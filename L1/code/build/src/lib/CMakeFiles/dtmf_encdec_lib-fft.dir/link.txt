@@ -1,0 +1,2 @@
+/usr/bin/ar qc /home/acm/Documents/heig/HPC/lab/L1/code/lib/libdtmf_encdec_lib-fft.a "CMakeFiles/dtmf_encdec_lib-fft.dir/dtmf_decode_fft.c.o" "CMakeFiles/dtmf_encdec_lib-fft.dir/dtmf_common.c.o" "CMakeFiles/dtmf_encdec_lib-fft.dir/dtmf_encode.c.o"
+/usr/bin/ranlib /home/acm/Documents/heig/HPC/lab/L1/code/lib/libdtmf_encdec_lib-fft.a

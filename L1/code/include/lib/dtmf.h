@@ -1,0 +1,24 @@
+/**
+ * @file dtmf.h
+ * @brief DTMF encoding and decoding public library interface.
+ * @author Aubry Mangold <aubry.mangold@heig-vd.ch>
+ * @date 2025-02-26
+ */
+
+#ifndef DTMF_H
+#define DTMF_H
+
+#include <math.h>
+#include <stdint.h>
+
+typedef double_t      dtmf_float_t;
+typedef uint_fast64_t dtmf_count_t;
+
+// Encodes a message into a DTMF signal.
+dtmf_count_t dtmf_encode(char const *message, dtmf_float_t **dtmf_buffer);
+
+// Decodes a DTMF signal into string.
+dtmf_count_t dtmf_decode(dtmf_float_t const *dtmf_buffer, char **out_message, dtmf_count_t const dtmf_frame_count);
+
+
+#endif  // DTMF_H
