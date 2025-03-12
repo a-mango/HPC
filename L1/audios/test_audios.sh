@@ -11,8 +11,8 @@ for i in $(fd -e wav .); do
   echo "FILE $i"
 
   echo -en "\tGOE >>>> "
-  ./$BIN_DIR/$BIN_GOE decode "$i" | tail -1
+  ./$BIN_DIR/$BIN_GOE decode "$i" |& tail -n 1
 
   echo -en "\tFFT >>>> "
-  ./$BIN_DIR/$BIN_FFT decode "$i" | tail -1
+  ./$BIN_DIR/$BIN_FFT decode "$i" |& tail -n 1
 done
