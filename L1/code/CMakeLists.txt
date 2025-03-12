@@ -11,6 +11,15 @@ set(CMAKE_COLOR_DIAGNOSTICS ON)
 set(CMAKE_COLOR_MAKEFILE ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# GCC version < 14 compatibility
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "14")
+    message(STATUS "Detected GCC < 14: forcing compiler to /usr/bin/gcc-13 and /usr/bin/g++-13")
+    set(CMAKE_C_COMPILER "/usr/bin/gcc-13" CACHE FILEPATH "C compiler" FORCE)
+    set(CMAKE_CXX_COMPILER "/usr/bin/g++-13" CACHE FILEPATH "C++ compiler" FORCE)
+  endif()
+endif()
+
 # C options
 set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
