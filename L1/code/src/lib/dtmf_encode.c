@@ -39,7 +39,7 @@ static bool _dtmf_input_validate(char const *str) {
 
     for (char const *c = str; *c != '\0'; c++) {
         // TODO: extract to an allow list.
-        if (!isalnum(*c) && !isdigit(*c) && *c != '!' && *c != '?' && *c != '.' && *c != ',' && *c != ' ') {
+        if (!isalnum(*c) && !isdigit(*c) && *c != '!' && *c != '?' && *c != '.' && *c != ',' && *c != ' ' && *c != '#') {
             fprintf(stderr, "Error: Invalid character in message: %c\n", *c);
             return false;
         }
