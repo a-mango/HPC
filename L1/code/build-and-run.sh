@@ -4,9 +4,9 @@ set -e
 
 BUILD_DIR=build
 BIN_DIR=bin
-BIN_NAME=dtmf_encdec-fft
+BIN_NAME=dtmf_encdec-goertzel
 
-cmake -S . -B $BUILD_DIR -DCMAKE_BUILD_TYPE=Release
+cmake -S . -B $BUILD_DIR -DCMAKE_BUILD_TYPE=Debug
 cmake --build $BUILD_DIR -- -j8
 
 echo -e "\n===== PROGRAM ====="
@@ -14,7 +14,7 @@ echo -e "$BIN_NAME"
 
 # Show the input
 echo -e "\n===== INPUT ====="
-[ -f $BIN_DIR/input.txt ] || echo -n "1234567890" >$BIN_DIR/input.txt
+[ -f $BIN_DIR/input.txt ] || echo -n "1234567890 ABCDEFGHIJKLMNOPQRSTUVWXYZ .!?,#" >$BIN_DIR/input.txt
 cat $BIN_DIR/input.txt
 
 # Run the encoder
