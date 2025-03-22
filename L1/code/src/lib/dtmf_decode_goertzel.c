@@ -16,6 +16,8 @@
 #include "dtmf_common.h"
 #include "io_utils.h"
 
+#define NOISE_THRESHOLD 1
+
 dtmf_float_t goertzel_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtmf_float_t target_freq, dtmf_float_t sample_rate) {
     int          k      = (int)(0.5 + (((dtmf_float_t)num_samples * target_freq) / sample_rate));
     dtmf_float_t omega  = (2.0 * M_PI * k) / (dtmf_float_t)num_samples;
@@ -69,6 +71,11 @@ dtmf_count_t dtmf_decode(dtmf_float_t const *dtmf_buffer, char **out_message, dt
                 max_magnitude = magnitude;
                 detected_key  = key;
             }
+        }
+
+        debug_printf("Detected key %d with magnitude %f\n", detected_key, max_magnitude);
+        if (max_magnitude < NOISE_THRESHOLD) {
+            detected_key = -1;  // Treat as silence if below noise threshold
         }
 
         if (detected_key != -1) {
