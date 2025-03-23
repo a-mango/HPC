@@ -5,7 +5,6 @@
  * @date 2025-03-11
  */
 
-
 #include <assert.h>
 #include <math.h>
 #include <stdbool.h>
@@ -16,9 +15,16 @@
 #include "dtmf_common.h"
 #include "io_utils.h"
 
-#define NOISE_THRESHOLD 1
+#define NOISE_THRESHOLD 15
+#define SILENCE_THRESHOLD 30
 
-dtmf_float_t goertzel_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtmf_float_t target_freq, dtmf_float_t sample_rate) {
+static void apply_hamming_window(dtmf_float_t *samples, dtmf_count_t num_samples) {
+    for (dtmf_count_t i = 0; i < num_samples; i++) {
+        samples[i] *= 0.54 - 0.46 * cos((2 * M_PI * i) / (num_samples - 1));
+    }
+}
+
+static dtmf_float_t goertzel_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtmf_float_t target_freq, dtmf_float_t sample_rate) {
     int          k      = (int)(0.5 + (((dtmf_float_t)num_samples * target_freq) / sample_rate));
     dtmf_float_t omega  = (2.0 * M_PI * k) / (dtmf_float_t)num_samples;
     dtmf_float_t sine   = sin(omega);
@@ -26,11 +32,22 @@ dtmf_float_t goertzel_detect(dtmf_float_t const *samples, dtmf_count_t num_sampl
     dtmf_float_t coeff  = 2.0 * cosine;
     dtmf_float_t q0 = 0, q1 = 0, q2 = 0;
 
+    // Create a copy of the samples to apply the Hamming window
+    dtmf_float_t *windowed_samples = (dtmf_float_t *)malloc(num_samples * sizeof(dtmf_float_t));
+    if (windowed_samples == NULL) {
+        fprintf(stderr, "Error: Could not allocate memory for windowed samples\n");
+        return 0;
+    }
+    memcpy(windowed_samples, samples, num_samples * sizeof(dtmf_float_t));
+    apply_hamming_window(windowed_samples, num_samples);
+
     for (dtmf_count_t i = 0; i < num_samples; i++) {
-        q0 = coeff * q1 - q2 + samples[i];
+        q0 = coeff * q1 - q2 + windowed_samples[i];
         q2 = q1;
         q1 = q0;
     }
+
+    free(windowed_samples);
 
     dtmf_float_t real      = (q1 - q2 * cosine);
     dtmf_float_t imag      = (q2 * sine);
@@ -75,7 +92,7 @@ dtmf_count_t dtmf_decode(dtmf_float_t const *dtmf_buffer, char **out_message, dt
 
         debug_printf("Detected key %d with magnitude %f\n", detected_key, max_magnitude);
         if (max_magnitude < NOISE_THRESHOLD) {
-            detected_key = -1;  // Treat as silence if below noise threshold
+            detected_key = -1;
         }
 
         if (detected_key != -1) {
@@ -120,6 +137,13 @@ dtmf_count_t dtmf_decode(dtmf_float_t const *dtmf_buffer, char **out_message, dt
         }
 
         buffer_read_ptr += chunk_size;
+    }
+
+    // Apply noise gate to the output message
+    for (dtmf_count_t i = 0; i < message_length; i++) {
+        if ((*out_message)[i] < SILENCE_THRESHOLD) {
+            (*out_message)[i] = ' ';
+        }
     }
 
     return message_length;
