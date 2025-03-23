@@ -18,11 +18,6 @@
 #define NOISE_THRESHOLD 43
 #define SILENCE_THRESHOLD 27
 
-static void apply_hamming_window(dtmf_float_t *samples, dtmf_count_t num_samples) {
-    for (dtmf_count_t i = 0; i < num_samples; i++) {
-        samples[i] *= 0.54 - 0.46 * cos((2 * M_PI * (dtmf_float_t)i) / (dtmf_float_t)(num_samples - 1));
-    }
-}
 
 static dtmf_float_t goertzel_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtmf_float_t target_freq, dtmf_float_t sample_rate) {
     int          k      = (int)(0.5 + (((dtmf_float_t)num_samples * target_freq) / sample_rate));
@@ -32,22 +27,16 @@ static dtmf_float_t goertzel_detect(dtmf_float_t const *samples, dtmf_count_t nu
     dtmf_float_t coeff  = 2.0 * cosine;
     dtmf_float_t q0 = 0, q1 = 0, q2 = 0;
 
-    // Create a copy of the samples to apply the Hamming window
-    dtmf_float_t *windowed_samples = (dtmf_float_t *)malloc(num_samples * sizeof(dtmf_float_t));
-    if (windowed_samples == NULL) {
-        fprintf(stderr, "Error: Could not allocate memory for windowed samples\n");
-        return 0;
-    }
-    memcpy(windowed_samples, samples, num_samples * sizeof(dtmf_float_t));
-    apply_hamming_window(windowed_samples, num_samples);
-
+    // Process samples directly with Hamming window
     for (dtmf_count_t i = 0; i < num_samples; i++) {
-        q0 = coeff * q1 - q2 + windowed_samples[i];
+        // Apply Hamming window inline
+        dtmf_float_t windowed_sample = samples[i] * (0.54 - 0.46 * cos((2 * M_PI * (dtmf_float_t)i) / (dtmf_float_t)(num_samples - 1)));
+
+        // Goertzel algorithm
+        q0 = coeff * q1 - q2 + windowed_sample;
         q2 = q1;
         q1 = q0;
     }
-
-    free(windowed_samples);
 
     dtmf_float_t real      = (q1 - q2 * cosine);
     dtmf_float_t imag      = (q2 * sine);
