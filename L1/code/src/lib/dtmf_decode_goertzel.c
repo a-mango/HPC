@@ -20,7 +20,7 @@
 
 static void apply_hamming_window(dtmf_float_t *samples, dtmf_count_t num_samples) {
     for (dtmf_count_t i = 0; i < num_samples; i++) {
-        samples[i] *= 0.54 - 0.46 * cos((2 * M_PI * i) / (num_samples - 1));
+        samples[i] *= 0.54 - 0.46 * cos((2 * M_PI * (dtmf_float_t)i) / (dtmf_float_t)(num_samples - 1));
     }
 }
 
