@@ -75,6 +75,10 @@ DtmfMapping dtmf_table_global[] = {
     {'0', 11, 1, {0, {0}}},
     {' ', 11, 2, {0, {0}}},
     {'*', 12, 1, {0, {0}}},
+    {'*', 12, 2, {0, {0}}},
+    {'*', 12, 3, {0, {0}}},
+    {'*', 12, 4, {0, {0}}},
+    {'*', 12, 5, {0, {0}}},
 };
 
 int dtmf_table_size = sizeof(dtmf_table_global) / sizeof(dtmf_table_global[0]);
