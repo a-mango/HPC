@@ -64,6 +64,8 @@
 
 #define DTMF_NUM_TONES 12
 
+#define DTMF_UNKNOWN_SYMBOL '~'
+
 constexpr dtmf_float_t dtmf_freqs_low_g[]  = DTMF_LOW_FREQS;
 constexpr dtmf_float_t dtmf_freqs_high_g[] = DTMF_HIGH_FREQS;
 

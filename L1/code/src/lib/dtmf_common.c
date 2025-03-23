@@ -176,5 +176,5 @@ char _dtmf_map_presses_to_letter(dtmf_count_t key, dtmf_count_t presses) {
     }
 
     debug_printf("No matching letter for key %lu with %lu presses.\n", key, presses);
-    return '?';  // Return a placeholder if no match is found
+    return DTMF_UNKNOWN_SYMBOL;
 }
