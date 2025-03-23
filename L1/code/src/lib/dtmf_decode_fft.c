@@ -1,5 +1,5 @@
 /**
- * @file dtmf_decode_goertzel.c
+ * @file dtmf_decode_fft.c
  * @brief DTMF decoding functions implementation using FFT algorithm.
  * @author Aubry Mangold <aubry.mangold@heig-vd.ch>
  * @date 2025-03-11
@@ -8,7 +8,6 @@
 #include <assert.h>
 #include <fftw3.h>
 #include <math.h>
-#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -17,6 +16,7 @@
 #include "io_utils.h"
 
 #define FFT_SIZE 2048
+#define NOISE_THRESHOLD 43
 
 static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtmf_float_t sample_rate) {
     fftw_complex *in, *out;
@@ -53,6 +53,10 @@ static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtm
     fftw_destroy_plan(p);
     fftw_free(in);
     fftw_free(out);
+
+    if (max_magnitude < NOISE_THRESHOLD) {
+        detected_key = -1;
+    }
 
     return detected_key;
 }
