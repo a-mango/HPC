@@ -45,8 +45,14 @@ static dtmf_float_t goertzel_detect(dtmf_float_t const *samples, dtmf_count_t nu
     return magnitude;
 }
 
-dtmf_count_t dtmf_decode(dtmf_float_t const *dtmf_buffer, char **out_message, dtmf_count_t dtmf_frame_count) {
+dtmf_count_t dtmf_decode(dtmf_float_t *dtmf_buffer, char **out_message, dtmf_count_t dtmf_frame_count) {
     assert(dtmf_buffer != NULL);
+
+    dtmf_float_t noise_threshold = _dtmf_calculate_noise_threshold(dtmf_buffer, dtmf_frame_count);
+    _dtmf_noise_reduction(dtmf_buffer, dtmf_frame_count, noise_threshold);
+    _dtmf_normalize_signal(dtmf_buffer, dtmf_frame_count);
+    _dtmf_apply_bandpass(dtmf_buffer, dtmf_frame_count);
+    _dtmf_pre_emphasis(dtmf_buffer, dtmf_frame_count);
 
     dtmf_count_t buffer_read_ptr = 0;
     dtmf_count_t chunk_size      = DTMF_TONE_REPEAT_NUM_SAMPLES;

@@ -206,3 +206,63 @@ void _dtmf_noise_reduction(dtmf_float_t *buffer, size_t num_samples, dtmf_float_
 
     debug_printf("Noise reduction applied with dynamic threshold %f (RMS: %f, factor: %f)\n", threshold, rms, threshold_factor);
 }
+
+void _dtmf_normalize_signal(dtmf_float_t *buffer, dtmf_count_t count) {
+    dtmf_float_t max = 0.0;
+    // Find maximum absolute value
+    for (dtmf_count_t i = 0; i < count; i++) {
+        if (fabs(buffer[i]) > max)
+            max = fabs(buffer[i]);
+    }
+    // Normalize if max is not zero
+    if (max > 0.0001) {
+        for (dtmf_count_t i = 0; i < count; i++) {
+            buffer[i] /= max;
+        }
+    }
+}
+
+// FIXME: pass sample rate as argument
+void _dtmf_apply_bandpass(dtmf_float_t *buffer, dtmf_count_t count) {
+    // IIR bandpass filter coefficients for 44100 Hz sample rate
+    const dtmf_float_t b0 = 0.0032981, b1 = 0.0, b2 = -0.00659619, b3 = 0.0, b4 = 0.0032981;
+    const dtmf_float_t a1 = -3.79262674, a2 = 5.43304806, a3 = -3.48434686, a4 = 0.84429627;
+    dtmf_float_t       x1 = 0, x2 = 0, x3 = 0, x4 = 0, y1 = 0, y2 = 0, y3 = 0, y4 = 0, y;
+
+    for (dtmf_count_t i = 0; i < count; i++) {
+        y         = b0 * buffer[i] + b1 * x1 + b2 * x2 + b3 * x3 + b4 * x4 - a1 * y1 - a2 * y2 - a3 * y3 - a4 * y4;
+        x4        = x3;
+        x3        = x2;
+        x2        = x1;
+        x1        = buffer[i];
+        y4        = y3;
+        y3        = y2;
+        y2        = y1;
+        y1        = y;
+        buffer[i] = y;
+    }
+}
+
+dtmf_float_t _dtmf_calculate_noise_threshold(dtmf_float_t const *buffer, dtmf_count_t count) {
+    dtmf_float_t sum    = 0.0;
+    dtmf_float_t sum_sq = 0.0;
+    for (dtmf_count_t i = 0; i < count; i++) {
+        sum += buffer[i];
+        sum_sq += buffer[i] * buffer[i];
+    }
+    dtmf_float_t mean     = sum / (dtmf_float_t)count;
+    dtmf_float_t variance = (sum_sq / (dtmf_float_t)count) - (mean * mean);
+    dtmf_float_t stddev   = sqrt(variance);
+    return mean + 1.4 * stddev;  // FIXME: magic number
+}
+
+void _dtmf_pre_emphasis(dtmf_float_t *buffer, dtmf_count_t count) {
+    const dtmf_float_t alpha = 0.95;
+    dtmf_float_t       prev  = 0.0;
+
+    for (dtmf_count_t i = 0; i < count; i++) {
+        dtmf_float_t current = buffer[i];
+        buffer[i]            = buffer[i] - alpha * prev;
+        prev                 = current;
+    }
+}

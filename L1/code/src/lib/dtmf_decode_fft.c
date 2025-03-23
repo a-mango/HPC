@@ -61,7 +61,7 @@ static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtm
     return detected_key;
 }
 
-dtmf_count_t dtmf_decode(dtmf_float_t const *dtmf_buffer, char **out_message, dtmf_count_t dtmf_frame_count) {
+dtmf_count_t dtmf_decode(dtmf_float_t *dtmf_buffer, char **out_message, dtmf_count_t dtmf_frame_count) {
     assert(dtmf_buffer != NULL);
 
     _dtmf_noise_reduction(dtmf_buffer, dtmf_frame_count, 1.5);

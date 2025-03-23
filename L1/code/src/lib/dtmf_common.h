@@ -116,4 +116,12 @@ dtmf_float_t _dtmf_compute_rms(const dtmf_float_t *buffer, dtmf_count_t num_samp
 // Apply noise reduction to the buffer.
 void _dtmf_noise_reduction(dtmf_float_t *buffer, size_t num_samples, dtmf_float_t threshold_factor);
 
+void _dtmf_normalize_signal(dtmf_float_t *buffer, dtmf_count_t count);
+
+void _dtmf_apply_bandpass(dtmf_float_t *buffer, dtmf_count_t count);
+
+dtmf_float_t _dtmf_calculate_noise_threshold(dtmf_float_t const *buffer, dtmf_count_t count);
+
+void _dtmf_pre_emphasis(dtmf_float_t *buffer, dtmf_count_t count);
+
 #endif  // DTMF_COMMON_H

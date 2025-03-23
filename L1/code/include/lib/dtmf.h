@@ -18,7 +18,7 @@ typedef uint_fast64_t dtmf_count_t;
 dtmf_count_t dtmf_encode(char const *message, dtmf_float_t **dtmf_buffer);
 
 // Decodes a DTMF signal into string.
-dtmf_count_t dtmf_decode(dtmf_float_t const *dtmf_buffer, char **out_message, dtmf_count_t const dtmf_frame_count);
+dtmf_count_t dtmf_decode(dtmf_float_t *dtmf_buffer, char **out_message, dtmf_count_t const dtmf_frame_count);
 
 
 #endif  // DTMF_H
