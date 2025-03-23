@@ -70,7 +70,7 @@ struct AudioTestParam {
  * @param os The output stream.
  */
 void PrintTo(const AudioTestParam& param, std::ostream* os) {
-    *os << "file_path: " << param.file_path << ", expected_output: " << param.expected_output;
+    *os << param.expected_output;
 }
 
 /**
@@ -95,7 +95,7 @@ TEST_P(AudioTestFFT, TestExpectedOutput) {
     }
 
     // Compare the actual output with the expected output
-    EXPECT_EQ(output, param.expected_output) << param.file_path;
+    EXPECT_EQ(output, param.expected_output);
 }
 
 /**
@@ -120,7 +120,7 @@ TEST_P(AudioTestGoertzel, TestExpectedOutput) {
     }
 
     // Compare the actual output with the expected output
-    EXPECT_EQ(output, param.expected_output) << param.file_path;
+    EXPECT_EQ(output, param.expected_output);
 }
 
 /**
@@ -158,6 +158,19 @@ std::vector<AudioTestParam> loadTestParams(const std::string& tsv_file) {
 std::vector<AudioTestParam> audio_test_params = loadTestParams(TSV_FILE);
 
 /**
+ * @brief Generate a custom test name for the test.
+ *
+ * @param info The test parameter info.
+ * @return The custom test name.
+ */
+std::string CustomTestNameGenerator(const ::testing::TestParamInfo<AudioTestParam>& info) {
+    std::string name = info.param.file_path;
+    std::replace(name.begin(), name.end(), '.', '_');
+    std::replace(name.begin(), name.end(), '/', '_');
+    return name;
+}
+
+/**
  * @brief Main function to run the tests.
  */
 int main(int argc, char** argv) {
@@ -171,8 +184,8 @@ int main(int argc, char** argv) {
 }
 
 // Instantiate the test suites
-INSTANTIATE_TEST_SUITE_P(AudioTestsFFT, AudioTestFFT, ::testing::ValuesIn(audio_test_params));
-INSTANTIATE_TEST_SUITE_P(AudioTestsGoertzel, AudioTestGoertzel, ::testing::ValuesIn(audio_test_params));
+INSTANTIATE_TEST_SUITE_P(AudioTests, AudioTestFFT, ::testing::ValuesIn(audio_test_params), CustomTestNameGenerator);
+INSTANTIATE_TEST_SUITE_P(AudioTests, AudioTestGoertzel, ::testing::ValuesIn(audio_test_params), CustomTestNameGenerator);
 
 // Allow uninstantiated parameterized tests
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(AudioTestFFT);
