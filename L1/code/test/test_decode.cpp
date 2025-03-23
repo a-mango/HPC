@@ -62,7 +62,6 @@ struct AudioTestParam {
     std::string expected_output;
 };
 
-
 /**
  * @brief Print the test parameters to the output stream.
  *
