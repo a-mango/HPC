@@ -63,12 +63,14 @@ endif()
 # Create names and paths
 set(EXE_NAME ${CMAKE_PROJECT_NAME})
 set(LIB_NAME ${CMAKE_PROJECT_NAME}_lib)
+set(TEST_NAME ${CMAKE_PROJECT_NAME}_test)
 
 # Create paths
 set(SRC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(INC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(BIN_PATH ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 set(LIB_PATH ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+set(TEST_PATH ${CMAKE_CURRENT_SOURCE_DIR}/test)
 
 # Setup the binary output directories
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BIN_PATH})
@@ -81,3 +83,4 @@ include_directories(${INC_PATH}/lib)
 
 # Add subdirectories
 add_subdirectory(${SRC_PATH})
+add_subdirectory(${TEST_PATH})
