@@ -13,6 +13,8 @@
 #include "dtmf.h"
 
 #define M_PI 3.1415926535897
+#define M_PI_2 1.5707963267949
+#define M_2PI 6.2831853071796
 
 #define DTMF_SAMPLE_RATE_HZ 44100
 #define DTMF_AMPLITUDE 1
