@@ -74,6 +74,7 @@ DtmfMapping dtmf_table_global[] = {
     {',', 10, 5, {0, {0}}},
     {'0', 11, 1, {0, {0}}},
     {' ', 11, 2, {0, {0}}},
+    {'*', 12, 1, {0, {0}}},
 };
 
 int dtmf_table_size = sizeof(dtmf_table_global) / sizeof(dtmf_table_global[0]);
@@ -253,7 +254,7 @@ dtmf_float_t _dtmf_calculate_noise_threshold(dtmf_float_t const *buffer, dtmf_co
     dtmf_float_t mean     = sum / (dtmf_float_t)count;
     dtmf_float_t variance = (sum_sq / (dtmf_float_t)count) - (mean * mean);
     dtmf_float_t stddev   = sqrt(variance);
-    return mean + 1.4 * stddev;  // FIXME: magic number
+    return mean + 1.1 * stddev;  // FIXME: magic number
 }
 
 void _dtmf_pre_emphasis(dtmf_float_t *buffer, dtmf_count_t count) {
