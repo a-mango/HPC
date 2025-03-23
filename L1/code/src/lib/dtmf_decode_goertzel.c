@@ -15,8 +15,8 @@
 #include "dtmf_common.h"
 #include "io_utils.h"
 
-#define NOISE_THRESHOLD 15
-#define SILENCE_THRESHOLD 30
+#define NOISE_THRESHOLD 43
+#define SILENCE_THRESHOLD 27
 
 static void apply_hamming_window(dtmf_float_t *samples, dtmf_count_t num_samples) {
     for (dtmf_count_t i = 0; i < num_samples; i++) {
