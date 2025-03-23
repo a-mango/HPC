@@ -2,8 +2,10 @@
 
 ## Build dependencies
 
-The program relies on the following libraries:
+The program relies on the following dependencies:
 
+- A `GCC` version compatible with the `C23` standard
+- `cmake`
 - `libfftw3-dev`
 - `libsndfile`
 
@@ -31,6 +33,15 @@ cmake -DCMAKE_BUILD_TYPE=Release ../..
 make
 ```
 
+## Testing
+
+To run the tests, you can use the helper script that will invoke `Gtest` with
+the appropriate input:
+
+```sh
+./build-and-test.sh
+```
+
 ## Running the Program
 
 After building the project, you can run the program using the following command:
@@ -55,3 +66,10 @@ To decode a message from `output.wav` and save it to `decoded.txt`, use:
 ```sh
 ./dtmf_encdec decode output.wav decoded.txt
 ```
+
+## Development
+
+The `build-and-run.sh` script can be used to build the project and run an
+example encoding and decoding operation. The script will take input from the
+`bin/input.txt` file if present, otherwise it will generate one. The encoded
+output will be saved to `bin/output.wav`, and the decoded output on `stdout`.
