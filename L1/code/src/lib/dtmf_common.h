@@ -110,4 +110,10 @@ bool _dtmf_allocate_buffer(dtmf_float_t **buffer, size_t num_samples);
 // Translates a key and number of presses to a DTMF letter.
 char _dtmf_map_presses_to_letter(dtmf_count_t key, dtmf_count_t presses);
 
+// Compute the root mean square of the buffer.
+dtmf_float_t _dtmf_compute_rms(const dtmf_float_t *buffer, dtmf_count_t num_samples);
+
+// Apply noise reduction to the buffer.
+void _dtmf_noise_reduction(dtmf_float_t *buffer, size_t num_samples, dtmf_float_t threshold_factor);
+
 #endif  // DTMF_COMMON_H

@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "dtmf.h"
 #include "io_utils.h"
 
 
@@ -177,4 +178,31 @@ char _dtmf_map_presses_to_letter(dtmf_count_t key, dtmf_count_t presses) {
 
     debug_printf("No matching letter for key %lu with %lu presses.\n", key, presses);
     return DTMF_UNKNOWN_SYMBOL;
+}
+
+dtmf_float_t _dtmf_compute_rms(const dtmf_float_t *buffer, dtmf_count_t num_samples) {
+    assert(buffer != NULL);
+
+    dtmf_float_t sum_squares = 0.0;
+
+    for (size_t i = 0; i < num_samples; i++) {
+        sum_squares += buffer[i] * buffer[i];
+    }
+
+    return sqrt(sum_squares / (dtmf_float_t)num_samples);
+}
+
+void _dtmf_noise_reduction(dtmf_float_t *buffer, size_t num_samples, dtmf_float_t threshold_factor) {
+    assert(buffer != NULL);
+
+    dtmf_float_t rms       = _dtmf_compute_rms(buffer, num_samples);
+    dtmf_float_t threshold = rms * threshold_factor;
+
+    for (size_t i = 0; i < num_samples; i++) {
+        if (fabs(buffer[i]) < threshold) {
+            buffer[i] = 0.0;
+        }
+    }
+
+    debug_printf("Noise reduction applied with dynamic threshold %f (RMS: %f, factor: %f)\n", threshold, rms, threshold_factor);
 }

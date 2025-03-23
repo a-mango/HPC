@@ -64,6 +64,7 @@ static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtm
 dtmf_count_t dtmf_decode(dtmf_float_t const *dtmf_buffer, char **out_message, dtmf_count_t dtmf_frame_count) {
     assert(dtmf_buffer != NULL);
 
+    _dtmf_noise_reduction(dtmf_buffer, dtmf_frame_count, 1.5);
     dtmf_count_t buffer_read_ptr = 0;
     dtmf_count_t chunk_size      = DTMF_TONE_REPEAT_NUM_SAMPLES;
 
