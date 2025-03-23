@@ -1,11 +1,8 @@
 File name	Expected output
-alphabet_digits.wav	ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789 ???
-alphabet_digits_signs.wav	1234567890 ABCDEFGHIJKLMNOPQRSTUVWXYZ .!?,#
-alphabet_digits_noisy.wav	ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789 ???
-crasher.wav	<UNKNOWN>
-digits.wav	012345678901234567890123456789
-easy_to_decode.wav	<UNKNOWN>
-hard_to_decode.wav	<UNKNOWN>
-unrealistic_noise.wav	<UNKNOWN>
-vacances.wav	J AI BESOIN DE VACANCES
-welcome.wav	?WELCOME TO THE LABORATORY
+digits.wav	1234567890
+digits_noisy.wav	1234567890
+digits_alphabet.wav	1234567890 ABCDEFGHIJKLMNOPQRSTUVWXYZ
+digits_alphabet_noisy.wav	1234567890 ABCDEFGHIJKLMNOPQRSTUVWXYZ
+digits_alphabet_signs.wav	1234567890 ABCDEFGHIJKLMNOPQRSTUVWXYZ .!?,#
+digits_alphabet_signs_noisy.wav	1234567890 ABCDEFGHIJKLMNOPQRSTUVWXYZ .!?,#
+corrupt.wav	~~~~~~~~~~~~~~~~~~~~~~~~~
