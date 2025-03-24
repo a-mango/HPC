@@ -18,7 +18,7 @@ mark_as_advanced(
 set(TEST_NAME ${CMAKE_PROJECT_NAME}_test)
 file(GLOB_RECURSE TEST_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 add_executable(${TEST_NAME} ${TEST_SOURCES})
-target_compile_options(${TEST_NAME} PRIVATE -Wno-error=inline)
+target_compile_options(${TEST_NAME} PRIVATE -Wno-inline)
 target_include_directories(${TEST_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(${TEST_NAME} ${CMAKE_SOURCE_DIR}/lib/libdtmf_encdec_lib-goertzel.a ${CMAKE_SOURCE_DIR}/lib/libdtmf_encdec_lib-fft.a GTest::gtest_main)
 gtest_discover_tests(${TEST_NAME})
