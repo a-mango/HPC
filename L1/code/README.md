@@ -2,12 +2,18 @@
 
 ## Build dependencies
 
-The program relies on the following dependencies:
+The program relies on the following system dependencies:
 
 - A `GCC` version compatible with the `C23` standard
 - `cmake`
 - `libfftw3-dev`
 - `libsndfile`
+
+Additionally, you'll have to initialise the Git submodules:
+
+```sh
+git submodule update --init
+```
 
 ## Building the Project
 
