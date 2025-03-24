@@ -67,6 +67,15 @@ the appropriate input:
 ./build-and-test.sh
 ```
 
+If you're running the tests manually or through CI, don't forget to set the
+following environment variables:
+
+```bash
+export DTMF_BINARY_PATH=$BIN_DIR/dtmf_encdec
+export DTMF_TEST_SAMPLES_DIR=$SCRIPT_DIR/test/samples
+export DTMF_TEST_CONFIG=$DTMF_TEST_SAMPLES_DIR/audio_files.tsv
+```
+
 ## Running the Program
 
 After building the project, you can run the program using the following command:

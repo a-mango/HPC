@@ -8,7 +8,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <sndfile-64.h>
+#include <sndfile.h>
 
 #ifdef DEBUG
 #define debug_printf(fmt, ...) fprintf(stderr, "[D] " fmt __VA_OPT__(, ) __VA_ARGS__)

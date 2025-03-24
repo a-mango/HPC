@@ -1,6 +1,6 @@
 add_subdirectory(lib)
 
-set(COMMON_INCLUDE_DIRS ${SNDFILE_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/include)
+set(COMMON_INCLUDE_DIRS ${SNDFILE_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/vendor)
 set(COMMON_LINK_LIBS ${SNDFILE_LIBRARY} m)
 
 file(GLOB_RECURSE SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.c)
@@ -10,7 +10,14 @@ find_path(SNDFILE_INCLUDE_DIR sndfile.h REQUIRED)
 find_library(SNDFILE_LIBRARY sndfile REQUIRED)
 
 if(NOT SNDFILE_INCLUDE_DIR OR NOT SNDFILE_LIBRARY)
-  message(FATAL_ERROR "libsndfile non trouvé. Assurez-vous que libsndfile1 et libsndfile1-dev sont installés.")
+  message(FATAL_ERROR "libsndfile missing. Make sure libsndfile and libsndfile-dev are installed.")
+endif()
+
+find_path(FFTW3_INCLUDE_DIR fftw3.h REQUIRED)
+find_library(FFTW3_LIBRARY fftw3 REQUIRED)
+
+if(NOT FFTW3_INCLUDE_DIR OR NOT FFTW3_LIBRARY)
+  message(FATAL_ERROR "libfftw3 missing. Make sure libfftw3 and libfftw3-dev are installed.")
 endif()
 
 # Filter source files for Goertzel implementation
@@ -18,7 +25,7 @@ list(FILTER SOURCE_FILES EXCLUDE REGEX ".*dtmf_decode_fft.c$")
 set(GOERTZEL_TARGET ${CMAKE_PROJECT_NAME}-goertzel)
 add_executable(${GOERTZEL_TARGET} ${SOURCE_FILES})
 target_include_directories(${GOERTZEL_TARGET} PRIVATE ${COMMON_INCLUDE_DIRS})
-target_link_libraries(${GOERTZEL_TARGET} PRIVATE ${COMMON_LINK_LIBS} ${LIB_NAME}-goertzel)
+target_link_libraries(${GOERTZEL_TARGET} PRIVATE ${COMMON_LINK_LIBS} ${LIB_NAME}-goertzel ${SNDFILE_LIBRARY})
 enable_asan(${GOERTZEL_TARGET})
 
 # Filter source files for FFT implementation
@@ -26,5 +33,5 @@ list(FILTER SOURCE_FILES EXCLUDE REGEX ".*dtmf_decode_goertzel.c$")
 set(FFT_TARGET ${CMAKE_PROJECT_NAME}-fft)
 add_executable(${FFT_TARGET} ${SOURCE_FILES})
 target_include_directories(${FFT_TARGET} PRIVATE ${COMMON_INCLUDE_DIRS})
-target_link_libraries(${FFT_TARGET} PRIVATE ${COMMON_LINK_LIBS} ${LIB_NAME}-fft fftw3)
+target_link_libraries(${FFT_TARGET} PRIVATE ${COMMON_LINK_LIBS} ${LIB_NAME}-fft fftw3 ${SNDFILE_LIBRARY})
 enable_asan(${FFT_TARGET})
