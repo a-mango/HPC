@@ -7,7 +7,7 @@ set_target_properties(gtest_main PROPERTIES FOLDER extern COMPILE_FLAGS "-w")
 set_target_properties(gmock PROPERTIES FOLDER extern COMPILE_FLAGS "-w")
 set_target_properties(gmock_main PROPERTIES FOLDER extern COMPILE_FLAGS "-w")
 
-target_add_compile_options(gtest_main --param inline-unit-growth=600)
+target_compile_options(gtest_main PRIVATE "-Wno-error=inline")
 
 mark_as_advanced(
     BUILD_GMOCK BUILD_GTEST BUILD_SHARED_LIBS
