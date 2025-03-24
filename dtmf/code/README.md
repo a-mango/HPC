@@ -8,6 +8,7 @@ The program relies on the following system dependencies:
 - `cmake`
 - `libfftw3-dev`
 - `libsndfile`
+- Sanitizers (if desired): `libtsan`, `libtsan`, `liblsan`, `liblsan`
 
 Additionally, you'll have to initialise the Git submodules:
 
@@ -33,6 +34,11 @@ Then set the `CC` and `CXX` environment variables to point to the new compilers
 export CC=/usr/bin/gcc-13
 export CXX=/usr/bin/g++-13
 ```
+
+### Sanitizers
+
+Standard sanitizers are enabled when running the tests. To disable them, set
+`ENABLE_ASAB` to `off` in the `build-and-test.sh` script.
 
 ## Building the Project
 
