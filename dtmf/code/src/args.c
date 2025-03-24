@@ -22,13 +22,6 @@ static char args_doc[] = "COMMAND INPUT [OUTPUT]";
 // The options we understand
 static struct argp_option options[] = {{0}};
 
-// Used by main to communicate with parse_opt
-struct arguments {
-    char *command;
-    char *input;
-    char *output;
-};
-
 // Parse a single option
 static error_t parse_opt(int key, char *arg, struct argp_state *state) {
     struct arguments *arguments = state->input;
