@@ -6,8 +6,11 @@ BUILD_DIR=build
 BIN_DIR=bin
 BIN_NAME=dtmf_encdec-goertzel
 
-cmake -S . -B $BUILD_DIR -DCMAKE_BUILD_TYPE=Debug -DENABLE_ASAN=ON
-cmake --build $BUILD_DIR -- -j8
+BUILD_OPTS="-DCMAKE_BUILD_TYPE=Debug -DENABLE_SAN=ON"
+MAKE_OPTS="-j8"
+
+cmake -S . -B $BUILD_DIR $BUILD_OPTS
+cmake --build $BUILD_DIR -- $MAKE_OPTS
 
 echo -e "\n===== PROGRAM ====="
 echo -e "$BIN_NAME"
