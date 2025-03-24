@@ -14,8 +14,8 @@
 #include "dtmf_common.h"
 #include "dtmf_utils.h"
 
-#define GOE_NOISE_THRESHOLD 39
-#define GOE_MAX_SAMPLES 2048
+#define GOE_NOISE_THRESHOLD 44
+#define GOE_MAX_SAMPLES 3800
 
 static dtmf_float_t goertzel_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtmf_float_t target_freq, dtmf_float_t sample_rate) {
     int          k      = (int)(0.5 + (((dtmf_float_t)num_samples * target_freq) / sample_rate));
