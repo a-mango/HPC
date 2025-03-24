@@ -6,7 +6,7 @@
  */
 
 #include <assert.h>
-#include <sndfile-64.h>
+#include <sndfile.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
