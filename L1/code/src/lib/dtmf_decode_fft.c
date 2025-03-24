@@ -13,10 +13,10 @@
 
 #include "dtmf.h"
 #include "dtmf_common.h"
-#include "io_utils.h"
+#include "dtmf_utils.h"
 
 #define FFT_SIZE 2048
-#define NOISE_THRESHOLD 43
+#define FFT_NOISE_THRESHOLD 30
 
 static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtmf_float_t sample_rate) {
     fftw_complex *in, *out;
@@ -54,7 +54,7 @@ static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtm
     fftw_free(in);
     fftw_free(out);
 
-    if (max_magnitude < NOISE_THRESHOLD) {
+    if (max_magnitude < FFT_NOISE_THRESHOLD) {
         detected_key = -1;
     }
 
@@ -64,7 +64,8 @@ static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtm
 dtmf_count_t dtmf_decode(dtmf_float_t *dtmf_buffer, char **out_message, dtmf_count_t dtmf_frame_count) {
     assert(dtmf_buffer != NULL);
 
-    _dtmf_noise_reduction(dtmf_buffer, dtmf_frame_count, 1.5);
+    _dtmf_preprocess_buffer(dtmf_buffer, dtmf_frame_count, 0.5);
+
     dtmf_count_t buffer_read_ptr = 0;
     dtmf_count_t chunk_size      = DTMF_TONE_REPEAT_NUM_SAMPLES;
 
