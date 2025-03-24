@@ -14,7 +14,8 @@
 #include "dtmf_common.h"
 #include "io_utils.h"
 
-#define NOISE_THRESHOLD 43
+#define GOE_NOISE_THRESHOLD 39
+#define GOE_MAX_SAMPLES 2048
 
 static dtmf_float_t goertzel_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtmf_float_t target_freq, dtmf_float_t sample_rate) {
     int          k      = (int)(0.5 + (((dtmf_float_t)num_samples * target_freq) / sample_rate));
@@ -24,8 +25,18 @@ static dtmf_float_t goertzel_detect(dtmf_float_t const *samples, dtmf_count_t nu
     dtmf_float_t coeff  = 2.0 * cosine;
     dtmf_float_t q0 = 0, q1 = 0, q2 = 0;
 
+    // Precompute window function values
+    static dtmf_float_t window[GOE_MAX_SAMPLES];
+    static int          window_initialized = 0;
+    if (!window_initialized) {
+        for (dtmf_count_t i = 0; i < GOE_MAX_SAMPLES; i++) {
+            window[i] = 0.54 - 0.46 * cos((2 * M_PI * (dtmf_float_t)i) / (dtmf_float_t)(GOE_MAX_SAMPLES - 1));
+        }
+        window_initialized = 1;
+    }
+
     for (dtmf_count_t i = 0; i < num_samples; i++) {
-        dtmf_float_t windowed_sample = samples[i] * (0.54 - 0.46 * cos((2 * M_PI * (dtmf_float_t)i) / (dtmf_float_t)(num_samples - 1)));
+        dtmf_float_t windowed_sample = samples[i] * window[i];
         q0                           = coeff * q1 - q2 + windowed_sample;
         q2                           = q1;
         q1                           = q0;
@@ -53,7 +64,7 @@ static void process_window(dtmf_float_t *dtmf_buffer, dtmf_count_t window_index,
         }
     }
 
-    if (*max_magnitude < NOISE_THRESHOLD) {
+    if (*max_magnitude < GOE_NOISE_THRESHOLD) {
         *detected_key = -1;
     }
 }
@@ -117,8 +128,8 @@ dtmf_count_t dtmf_decode(dtmf_float_t *dtmf_buffer, char **out_message, dtmf_cou
     dtmf_count_t       chunks_seen       = 0;
     dtmf_count_t       repetitions       = 0;
     dtmf_count_t       pause_repetitions = 0;
-    dtmf_count_t const debounce_window   = DTMF_TONE_NUM_SAMPLES / stride_size;
     dtmf_count_t       key_cooldown      = 0;
+    dtmf_count_t const debounce_window   = DTMF_TONE_NUM_SAMPLES / stride_size;
 
     _dtmf_preprocess_buffer(dtmf_buffer, dtmf_frame_count, 1.1);
 
