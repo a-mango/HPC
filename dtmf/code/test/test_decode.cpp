@@ -24,11 +24,17 @@
 #include <string>
 #include <vector>
 
-const std::string BINARY_PATH     = "./bin/dtmf_encdec";
+
+std::string env(const std::string& var, const std::string& default_val) {
+    const char* val = std::getenv(var.c_str());
+    return val == nullptr ? default_val : std::string(val);
+}
+
+const std::string BINARY_PATH     = env("DTMF_BINARY_PATH", "bin/dtmf_encdec");
+const std::string SAMPLES_DIR     = env("DTMF_TEST_SAMPLES_DIR", "test/samples");
+const std::string TSV_FILE        = env("DTMF_TEST_CONFIG", "test/samples/audio_files.tsv");
 const std::string BINARY_GOERTZEL = BINARY_PATH + "-goertzel";
 const std::string BINARY_FFT      = BINARY_PATH + "-fft";
-const std::string SAMPLES_DIR     = "./test/samples";
-const std::string TSV_FILE        = SAMPLES_DIR + "/audio_files.tsv";
 
 /**
  * @brief Execute a shell command and return the output.
@@ -173,6 +179,10 @@ std::string CustomTestNameGenerator(const ::testing::TestParamInfo<AudioTestPara
  * @brief Main function to run the tests.
  */
 int main(int argc, char** argv) {
+    std::cout << "DTMF_BINARY_PATH: " << BINARY_PATH << std::endl;
+    std::cout << "DTMF_TEST_SAMPLES_DIR: " << SAMPLES_DIR << std::endl;
+    std::cout << "DTMF_TEST_CONFIG: " << TSV_FILE << std::endl;
+
     std::cout << "Loaded " << audio_test_params.size() << " test parameters." << std::endl;
     for (const auto& param : audio_test_params) {
         std::cout << "File: " << param.file_path << ", Expected Output: " << param.expected_output << std::endl;
