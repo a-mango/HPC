@@ -2,10 +2,10 @@ add_subdirectory("${VENDOR_PATH}/googletest" "vendor/googletest")
 enable_testing()
 include(GoogleTest)
 
-set_target_properties(gtest PROPERTIES FOLDER extern COMPILE_FLAGS "-w")
-set_target_properties(gtest_main PROPERTIES FOLDER extern COMPILE_FLAGS "-w")
-set_target_properties(gmock PROPERTIES FOLDER extern COMPILE_FLAGS "-w")
-set_target_properties(gmock_main PROPERTIES FOLDER extern COMPILE_FLAGS "-w")
+set_target_properties(gtest PROPERTIES FOLDER extern COMPILE_FLAGS "-w  -Wno-error=inline")
+set_target_properties(gtest_main PROPERTIES FOLDER extern COMPILE_FLAGS "-w -Wno-error=inline")
+set_target_properties(gmock PROPERTIES FOLDER extern COMPILE_FLAGS "-w -Wno-error=inline")
+set_target_properties(gmock_main PROPERTIES FOLDER extern COMPILE_FLAGS "-w -Wno-error=inline")
 mark_as_advanced(
     BUILD_GMOCK BUILD_GTEST BUILD_SHARED_LIBS
     gmock_build_tests gtest_build_samples gtest_build_tests
