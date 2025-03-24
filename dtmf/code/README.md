@@ -26,6 +26,14 @@ sudo apt-get update
 sudo apt-get install -y gcc-13 g++-13
 ```
 
+Then set the `CC` and `CXX` environment variables to point to the new compilers
+**before** invoking `cmake`:
+
+```sh
+export CC=/usr/bin/gcc-13
+export CXX=/usr/bin/g++-13
+```
+
 ## Building the Project
 
 ### Debug Build
