@@ -15,6 +15,17 @@ Additionally, you'll have to initialise the Git submodules:
 git submodule update --init
 ```
 
+### C23 on Ubuntu
+
+If you're running Ubuntu or one of its derivatives, you can install the `gcc-13`
+toolchain using the following commands:
+
+```sh
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+sudo apt-get update
+sudo apt-get install -y gcc-13 g++-13
+```
+
 ## Building the Project
 
 ### Debug Build
