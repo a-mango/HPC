@@ -1,6 +1,6 @@
 /**
- * @file io_utils.c
- * @brief IO utilities for the DTMF enc/decoder.
+ * @file dtmf_utils.c
+ * @brief Utilities for the DTMF enc/decoder.
  * @author Aubry Mangold <aubry.mangold@heig-vd.ch>
  * @date 2025-02-26
  */

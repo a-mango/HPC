@@ -1,17 +1,17 @@
 /**
- * @file io_utils.h
- * @brief IO functions implementation.
+ * @file dtmf_utils.h
+ * @brief Utility functions implementation.
  * @author Aubry Mangold <aubry.mangold@heig-vd.ch>
  * @date 2025-03-11
  */
+
+#include "dtmf_utils.h"
 
 #include <assert.h>
 #include <sndfile.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-#include "dtmf_utils.h"
 
 bool utils_read_text_file(char const *filename, char **out_buffer) {
     assert(filename != NULL);
