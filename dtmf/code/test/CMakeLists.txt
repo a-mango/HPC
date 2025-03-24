@@ -1,13 +1,12 @@
-add_subdirectory("${VENDOR_PATH}/googletest" "vendor/googletest")
 enable_testing()
 include(GoogleTest)
 
-set_target_properties(gtest PROPERTIES FOLDER extern COMPILE_FLAGS "-w")
-set_target_properties(gtest_main PROPERTIES FOLDER extern COMPILE_FLAGS "-w")
-set_target_properties(gmock PROPERTIES FOLDER extern COMPILE_FLAGS "-w")
-set_target_properties(gmock_main PROPERTIES FOLDER extern COMPILE_FLAGS "-w")
+set_target_properties(gtest PROPERTIES FOLDER vendor COMPILE_FLAGS "-w")
+set_target_properties(gtest_main PROPERTIES FOLDER vendor COMPILE_FLAGS "-w")
+set_target_properties(gmock PROPERTIES FOLDER vendor COMPILE_FLAGS "-w")
+set_target_properties(gmock_main PROPERTIES FOLDER vendor COMPILE_FLAGS "-w")
 
-set_property(TARGET gtest_main APPEND_STRING PROPERTY COMPILE_OPTIONS "--param" "inline-unit-growth=4096")
+set_property(TARGET gtest_main APPEND_STRING PROPERTY COMPILE_OPTIONS "--param" "inline-unit-growth=4096" "-w")
 
 mark_as_advanced(
     BUILD_GMOCK BUILD_GTEST BUILD_SHARED_LIBS
@@ -21,4 +20,5 @@ add_executable(${TEST_NAME} ${TEST_SOURCES})
 target_compile_options(${TEST_NAME} PRIVATE -Wno-inline)
 target_include_directories(${TEST_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(${TEST_NAME} ${CMAKE_SOURCE_DIR}/lib/libdtmf_encdec_lib-goertzel.a ${CMAKE_SOURCE_DIR}/lib/libdtmf_encdec_lib-fft.a GTest::gtest_main)
-gtest_discover_tests(${TEST_NAME})
+
+gtest_discover_tests(${TEST_NAME} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
