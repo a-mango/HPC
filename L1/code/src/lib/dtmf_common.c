@@ -185,25 +185,25 @@ char _dtmf_map_presses_to_letter(dtmf_count_t key, dtmf_count_t presses) {
     return DTMF_UNKNOWN_SYMBOL;
 }
 
-dtmf_float_t _dtmf_compute_rms(const dtmf_float_t *buffer, dtmf_count_t num_samples) {
+static dtmf_float_t _dtmf_compute_rms(const dtmf_float_t *buffer, dtmf_count_t const count) {
     assert(buffer != NULL);
 
     dtmf_float_t sum_squares = 0.0;
 
-    for (size_t i = 0; i < num_samples; i++) {
+    for (size_t i = 0; i < count; i++) {
         sum_squares += buffer[i] * buffer[i];
     }
 
-    return sqrt(sum_squares / (dtmf_float_t)num_samples);
+    return sqrt(sum_squares / (dtmf_float_t)count);
 }
 
-void _dtmf_noise_reduction(dtmf_float_t *buffer, size_t num_samples, dtmf_float_t threshold_factor) {
+static void _dtmf_noise_reduction(dtmf_float_t *buffer, dtmf_count_t const count, dtmf_float_t const threshold_factor) {
     assert(buffer != NULL);
 
-    dtmf_float_t rms       = _dtmf_compute_rms(buffer, num_samples);
+    dtmf_float_t rms       = _dtmf_compute_rms(buffer, count);
     dtmf_float_t threshold = rms * threshold_factor;
 
-    for (size_t i = 0; i < num_samples; i++) {
+    for (size_t i = 0; i < count; i++) {
         if (fabs(buffer[i]) < threshold) {
             buffer[i] = 0.0;
         }
@@ -212,7 +212,7 @@ void _dtmf_noise_reduction(dtmf_float_t *buffer, size_t num_samples, dtmf_float_
     debug_printf("Noise reduction applied with dynamic threshold %f (RMS: %f, factor: %f)\n", threshold, rms, threshold_factor);
 }
 
-void _dtmf_normalize_signal(dtmf_float_t *buffer, dtmf_count_t count) {
+static void _dtmf_normalize_signal(dtmf_float_t *buffer, dtmf_count_t const count) {
     dtmf_float_t max = 0.0;
     // Find maximum absolute value
     for (dtmf_count_t i = 0; i < count; i++) {
@@ -227,9 +227,8 @@ void _dtmf_normalize_signal(dtmf_float_t *buffer, dtmf_count_t count) {
     }
 }
 
-// FIXME: pass sample rate as argument
-void _dtmf_apply_bandpass(dtmf_float_t *buffer, dtmf_count_t count) {
-    // IIR bandpass filter coefficients for 44100 Hz sample rate
+static void _dtmf_apply_bandpass(dtmf_float_t *buffer, dtmf_count_t const count) {
+    // IIR bandpass filter coefficients for 44100 Hz sample rate with some tolerance
     const dtmf_float_t b0 = 0.0032981, b1 = 0.0, b2 = -0.00659619, b3 = 0.0, b4 = 0.0032981;
     const dtmf_float_t a1 = -3.79262674, a2 = 5.43304806, a3 = -3.48434686, a4 = 0.84429627;
     dtmf_float_t       x1 = 0, x2 = 0, x3 = 0, x4 = 0, y1 = 0, y2 = 0, y3 = 0, y4 = 0, y;
@@ -248,7 +247,7 @@ void _dtmf_apply_bandpass(dtmf_float_t *buffer, dtmf_count_t count) {
     }
 }
 
-dtmf_float_t _dtmf_calculate_noise_threshold(dtmf_float_t const *buffer, dtmf_count_t count) {
+static dtmf_float_t _dtmf_calculate_noise_threshold(dtmf_float_t const *buffer, dtmf_count_t const count, dtmf_float_t const threshold_factor) {
     dtmf_float_t sum    = 0.0;
     dtmf_float_t sum_sq = 0.0;
     for (dtmf_count_t i = 0; i < count; i++) {
@@ -258,10 +257,10 @@ dtmf_float_t _dtmf_calculate_noise_threshold(dtmf_float_t const *buffer, dtmf_co
     dtmf_float_t mean     = sum / (dtmf_float_t)count;
     dtmf_float_t variance = (sum_sq / (dtmf_float_t)count) - (mean * mean);
     dtmf_float_t stddev   = sqrt(variance);
-    return mean + 1.1 * stddev;  // FIXME: magic number
+    return mean + threshold_factor * stddev;
 }
 
-void _dtmf_pre_emphasis(dtmf_float_t *buffer, dtmf_count_t count) {
+static void _dtmf_pre_emphasis(dtmf_float_t *buffer, dtmf_count_t const count) {
     const dtmf_float_t alpha = 0.95;
     dtmf_float_t       prev  = 0.0;
 
@@ -270,4 +269,12 @@ void _dtmf_pre_emphasis(dtmf_float_t *buffer, dtmf_count_t count) {
         buffer[i]            = buffer[i] - alpha * prev;
         prev                 = current;
     }
+}
+
+void _dtmf_preprocess_buffer(dtmf_float_t *buffer, dtmf_count_t frame_count, dtmf_float_t const threshold_factor) {
+    dtmf_float_t const noise_threshold = _dtmf_calculate_noise_threshold(buffer, frame_count, threshold_factor);
+    _dtmf_noise_reduction(buffer, frame_count, noise_threshold);
+    _dtmf_normalize_signal(buffer, frame_count);
+    _dtmf_apply_bandpass(buffer, frame_count);
+    _dtmf_pre_emphasis(buffer, frame_count);
 }

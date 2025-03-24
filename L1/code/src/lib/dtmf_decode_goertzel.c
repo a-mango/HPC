@@ -7,7 +7,6 @@
 
 #include <assert.h>
 #include <math.h>
-#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -16,12 +15,10 @@
 #include "io_utils.h"
 
 #define NOISE_THRESHOLD 43
-#define SILENCE_THRESHOLD 27
-#define DTMF_COMPONENT_RATIO_THRESHOLD 0.4
 
 static dtmf_float_t goertzel_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtmf_float_t target_freq, dtmf_float_t sample_rate) {
     int          k      = (int)(0.5 + (((dtmf_float_t)num_samples * target_freq) / sample_rate));
-    dtmf_float_t omega  = (2.0 * M_PI * k) / (dtmf_float_t)num_samples;
+    dtmf_float_t omega  = (M_2_PI * k) / (dtmf_float_t)num_samples;
     dtmf_float_t sine   = sin(omega);
     dtmf_float_t cosine = cos(omega);
     dtmf_float_t coeff  = 2.0 * cosine;
@@ -29,9 +26,9 @@ static dtmf_float_t goertzel_detect(dtmf_float_t const *samples, dtmf_count_t nu
 
     for (dtmf_count_t i = 0; i < num_samples; i++) {
         dtmf_float_t windowed_sample = samples[i] * (0.54 - 0.46 * cos((2 * M_PI * (dtmf_float_t)i) / (dtmf_float_t)(num_samples - 1)));
-        q0 = coeff * q1 - q2 + windowed_sample;
-        q2 = q1;
-        q1 = q0;
+        q0                           = coeff * q1 - q2 + windowed_sample;
+        q2                           = q1;
+        q1                           = q0;
     }
 
     dtmf_float_t real      = (q1 - q2 * cosine);
@@ -41,20 +38,69 @@ static dtmf_float_t goertzel_detect(dtmf_float_t const *samples, dtmf_count_t nu
     return magnitude;
 }
 
-static bool is_dtmf_tone_detected(dtmf_float_t low_mag, dtmf_float_t high_mag) {
-    if (low_mag < NOISE_THRESHOLD || high_mag < NOISE_THRESHOLD) return false;
-    dtmf_float_t ratio = low_mag < high_mag ? (low_mag / high_mag) : (high_mag / low_mag);
-    return ratio > DTMF_COMPONENT_RATIO_THRESHOLD;
+static void process_window(dtmf_float_t *dtmf_buffer, dtmf_count_t window_index, dtmf_count_t window_size, dtmf_float_t *max_magnitude, int *detected_key) {
+    *max_magnitude = 0;
+    *detected_key  = -1;
+
+    for (int key = 1; key <= DTMF_NUM_TONES; key++) {
+        dtmf_float_t magnitude =
+            goertzel_detect(dtmf_buffer + window_index, window_size, DTMF_FREQUENCIES_MAP[key - 1].low, DTMF_SAMPLE_RATE_HZ) +
+            goertzel_detect(dtmf_buffer + window_index, window_size, DTMF_FREQUENCIES_MAP[key - 1].high, DTMF_SAMPLE_RATE_HZ);
+
+        if (magnitude > *max_magnitude) {
+            *max_magnitude = magnitude;
+            *detected_key  = key;
+        }
+    }
+
+    if (*max_magnitude < NOISE_THRESHOLD) {
+        *detected_key = -1;
+    }
+}
+
+static void handle_detected_key(int detected_key, int *last_detected_key, dtmf_count_t *chunks_seen, dtmf_count_t *repetitions, dtmf_count_t *pause_repetitions, dtmf_count_t *message_length, char **out_message, dtmf_count_t debounce_window, dtmf_count_t *key_cooldown) {
+    if (detected_key != -1) {
+        if (*last_detected_key == -1) {
+            *last_detected_key = detected_key;
+            *chunks_seen       = 1;
+        } else if (*last_detected_key == detected_key) {
+            (*chunks_seen)++;
+        } else {
+            *chunks_seen       = 1;
+            *repetitions       = 0;
+            *last_detected_key = detected_key;
+        }
+        *pause_repetitions = 0;
+    } else {
+        (*pause_repetitions)++;
+
+        if (*chunks_seen >= 4) {
+            (*repetitions)++;
+            *chunks_seen = 0;
+        }
+
+        if (*pause_repetitions >= 4 && *last_detected_key != -1 && (*chunks_seen >= 3 || *repetitions > 0)) {
+            *repetitions += (*chunks_seen >= 3) ? 1 : 0;
+            char letter                         = _dtmf_map_presses_to_letter((dtmf_count_t)*last_detected_key, *repetitions);
+            (*out_message)[(*message_length)++] = letter;
+
+            *last_detected_key = -1;
+            *repetitions       = 0;
+            *chunks_seen       = 0;
+            *pause_repetitions = 0;
+            *key_cooldown      = debounce_window;
+        }
+    }
+
+    if (*key_cooldown > 0) {
+        (*key_cooldown)--;
+    }
 }
 
 dtmf_count_t dtmf_decode(dtmf_float_t *dtmf_buffer, char **out_message, dtmf_count_t dtmf_frame_count) {
     assert(dtmf_buffer != NULL);
-
-    dtmf_float_t noise_threshold = _dtmf_calculate_noise_threshold(dtmf_buffer, dtmf_frame_count);
-    _dtmf_noise_reduction(dtmf_buffer, dtmf_frame_count, noise_threshold);
-    _dtmf_normalize_signal(dtmf_buffer, dtmf_frame_count);
-    _dtmf_apply_bandpass(dtmf_buffer, dtmf_frame_count);
-    _dtmf_pre_emphasis(dtmf_buffer, dtmf_frame_count);
+    assert(out_message != NULL);
+    assert(dtmf_frame_count > 0);
 
     const dtmf_count_t window_size = DTMF_TONE_REPEAT_NUM_SAMPLES;
     const dtmf_count_t stride_size = DTMF_TONE_REPEAT_NUM_SAMPLES / 2;
@@ -67,92 +113,31 @@ dtmf_count_t dtmf_decode(dtmf_float_t *dtmf_buffer, char **out_message, dtmf_cou
         return 0;
     }
 
-    int          last_detected_key = -1;
-    dtmf_count_t chunks_seen       = 0;
-    dtmf_count_t repetitions       = 0;
-    dtmf_count_t pause_repetitions = 0;
-    bool message_started = false;
-bool first_letter_decoded = false;
+    int                last_detected_key = -1;
+    dtmf_count_t       chunks_seen       = 0;
+    dtmf_count_t       repetitions       = 0;
+    dtmf_count_t       pause_repetitions = 0;
+    dtmf_count_t const debounce_window   = DTMF_TONE_NUM_SAMPLES / stride_size;
+    dtmf_count_t       key_cooldown      = 0;
 
-    dtmf_count_t debounce_window = DTMF_TONE_NUM_SAMPLES / stride_size;
-    dtmf_count_t key_cooldown    = 0;
+    _dtmf_preprocess_buffer(dtmf_buffer, dtmf_frame_count, 1.1);
 
     for (dtmf_count_t i = 0; i + window_size <= dtmf_frame_count; i += stride_size) {
-        dtmf_float_t max_magnitude = 0;
-        int detected_key = -1;
-        dtmf_float_t low_mag = 0, high_mag = 0;
+        dtmf_float_t max_magnitude;
+        int          detected_key;
 
-        for (int key = 1; key <= 11; key++) {
-            dtmf_float_t low = goertzel_detect(dtmf_buffer + i, window_size, DTMF_FREQUENCIES_MAP[key - 1].low, DTMF_SAMPLE_RATE_HZ);
-            dtmf_float_t high = goertzel_detect(dtmf_buffer + i, window_size, DTMF_FREQUENCIES_MAP[key - 1].high, DTMF_SAMPLE_RATE_HZ);
-            dtmf_float_t magnitude = low + high;
+        process_window(dtmf_buffer, i, window_size, &max_magnitude, &detected_key);
 
-            if (magnitude > max_magnitude) {
-                max_magnitude = magnitude;
-                detected_key  = key;
-                low_mag = low;
-                high_mag = high;
-            }
-        }
+        debug_printf("Window at %lu detected key %d (mag=%.2f)\n", i, detected_key, max_magnitude);
 
-        if (max_magnitude < NOISE_THRESHOLD) {
-            detected_key = -1;
-        }
-
-        debug_printf("Window at %d detected key %d (mag=%.2f)\n", i, detected_key, max_magnitude);
-
-        if (!message_started) {
-    if (detected_key == -1) {
-        continue; // wait until we detect a strong DTMF tone
-    }
-    message_started = true;
-}
-
-        if (detected_key != -1) {
-            if (last_detected_key == -1) {
-                last_detected_key = detected_key;
-                chunks_seen       = 1;
-            } else if (last_detected_key == detected_key) {
-                chunks_seen++;
-            } else {
-                chunks_seen       = 1;
-                repetitions       = 0;
-                last_detected_key = detected_key;
-            }
-            pause_repetitions = 0;
-        } else {
-            pause_repetitions++;
-
-            if (chunks_seen >= 4) {
-                repetitions++;
-                chunks_seen = 0;
-            }
-
-            if (pause_repetitions >= 4 && last_detected_key != -1 && (chunks_seen >= 3 || repetitions > 0)) {
-                repetitions += (chunks_seen >= 3) ? 1 : 0;
-                char letter = _dtmf_map_presses_to_letter((dtmf_count_t)last_detected_key, repetitions);
-                (*out_message)[message_length++] = letter;
-first_letter_decoded = true;
-
-                last_detected_key = -1;
-                repetitions       = 0;
-                chunks_seen       = 0;
-                pause_repetitions = 0;
-                key_cooldown      = debounce_window;
-            }
-        }
-
-        if (key_cooldown > 0) {
-            key_cooldown--;
-        }
+        handle_detected_key(detected_key, &last_detected_key, &chunks_seen, &repetitions, &pause_repetitions, &message_length, out_message, debounce_window, &key_cooldown);
     }
 
     if (last_detected_key != -1 && (chunks_seen >= 3 || repetitions > 0)) {
-    repetitions += (chunks_seen >= 3) ? 1 : 0;
-    char letter = _dtmf_map_presses_to_letter((dtmf_count_t)last_detected_key, repetitions);
-    (*out_message)[message_length++] = letter;
-}
+        repetitions += (chunks_seen >= 3) ? 1 : 0;
+        char letter                      = _dtmf_map_presses_to_letter((dtmf_count_t)last_detected_key, repetitions);
+        (*out_message)[message_length++] = letter;
+    }
 
     return message_length;
 }
-

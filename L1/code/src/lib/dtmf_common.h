@@ -13,8 +13,8 @@
 #include "dtmf.h"
 
 #define M_PI 3.1415926535897
+#define M_2_PI 6.2831853071796
 #define M_PI_2 1.5707963267949
-#define M_2PI 6.2831853071796
 
 #define DTMF_SAMPLE_RATE_HZ 44100
 #define DTMF_AMPLITUDE 1
@@ -76,7 +76,6 @@ typedef struct {
     DtmfTone tone;
 } DtmfMapping;
 
-// extern constexpr DtmfFrequencyPair DTMF_FREQUENCIES_MAP[DTMF_NUM_TONES];
 extern DtmfMapping       dtmf_table_global[];
 extern int               dtmf_table_size;
 extern DtmfTone          dtmf_tones_map_global[DTMF_NUM_TONES];
@@ -99,18 +98,7 @@ bool _dtmf_allocate_buffer(dtmf_float_t **buffer, size_t num_samples);
 // Translates a key and number of presses to a DTMF letter.
 char _dtmf_map_presses_to_letter(dtmf_count_t key, dtmf_count_t presses);
 
-// Compute the root mean square of the buffer.
-dtmf_float_t _dtmf_compute_rms(const dtmf_float_t *buffer, dtmf_count_t num_samples);
-
-// Apply noise reduction to the buffer.
-void _dtmf_noise_reduction(dtmf_float_t *buffer, size_t num_samples, dtmf_float_t threshold_factor);
-
-void _dtmf_normalize_signal(dtmf_float_t *buffer, dtmf_count_t count);
-
-void _dtmf_apply_bandpass(dtmf_float_t *buffer, dtmf_count_t count);
-
-dtmf_float_t _dtmf_calculate_noise_threshold(dtmf_float_t const *buffer, dtmf_count_t count);
-
-void _dtmf_pre_emphasis(dtmf_float_t *buffer, dtmf_count_t count);
+// Preprocess a signal before analysis.
+void _dtmf_preprocess_buffer(dtmf_float_t *buffer, dtmf_count_t frame_count, dtmf_float_t threshold_factor);
 
 #endif  // DTMF_COMMON_H
