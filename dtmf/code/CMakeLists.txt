@@ -1,11 +1,18 @@
 cmake_minimum_required(VERSION 3.22)
+include(CheckCCompilerFlag)
+include(CheckCXXCompilerFlag)
 
-# GCC version < 13 compatibility
-if(CMAKE_C_COMPILER_ID STREQUAL "GNU" AND CMAKE_C_COMPILER_VERSION VERSION_LESS "13")
-  message(FATAL "You're using GCC < 13. Consider setting CC and CXX to gcc-13/g++-13 before invoking cmake.")
-endif()
 
+# Project definition
 project(dtmf_encdec VERSION 0.1 LANGUAGES C CXX)
+
+check_c_compiler_flag(-std=c23 CC_HAVE_C23)
+check_cxx_compiler_flag(-std=c++23 CC_HAVE_CXX23)
+
+# C23 version compatibility
+if(NOT CC_HAVE_C23 OR NOT CC_HAVE_CXX23)
+  message(FATAL "The toolchain has no C23/C++23 support. Please use GCC 13 or later. See README.md for more information.")
+endif()
 
 # CMake options
 set(CMAKE_COLOR_DIAGNOSTICS ON)
