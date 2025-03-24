@@ -14,8 +14,11 @@
 #include "dtmf_common.h"
 #include "dtmf_utils.h"
 
-#define GOE_NOISE_THRESHOLD 44
 #define GOE_MAX_SAMPLES 3800
+
+// Magic numbers
+#define GOE_NOISE_THRESHOLD 44
+#define PREPROCESS_THRESHOLD_FACTOR 1.1
 
 static dtmf_float_t goertzel_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtmf_float_t target_freq, dtmf_float_t sample_rate) {
     int          k      = (int)(0.5 + (((dtmf_float_t)num_samples * target_freq) / sample_rate));
@@ -131,7 +134,7 @@ dtmf_count_t dtmf_decode(dtmf_float_t *dtmf_buffer, char **out_message, dtmf_cou
     dtmf_count_t       key_cooldown      = 0;
     dtmf_count_t const debounce_window   = DTMF_TONE_NUM_SAMPLES / stride_size;
 
-    _dtmf_preprocess_buffer(dtmf_buffer, dtmf_frame_count, 1.1);
+    _dtmf_preprocess_buffer(dtmf_buffer, dtmf_frame_count, PREPROCESS_THRESHOLD_FACTOR);
 
     for (dtmf_count_t i = 0; i + window_size <= dtmf_frame_count; i += stride_size) {
         dtmf_float_t max_magnitude;
