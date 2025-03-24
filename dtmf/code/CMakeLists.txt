@@ -5,7 +5,6 @@ if(CMAKE_C_COMPILER_ID STREQUAL "GNU" AND CMAKE_C_COMPILER_VERSION VERSION_LESS 
   message(FATAL "You're using GCC < 13. Consider setting CC and CXX to gcc-13/g++-13 before invoking cmake.")
 endif()
 
-
 project(dtmf_encdec VERSION 0.1 LANGUAGES C CXX)
 
 # CMake options
@@ -86,6 +85,7 @@ if(ENABLE_ASAN AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang" AND CMAKE_BUILD_TYP
   endif()
 endif()
 
+# Enable sanitizers on a target
 function(enable_asan target)
   if(SAN_OPT)
     message(STATUS "Enabling sanitizers for target ${target}")
