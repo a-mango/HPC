@@ -6,6 +6,10 @@ include(CheckCXXCompilerFlag)
 # Project definition
 project(dtmf_encdec VERSION 0.1 LANGUAGES C CXX)
 
+option(ENABLE_TESTS "Enable tests" OFF)
+option(ENABLE_COV "Enable coverage reporting" OFF)
+option(ENABLE_SAN "Enable sanitizers " OFF)
+
 check_c_compiler_flag(-std=c23 CC_HAVE_C23)
 check_cxx_compiler_flag(-std=c++23 CC_HAVE_CXX23)
 
@@ -62,15 +66,21 @@ add_compile_options(
 # Conditional compilation flags
 if(CMAKE_BUILD_TYPE MATCHES Debug)
   add_compile_definitions(DEBUG)
-  add_compile_options(-g3 -fPIE -pie)
+  add_compile_options(-g3 -O0 -fPIE -pie)
 elseif(CMAKE_BUILD_TYPE MATCHES Release)
   add_compile_definitions(NDEBUG)
   add_compile_options(-O3 -Werror)
 endif()
 
+# Coverage reporting
+if(ENABLE_COV)
+  message(STATUS "Enabling coverage reporting")
+  add_compile_options(--coverage -O0 -g)
+  add_link_options(--coverage)
+endif()
+
 # Enable sanitizers in Debug mode
-option(ENABLE_ASAN "Enable asan" OFF)
-if(ENABLE_ASAN AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang" AND CMAKE_BUILD_TYPE MATCHES Debug)
+if(ENABLE_SAN AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang" AND CMAKE_BUILD_TYPE MATCHES Debug)
   execute_process(COMMAND ${CMAKE_C_COMPILER} -print-file-name=libasan.so OUTPUT_VARIABLE ASAN_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
   get_filename_component(ASAN_DIR ${ASAN_PATH} DIRECTORY)
 
@@ -101,6 +111,10 @@ function(enable_asan target)
   endif()
 endfunction()
 
-# Add subdirectories
+add_subdirectory(${VENDOR_PATH})
 add_subdirectory(${SRC_PATH})
-add_subdirectory(${TEST_PATH})
+if(ENABLE_TESTS)
+  message(STATUS "Enabling tests")
+  add_subdirectory(${TEST_PATH})
+endif()
+
