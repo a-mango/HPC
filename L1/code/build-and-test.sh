@@ -13,7 +13,7 @@ cmake -S . -B $BUILD_DIR -DCMAKE_BUILD_TYPE=Debug
 cmake --build $BUILD_DIR -- -j8
 
 if $CMD; then
-  notify-send "Tests Passed" "All tests passed successfully" -r=cmake
+  notify-send "Tests Passed" "All tests passed successfully" -t 5000
 else
-  notify-send "Tests Failed" "Some tests failed" -u critical -r=cmake
+  notify-send "Tests Failed" "Some tests failed" -u critical -t 5000
 fi
