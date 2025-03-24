@@ -5,13 +5,13 @@
  * @date 2025-03-11
  */
 
-#include "dtmf_utils.h"
-
 #include <assert.h>
 #include <sndfile-64.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "dtmf_utils.h"
 
 bool utils_read_text_file(char const *filename, char **out_buffer) {
     assert(filename != NULL);

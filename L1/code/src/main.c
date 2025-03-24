@@ -1,7 +1,6 @@
 /**
  * @file main.c
  * @brief Main program for DTMF encoding and decoding.
- * @author Aubry Mangold <aubry.mangold@heig-vd.ch>
  * @date 2025-02-26
  */
 
@@ -10,56 +9,60 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "io_utils.h"
+#include "arg_parser.h"
+#include "dtmf_utils.h"
 
 /*
  * Program entry point.
  */
 int main(int argc, char *argv[]) {
-    if (argc < 3) {
-        utils_print_usage(argv[0]);
-        return 1;
-    }
+    struct arguments arguments;
+    parse_arguments(argc, argv, &arguments);
 
-    if (strcmp(argv[1], "encode") == 0) {
-        if (argc != 4) {
-            utils_print_usage(argv[0]);
-            return 1;
-        }
-
+    if (strcmp(arguments.command, "encode") == 0) {
         char *buffer = NULL;
-        if (!utils_read_text_file(argv[2], &buffer)) {
-            fprintf(stderr, "Error: Could not read file %s\n", argv[2]);
+        if (!utils_read_text_file(arguments.input, &buffer)) {
+            fprintf(stderr, "Error: Could not read file %s\n", arguments.input);
             return EXIT_FAILURE;
         }
 
         dtmf_float_t *dtmf_buffer      = NULL;
         dtmf_count_t  dtmf_frame_count = dtmf_encode(buffer, &dtmf_buffer);
 
-        utils_write_wav_file(argv[3], dtmf_buffer, (sf_count_t)dtmf_frame_count);
+        if (!utils_write_wav_file(arguments.output, dtmf_buffer, (sf_count_t)dtmf_frame_count)) {
+            fprintf(stderr, "Error: Could not write to file %s\n", arguments.output);
+            free(buffer);
+            free(dtmf_buffer);
+            return EXIT_FAILURE;
+        }
 
         free(buffer);
         free(dtmf_buffer);
-    } else if (strcmp(argv[1], "decode") == 0) {
+    } else if (strcmp(arguments.command, "decode") == 0) {
         SF_INFO       sf_info     = {0};
         dtmf_float_t *dtmf_buffer = NULL;
 
-        if (!utils_read_wav_file(argv[2], &dtmf_buffer, &sf_info) != 0) {
-            fprintf(stderr, "Error: Could not read file %s\n", argv[2]);
+        if (!utils_read_wav_file(arguments.input, &dtmf_buffer, &sf_info)) {
+            fprintf(stderr, "Error: Could not read file %s\n", arguments.input);
             return EXIT_FAILURE;
         }
 
         char *message = NULL;
         dtmf_decode(dtmf_buffer, &message, (dtmf_count_t)sf_info.frames);
 
-        printf("%s\n", message);
+        if (message != NULL) {
+            printf("%s\n", message);
+            free(message);
+        } else {
+            fprintf(stderr, "Error: Decoding failed\n");
+        }
 
         free(dtmf_buffer);
-        free(message);
     } else {
-        utils_print_usage(argv[0]);
-        return 1;
+        fprintf(stderr, "Unknown command: %s\n", arguments.command);
+        return EXIT_FAILURE;
     }
 
     return 0;
 }
+
