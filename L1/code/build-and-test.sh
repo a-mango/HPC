@@ -4,7 +4,7 @@ set -e
 
 BUILD_DIR=build
 BIN_DIR=bin
-TEST_NAME=dtmf_test
+TEST_NAME=dtmf_encdec_test
 CMD="./$BIN_DIR/$TEST_NAME"
 
 export GTEST_COLOR=yes

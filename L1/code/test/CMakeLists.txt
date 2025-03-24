@@ -1,4 +1,3 @@
-
 add_subdirectory("${VENDOR_PATH}/googletest" "vendor/googletest")
 enable_testing()
 include(GoogleTest)
@@ -13,6 +12,7 @@ mark_as_advanced(
     gtest_disable_pthreads gtest_force_shared_crt gtest_hide_internal_symbols
 )
 
+set(TEST_NAME ${CMAKE_PROJECT_NAME}_test)
 file(GLOB_RECURSE TEST_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 add_executable(${TEST_NAME} ${TEST_SOURCES})
 target_include_directories(${TEST_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.24)
 
 ###################
 ## Project setup ##
@@ -12,12 +12,10 @@ set(CMAKE_COLOR_MAKEFILE ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # GCC version < 14 compatibility
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "14")
-    message(STATUS "Detected GCC < 14: forcing compiler to /usr/bin/gcc-13 and /usr/bin/g++-13")
-    set(CMAKE_C_COMPILER "/usr/bin/gcc-13" CACHE FILEPATH "C compiler" FORCE)
-    set(CMAKE_CXX_COMPILER "/usr/bin/g++-13" CACHE FILEPATH "C++ compiler" FORCE)
-  endif()
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "14")
+  message(STATUS "Detected GCC < 14: forcing compiler to /usr/bin/gcc-13 and /usr/bin/g++-13")
+  set(CMAKE_C_COMPILER "/usr/bin/gcc-13" CACHE FILEPATH "C compiler" FORCE)
+  set(CMAKE_CXX_COMPILER "/usr/bin/g++-13" CACHE FILEPATH "C++ compiler" FORCE)
 endif()
 
 # C options
@@ -26,7 +24,7 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 
 # C++ options
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -71,23 +69,29 @@ endif()
 
 # Enable sanitizers in Debug mode
 option(ENABLE_ASAN "Enable asan" OFF)
-if(ENABLE_ASAN AND CMAKE_BUILD_TYPE MATCHES Debug AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang" AND CMAKE_BUILD_TYPE MATCHES Debug)
-  find_library(ASAN_LIB asan)
-  find_library(UBSAN_LIB ubsan)
-  find_library(LSAN_LIB lsan)
-  find_library(TSAN_LIB tsan)
+if(ENABLE_ASAN AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang" AND CMAKE_BUILD_TYPE MATCHES Debug)
+  execute_process(COMMAND ${CMAKE_C_COMPILER} -print-file-name=libasan.so OUTPUT_VARIABLE ASAN_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
+  get_filename_component(ASAN_DIR ${ASAN_PATH} DIRECTORY)
+
+  find_library(ASAN_LIB NAMES asan libasan PATHS ${ASAN_DIR})
+  find_library(UBSAN_LIB NAMES ubsan libubsan PATHS ${ASAN_DIR})
+  find_library(LSAN_LIB NAMES lsan liblsan PATHS ${ASAN_DIR})
+  find_library(TSAN_LIB NAMES tsan libtsan PATHS ${ASAN_DIR})
 
   if(ASAN_LIB AND UBSAN_LIB AND LSAN_LIB AND TSAN_LIB)
+    message(STATUS "Enabling sanitizers for target ${target}")
     set(SAN_OPT "-fsanitize=address,leak,undefined,pointer-compare,pointer-subtract,alignment,signed-integer-overflow,shift,integer-divide-by-zero,null")
-    message(STATUS "Enabling sanitizers")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SAN_OPT} -fstack-protector")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${SAN_OPT}")
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${SAN_OPT}")
-    set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${SAN_OPT}")
   else()
-    message(WARNING "Sanitizer libraries not found. Disabling sanitizers.")
+    message(WARNING "Sanitizer libraries not found. Disabling sanitizers for target ${target}.")
   endif()
 endif()
+
+function(enable_asan target)
+  if(SAN_OPT)
+    target_compile_options(${target} PRIVATE ${SAN_OPT} -fno-omit-frame-pointer -fstack-protector)
+    target_link_libraries(${target} PRIVATE ${SAN_OPT})
+  endif()
+endfunction()
 
 # Add subdirectories
 add_subdirectory(${SRC_PATH})
