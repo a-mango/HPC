@@ -12,7 +12,7 @@
 
 #include "dtmf.h"
 #include "dtmf_common.h"
-#include "io_utils.h"
+#include "dtmf_utils.h"
 
 #define GOE_NOISE_THRESHOLD 39
 #define GOE_MAX_SAMPLES 2048

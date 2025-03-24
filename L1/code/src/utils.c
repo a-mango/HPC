@@ -5,8 +5,9 @@
  * @date 2025-03-11
  */
 
+#include "dtmf_utils.h"
+
 #include <assert.h>
-#include <io_utils.h>
 #include <sndfile-64.h>
 #include <stdint.h>
 #include <stdio.h>

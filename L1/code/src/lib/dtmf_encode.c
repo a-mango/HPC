@@ -11,7 +11,7 @@
 #include <string.h>
 
 #include "dtmf_common.h"
-#include "io_utils.h"
+#include "dtmf_utils.h"
 
 
 static DtmfMapping  _dtmf_map_char(char const letter);

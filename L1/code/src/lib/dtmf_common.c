@@ -12,7 +12,7 @@
 #include <string.h>
 
 #include "dtmf.h"
-#include "io_utils.h"
+#include "dtmf_utils.h"
 
 
 DtmfFrequencyPair DTMF_FREQUENCIES_MAP[DTMF_NUM_TONES] = {
