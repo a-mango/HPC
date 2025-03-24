@@ -109,7 +109,7 @@ static bool _dtmf_encode_message(char const *message, dtmf_float_t *dtmf_buffer)
 // Encodes a message into a DTMF signal.
 dtmf_count_t dtmf_encode(char const *message, dtmf_float_t **dtmf_buffer) {
     assert(message != NULL);
-    assert(dtmf_buffer != NULL);  // We need a valid pointer to write the buffer to.
+    assert(dtmf_buffer != NULL);
 
     debug_printf("Encoding message %s to DTMF...\n", message);
     _dtmf_init();
@@ -128,10 +128,13 @@ dtmf_count_t dtmf_encode(char const *message, dtmf_float_t **dtmf_buffer) {
     debug_printf("Number of samples: %lu\n", num_samples);
 
     if (!_dtmf_allocate_buffer(dtmf_buffer, num_samples)) {
+        free((void *)normalized_input);
         exit(EXIT_FAILURE);
     }
 
     _dtmf_encode_message(normalized_input, *dtmf_buffer);
+
+    free((void *)normalized_input);
 
     return num_samples;
 }
