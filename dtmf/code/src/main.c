@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "arg_parser.h"
+#include "args.h"
 #include "dtmf_utils.h"
 
 /*
@@ -65,4 +65,3 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
-

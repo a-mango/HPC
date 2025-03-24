@@ -1,9 +1,11 @@
 /**
- * @file arg_parser.c
+ * @file args.c
  * @brief Argument parser for the DTMF encoding and decoding program.
  * @author Aubry Mangold <aubry.mangold@heig-vd.ch>
  * @date 2025-03-24
  */
+
+#include "args.h"
 
 #include <argp.h>
 #include <stdlib.h>
