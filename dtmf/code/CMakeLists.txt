@@ -4,19 +4,23 @@ cmake_minimum_required(VERSION 3.24)
 ## Project setup ##
 ###################
 
+# GCC version < 13 compatibility
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "13")
+  message(STATUS "Detected GCC < 13: forcing compiler to /usr/bin/gcc-13 and /usr/bin/g++-13")
+  # Test if compiler actually exists
+  if(NOT EXISTS "/usr/bin/gcc-13" OR NOT EXISTS "/usr/bin/g++-13")
+    message(FATAL_ERROR "GCC 13 not found. Please install GCC 13 and try again.")
+  endif()
+  set(CMAKE_C_COMPILER "/usr/bin/gcc-13" CACHE FILEPATH "C compiler" FORCE)
+  set(CMAKE_CXX_COMPILER "/usr/bin/g++-13" CACHE FILEPATH "C++ compiler" FORCE)
+endif()
+
 project(dtmf_encdec VERSION 0.1 LANGUAGES C CXX)
 
 # CMake options
 set(CMAKE_COLOR_DIAGNOSTICS ON)
 set(CMAKE_COLOR_MAKEFILE ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-# GCC version < 14 compatibility
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "14")
-  message(STATUS "Detected GCC < 14: forcing compiler to /usr/bin/gcc-13 and /usr/bin/g++-13")
-  set(CMAKE_C_COMPILER "/usr/bin/gcc-13" CACHE FILEPATH "C compiler" FORCE)
-  set(CMAKE_CXX_COMPILER "/usr/bin/g++-13" CACHE FILEPATH "C++ compiler" FORCE)
-endif()
 
 # C options
 set(CMAKE_C_STANDARD 23)
