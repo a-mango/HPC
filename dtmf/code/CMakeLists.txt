@@ -80,7 +80,7 @@ if(ENABLE_COV)
 endif()
 
 # Enable sanitizers in Debug mode
-if(ENABLE_SAN AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang" AND CMAKE_BUILD_TYPE MATCHES Debug)
+if(ENABLE_SAN)
   execute_process(COMMAND ${CMAKE_C_COMPILER} -print-file-name=libasan.so OUTPUT_VARIABLE ASAN_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
   get_filename_component(ASAN_DIR ${ASAN_PATH} DIRECTORY)
 
