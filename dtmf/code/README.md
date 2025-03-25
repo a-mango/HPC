@@ -9,6 +9,7 @@ The program relies on the following system dependencies:
 - `libfftw3-dev`
 - `libsndfile`
 - Sanitizers (if desired): `libtsan`, `libtsan`, `liblsan`, `liblsan`
+- `ffmpeg` and `ffprobe` (for testing)
 
 Additionally, you'll have to initialise the Git submodules:
 
@@ -39,6 +40,14 @@ export CXX=/usr/bin/g++-13
 
 Standard sanitizers are enabled when running the tests. To disable them, set
 `ENABLE_ASAB` to `off` in the `build-and-test.sh` script.
+
+### CMake options
+
+The following CMake options are available:
+
+- `ENABLE_TESTS`: enable the tests (default: `off`)
+- `ENABLE_COV`: enable code coverage data generation (default: `off`)
+- `ENABLE_SAN`: enable the sanitizers (default: `off`)
 
 ## Building the Project
 
@@ -80,6 +89,13 @@ following environment variables:
 export DTMF_BINARY_PATH=$BIN_DIR/dtmf_encdec
 export DTMF_TEST_SAMPLES_DIR=$SCRIPT_DIR/test/samples
 export DTMF_TEST_CONFIG=$DTMF_TEST_SAMPLES_DIR/audio_files.tsv
+```
+
+The following command was used to generate the hashes used in the encoding
+tests:
+
+```bash
+echo -n "$VALUE" > input.txt && ./bin/dtmf_encdec-fft encode input.txt output.wav 2>/dev/null && ffprobe output.wav 2>&1 | tail -n2 | md5sum
 ```
 
 ## Running the Program
