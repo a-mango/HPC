@@ -4,8 +4,6 @@ SortIncludes: CaseInsensitive
 TabWidth: 4
 UseTab: Never
 ColumnLimit: 0 # Workaround to align initializer list on next line
----
-Language: Cpp
 AccessModifierOffset: 0
 AlignArrayOfStructures: Left
 AlignConsecutiveAssignments: Consecutive
