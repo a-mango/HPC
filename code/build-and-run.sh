@@ -2,11 +2,17 @@
 
 set -e
 
+if [ "$#" -eq 1 ] && [ "$1" != "Debug" ] && [ "$1" != "Release" ]; then
+  echo "Usage: $0 <Release (default)|Debug>"
+  exit 1
+fi
+
 BUILD_DIR=build
 BIN_DIR=bin
 BIN_NAME=dtmf_encdec-goertzel
 
-BUILD_OPTS="-DCMAKE_BUILD_TYPE=Debug -DENABLE_SAN=ON"
+BUILD_MODE=${1:-Release}
+BUILD_OPTS="-DCMAKE_BUILD_TYPE=$BUILD_MODE -DENABLE_SAN=ON"
 MAKE_OPTS="-j8"
 
 cmake -S . -B $BUILD_DIR $BUILD_OPTS
