@@ -32,7 +32,7 @@ std::string env(const std::string& var, const std::string& default_val) {
 
 const std::string BINARY_PATH     = env("DTMF_BINARY_PATH", "bin/dtmf_encdec");
 const std::string SAMPLES_DIR     = env("DTMF_TEST_SAMPLES_DIR", "test/samples");
-const std::string TSV_FILE        = env("DTMF_TEST_CONFIG", "test/samples/audio_files.tsv");
+const std::string TSV_FILE        = env("DTMF_TEST_PARAMS_DECODE_TSV", "test/params_decode.tsv");
 const std::string BINARY_GOERTZEL = BINARY_PATH + "-goertzel";
 const std::string BINARY_FFT      = BINARY_PATH + "-fft";
 
@@ -63,7 +63,7 @@ std::string exec(const std::string& cmd) {
  * @brief Structure to hold the test parameters for audio files.
  *
  */
-struct AudioTestParam {
+struct DecodeTestParam {
     std::string file_path;
     std::string expected_output;
 };
@@ -74,24 +74,24 @@ struct AudioTestParam {
  * @param param The test parameters.
  * @param os The output stream.
  */
-void PrintTo(const AudioTestParam& param, std::ostream* os) {
+void PrintTo(const DecodeTestParam& param, std::ostream* os) {
     *os << param.expected_output;
 }
 
 /**
- * @class AudioTestFFT
+ * @class DecodeFFT
  * @brief Test fixture class for the FFT version of the program.
  *
  */
-class AudioTestFFT : public ::testing::TestWithParam<AudioTestParam> {};
+class DecodeFFT : public ::testing::TestWithParam<DecodeTestParam> {};
 
 /**
  * @brief Test the expected output of the FFT version of the program.
  */
-TEST_P(AudioTestFFT, TestExpectedOutput) {
-    AudioTestParam param   = GetParam();
-    std::string    command = std::format("{} decode {}/{}", BINARY_FFT, SAMPLES_DIR, param.file_path);
-    std::string    output;
+TEST_P(DecodeFFT, TestExpectedOutput) {
+    DecodeTestParam param   = GetParam();
+    std::string     command = std::format("{} decode {}/{}", BINARY_FFT, SAMPLES_DIR, param.file_path);
+    std::string     output;
 
     try {
         output = exec(command);
@@ -104,19 +104,19 @@ TEST_P(AudioTestFFT, TestExpectedOutput) {
 }
 
 /**
- * @class AudioTestGoertzel
+ * @class AudioDecodeTestGoertzel
  * @brief Test fixture class for the Goertzel version of the program.
  *
  */
-class AudioTestGoertzel : public ::testing::TestWithParam<AudioTestParam> {};
+class DecodeGoertzel : public ::testing::TestWithParam<DecodeTestParam> {};
 
 /**
  * @brief Test the expected output of the Goertzel version of the program.
  */
-TEST_P(AudioTestGoertzel, TestExpectedOutput) {
-    AudioTestParam param   = GetParam();
-    std::string    command = std::format("{} decode {}/{}", BINARY_GOERTZEL, SAMPLES_DIR, param.file_path);
-    std::string    output;
+TEST_P(DecodeGoertzel, TestExpectedOutput) {
+    DecodeTestParam param   = GetParam();
+    std::string     command = std::format("{} decode {}/{}", BINARY_GOERTZEL, SAMPLES_DIR, param.file_path);
+    std::string     output;
 
     try {
         output = exec(command);
@@ -134,10 +134,10 @@ TEST_P(AudioTestGoertzel, TestExpectedOutput) {
  * @param tsv_file The path to the TSV file.
  * @return A vector of AudioTestParam objects.
  */
-std::vector<AudioTestParam> loadTestParams(const std::string& tsv_file) {
-    std::ifstream               file(tsv_file);
-    std::vector<AudioTestParam> params;
-    std::string                 line, file_path, expected_output;
+std::vector<DecodeTestParam> loadTestParams(const std::string& tsv_file) {
+    std::ifstream                file(tsv_file);
+    std::vector<DecodeTestParam> params;
+    std::string                  line, file_path, expected_output;
 
     if (!file.is_open()) {
         std::cerr << "Failed to open file: " << tsv_file << std::endl;
@@ -160,7 +160,7 @@ std::vector<AudioTestParam> loadTestParams(const std::string& tsv_file) {
 /**
  * @brief The test parameters for the audio files.
  */
-std::vector<AudioTestParam> audio_test_params = loadTestParams(TSV_FILE);
+std::vector<DecodeTestParam> audio_test_params = loadTestParams(TSV_FILE);
 
 /**
  * @brief Generate a custom test name for the test.
@@ -168,7 +168,7 @@ std::vector<AudioTestParam> audio_test_params = loadTestParams(TSV_FILE);
  * @param info The test parameter info.
  * @return The custom test name.
  */
-std::string CustomTestNameGenerator(const ::testing::TestParamInfo<AudioTestParam>& info) {
+std::string CustomTestNameGenerator(const ::testing::TestParamInfo<DecodeTestParam>& info) {
     std::string name = info.param.file_path;
     std::replace(name.begin(), name.end(), '.', '_');
     std::replace(name.begin(), name.end(), '/', '_');
@@ -193,8 +193,8 @@ int main(int argc, char** argv) {
 }
 
 // Instantiate the test suites
-INSTANTIATE_TEST_SUITE_P(AudioTests, AudioTestFFT, ::testing::ValuesIn(audio_test_params), CustomTestNameGenerator);
-INSTANTIATE_TEST_SUITE_P(AudioTests, AudioTestGoertzel, ::testing::ValuesIn(audio_test_params), CustomTestNameGenerator);
+INSTANTIATE_TEST_SUITE_P(AudioDecodeTests, DecodeFFT, ::testing::ValuesIn(audio_test_params), CustomTestNameGenerator);
+INSTANTIATE_TEST_SUITE_P(AudioDecodeTests, DecodeGoertzel, ::testing::ValuesIn(audio_test_params), CustomTestNameGenerator);
 
 // Allow uninstantiated parameterized tests
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(AudioTestFFT);
