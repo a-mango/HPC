@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "dtmf.h"
 #include "dtmf_common.h"
 #include "dtmf_error.h"
 #include "dtmf_utils.h"
@@ -118,7 +119,7 @@ static bool _dtmf_encode_message(char const *message, dtmf_float_t *dtmf_buffer)
     for (char const *c = message; *c != '\0'; c++) {
         DtmfMapping mapping;
 
-        if (!_dtmf_map_char(*c, &mapping)) {
+        if (_dtmf_map_char(*c, &mapping)) {
             DTMF_FAIL();
         }
 
@@ -139,9 +140,10 @@ static bool _dtmf_encode_message(char const *message, dtmf_float_t *dtmf_buffer)
 }
 
 // Encodes a message into a DTMF signal.
-dtmf_count_t dtmf_encode(char const *message, dtmf_float_t **dtmf_buffer) {
+bool dtmf_encode(char const *message, dtmf_float_t **dtmf_buffer, dtmf_count_t *out_samples_count) {
     assert(message != NULL);
     assert(dtmf_buffer != NULL);
+    assert(out_samples_count != NULL);
     DTMF_DEBUG("Encoding message %s to DTMF...\n", message);
 
     _dtmf_init();
@@ -178,5 +180,7 @@ dtmf_count_t dtmf_encode(char const *message, dtmf_float_t **dtmf_buffer) {
 
     DTMF_DEBUG("Successfully encoded message of length %lums to DTMF signal\n", duration_ms);
 
-    return num_samples;
+    *out_samples_count = num_samples;
+
+    DTMF_SUCCEED();
 }

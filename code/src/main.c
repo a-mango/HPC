@@ -11,6 +11,7 @@
 
 #include "args.h"
 #include "dtmf_utils.h"
+#include "lib/dtmf_error.h"
 
 /*
  * Program entry point.
@@ -26,10 +27,13 @@ int main(int argc, char *argv[]) {
             return EXIT_FAILURE;
         }
 
-        dtmf_float_t *dtmf_buffer      = NULL;
-        dtmf_count_t  dtmf_frame_count = dtmf_encode(buffer, &dtmf_buffer);
+        dtmf_float_t *dtmf_buffer = NULL;
+        dtmf_count_t  samples_cnt = 0;
+        if (dtmf_encode(buffer, &dtmf_buffer, &samples_cnt)) {
+            DTMF_EXIT_FAILURE();
+        }
 
-        if (!utils_write_wav_file(arguments.output, dtmf_buffer, (sf_count_t)dtmf_frame_count)) {
+        if (!utils_write_wav_file(arguments.output, dtmf_buffer, (sf_count_t)samples_cnt)) {
             fprintf(stderr, "Error: Could not write to file %s\n", arguments.output);
             free(buffer);
             free(dtmf_buffer);
