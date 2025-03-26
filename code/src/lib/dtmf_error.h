@@ -23,6 +23,9 @@ typedef enum {
 #define DTMF_SUCCEED() return DTMF_SUCCESS
 #define DTMF_FAIL() return DTMF_FAILURE
 
+#define DTMF_EXIT_SUCCESS() exit(EXIT_SUCCESS)
+#define DTMF_EXIT_FAILURE() exit(EXIT_FAILURE)
+
 #ifdef DEBUG
 #define DTMF_TRACE(fmt, ...) fprintf(stderr, "Trace: " fmt "\n"__VA_OPT__(, )__VA_ARGS__)
 #define DTMF_DEBUG(fmt, ...) fprintf(stderr, "Debug: " fmt "\n"__VA_OPT__(, )__VA_ARGS__)
@@ -46,9 +49,6 @@ typedef enum {
         fprintf(stderr, "Fatal: " fmt "\n"__VA_OPT__(, )__VA_ARGS__); \
         exit(EXIT_FAILURE);                                           \
     } while (0)
-
-#define DTMF_EXIT_SUCCESS() exit(EXIT_SUCCESS)
-#define DTMF_EXIT_FAILURE() exit(1)
 
 #define DTMF_ASSERT(CONDITION, fmt, ...)  \
     do {                                  \
