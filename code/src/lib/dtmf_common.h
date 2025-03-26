@@ -95,6 +95,9 @@ void _dtmf_init();
 // Allocate a new buffer of size num_samples for the DTMF signal.
 bool _dtmf_allocate_buffer(dtmf_float_t **buffer, size_t num_samples);
 
+// Free the buffer allocated by _dtmf_allocate_buffer.
+bool _dtmf_free_buffer(dtmf_float_t *buffer);
+
 // Translates a key and number of presses to a DTMF letter.
 char _dtmf_map_presses_to_letter(dtmf_count_t key, dtmf_count_t presses);
 

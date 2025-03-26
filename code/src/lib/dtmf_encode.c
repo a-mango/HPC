@@ -11,67 +11,84 @@
 #include <string.h>
 
 #include "dtmf_common.h"
+#include "dtmf_error.h"
 #include "dtmf_utils.h"
 
+#define IS_DTMF_SYMBOL(symbol) (isalnum(symbol) || isdigit(symbol) || symbol == '!' || symbol == '?' || symbol == '.' || symbol == ',' || symbol == ' ' || symbol == '#' || symbol == '*')
 
-static DtmfMapping  _dtmf_map_char(char const letter);
-static bool         _dtmf_input_validate(char const *str);
-static char        *_dtmf_input_normalize(char const *str);
-static dtmf_count_t _dtmf_calc_duration(char const *message);
-static bool         _dtmf_encode_message(char const *message, dtmf_float_t *dtmf_buffer);
+static bool _dtmf_map_char(char const letter, DtmfMapping *out_mapped_char);
+static bool _dtmf_input_validate(char const *str);
+static bool _dtmf_input_normalize(char const *str, char **normalized_str);
+static bool _dtmf_calc_duration(char const *message, dtmf_count_t *out_count);
+static bool _dtmf_encode_message(char const *message, dtmf_float_t *dtmf_buffer);
 
 
-static DtmfMapping _dtmf_map_char(char const letter) {
+static bool _dtmf_map_char(char const letter, DtmfMapping *out_mapped_char) {
+    DTMF_DEBUG("Mapping letter %c to DTMF key\n", letter);
+    assert(IS_DTMF_SYMBOL(letter));
+    assert(out_mapped_char != NULL);
+
     for (int i = 0; i < dtmf_table_size; i++) {
         if (dtmf_table_global[i].letter == letter) {
-            return dtmf_table_global[i];
+            *out_mapped_char = dtmf_table_global[i];
+            DTMF_TRACE("Mapped %c to %d x %d\n", letter, out_mapped_char->key, out_mapped_char->presses);
+            DTMF_SUCCEED();
         }
     }
 
-    debug_printf("Letter %c not found in DTMF table.\n", letter);
-    assert(false);  // FIXME: we probably want to bail at this point.
-
-    return dtmf_table_global[dtmf_table_size - 1];  // DTMF_TONE_UNUSED
+    DTMF_DEBUG("Letter %c not found in DTMF table.\n", letter);
+    DTMF_ERROR("invalid character in message: %c", letter);
 }
 
 static bool _dtmf_input_validate(char const *str) {
-    debug_printf("Validating input\n");
+    DTMF_DEBUG("Validating input\n");
+    assert(str != NULL);
 
     for (char const *c = str; *c != '\0'; c++) {
-        // TODO: extract to an allow list.
-        if (!isalnum(*c) && !isdigit(*c) && *c != '!' && *c != '?' && *c != '.' && *c != ',' && *c != ' ' && *c != '#') {
-            fprintf(stderr, "Error: Invalid character in message: %c\n", *c);
-            return false;
+        if (!IS_DTMF_SYMBOL(*c)) {
+            DTMF_ERROR("invalid character in message: %c", *c);
         }
     }
 
-    return true;
+    DTMF_SUCCEED();
 }
 
-static char *_dtmf_input_normalize(char const *str) {
-    char *normalized = calloc(strlen(str) + 1, sizeof(char));
-    strcpy(normalized, str);
+static bool _dtmf_input_normalize(char const *str, char **out_normalized) {
+    DTMF_DEBUG("Normalizing input\n");
+    assert(str != NULL);
+    assert(out_normalized != NULL);
 
-    for (char *c = normalized; *c != '\0'; c++) {
+    *out_normalized = (char *)calloc(strlen(str) + 1, sizeof(char));
+    if (*out_normalized == NULL) {
+        DTMF_ERROR("could not allocate memory for normalized message");
+    }
+
+    strcpy(*out_normalized, str);
+
+    for (char *c = *out_normalized; *c != '\0'; c++) {
         *c = (char)toupper(*c);
     }
 
-    debug_printf("Normalized message to: %s\n", normalized);
+    DTMF_DEBUG("Normalized message to: %s\n", *out_normalized);
 
-    return normalized;
+    DTMF_SUCCEED();
 }
 
-static dtmf_count_t _dtmf_calc_duration(char const *message) {
-    debug_printf("Calculating signal duration\n");
-    debug_printf("Letter\tKey\tPresses\n");
+static bool _dtmf_calc_duration(char const *message, dtmf_count_t *out_count) {
+    DTMF_DEBUG("Computing audio duration\n");
+    assert(message != NULL);
+    assert(out_count != NULL);
+
+    DTMF_DEBUG("Letter\tKey\tPresses\n");
 
     dtmf_count_t duration_total = 0;
     // Iterate over the chars of the message to compute it's duration.
     for (char const *c = message; *c != 0; c++) {
-        DtmfMapping letter = _dtmf_map_char(*c);
+        DtmfMapping letter;
+        if (_dtmf_map_char(*c, &letter)) {
+            DTMF_FAIL();
+        }
         duration_total += letter.presses * DTMF_TONE_DURATION_MS;
-
-        debug_printf("%c\t\t%d\t%d\n", letter.letter, letter.key, letter.presses);
 
         if (letter.presses > 1) {
             duration_total += (dtmf_count_t)(letter.presses - 1) * DTMF_TONE_REPEAT_MS;
@@ -82,59 +99,84 @@ static dtmf_count_t _dtmf_calc_duration(char const *message) {
         }
     }
 
-    return duration_total;
+    if (duration_total == 0) {
+        DTMF_ERROR("could not calculate duration of message");
+    }
+
+    *out_count = duration_total;
+    DTMF_DEBUG("Computed duration: %lums\n", duration_total);
+    DTMF_SUCCEED();
 }
 
 static bool _dtmf_encode_message(char const *message, dtmf_float_t *dtmf_buffer) {
-    debug_printf("Processing message %s\n", message);
+    assert(message != NULL);
+    assert(dtmf_buffer != NULL);
+    DTMF_DEBUG("Processing message %s\n", message);
 
-    size_t buffer_write_ptr = 0;  // This should track where we are in the buffer
+
+    size_t buffer_write_ptr = 0;
     for (char const *c = message; *c != '\0'; c++) {
-        DtmfMapping mapping = _dtmf_map_char(*c);
+        DtmfMapping mapping;
+
+        if (!_dtmf_map_char(*c, &mapping)) {
+            DTMF_FAIL();
+        }
 
         // Write the tone by copying from the global table.
         memcpy(dtmf_buffer + buffer_write_ptr, mapping.tone.samples, mapping.tone.sample_count * sizeof(dtmf_float_t));
+        DTMF_ASSERT(mapping.tone.sample_count != 0, "could not copy tone samples");
         buffer_write_ptr += mapping.tone.sample_count;
 
         // Add a pause between tones if there are more letters.
         if (*(c + 1) != '\0') {
             memset(dtmf_buffer + buffer_write_ptr, 0, DTMF_TONE_PAUSE_NUM_SAMPLES * sizeof(dtmf_float_t));
+            DTMF_ASSERT(DTMF_TONE_PAUSE_NUM_SAMPLES != 0, "could not add pause between tones");
             buffer_write_ptr += DTMF_TONE_PAUSE_NUM_SAMPLES;
         }
     }
 
-    return true;
+    DTMF_SUCCEED();
 }
 
 // Encodes a message into a DTMF signal.
 dtmf_count_t dtmf_encode(char const *message, dtmf_float_t **dtmf_buffer) {
     assert(message != NULL);
     assert(dtmf_buffer != NULL);
+    DTMF_DEBUG("Encoding message %s to DTMF...\n", message);
 
-    debug_printf("Encoding message %s to DTMF...\n", message);
     _dtmf_init();
 
-    if (!_dtmf_input_validate(message)) {
-        fprintf(stderr, "Error: Invalid input message\n");
+    if (_dtmf_input_validate(message)) {
         return 0;  // TODO: find a better way to handle this, maybe using out params.
     }
 
-    char const *normalized_input = _dtmf_input_normalize(message);
+    char *normalized_input = NULL;
+    if (_dtmf_input_normalize(message, &normalized_input)) {
+        DTMF_FAIL();
+    }
 
-    dtmf_count_t duration_ms = _dtmf_calc_duration(normalized_input);
+    dtmf_count_t duration_ms;
+    if (_dtmf_calc_duration(normalized_input, &duration_ms)) {
+        DTMF_FAIL();
+    }
+
+    DTMF_ASSERT(duration_ms != 0, "could not calculate duration of message");
+
     dtmf_count_t num_samples = (duration_ms * DTMF_SAMPLE_RATE_HZ / DTMF_MS_PER_HZ);
 
-    debug_printf("Signal duration @%d Hz: %lu ms\n", DTMF_SAMPLE_RATE_HZ, duration_ms);
-    debug_printf("Number of samples: %lu\n", num_samples);
+    DTMF_DEBUG("Signal duration @%d Hz: %lu ms\n", DTMF_SAMPLE_RATE_HZ, duration_ms);
+    DTMF_DEBUG("Number of samples: %lu\n", num_samples);
 
-    if (!_dtmf_allocate_buffer(dtmf_buffer, num_samples)) {
-        free((void *)normalized_input);
-        exit(EXIT_FAILURE);
+    if (_dtmf_allocate_buffer(dtmf_buffer, num_samples)) {
+        _dtmf_free_buffer(*dtmf_buffer);
+        DTMF_FATAL("could not allocate buffer for DTMF signal");
     }
 
     _dtmf_encode_message(normalized_input, *dtmf_buffer);
 
-    free((void *)normalized_input);
+    free(normalized_input);
+
+    DTMF_DEBUG("Successfully encoded message of length %dms to DTMF signal\n", duration_ms);
 
     return num_samples;
 }
