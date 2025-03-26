@@ -40,7 +40,6 @@ typedef enum {
 #define DTMF_ERROR(fmt, ...)                                          \
     do {                                                              \
         fprintf(stderr, "Error: " fmt "\n"__VA_OPT__(, )__VA_ARGS__); \
-        assert(false);                                                \
         return DTMF_FAILURE;                                          \
     } while (0)
 
