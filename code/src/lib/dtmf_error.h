@@ -47,6 +47,9 @@ typedef enum {
         exit(EXIT_FAILURE);                                           \
     } while (0)
 
+#define DTMF_EXIT_SUCCESS() exit(EXIT_SUCCESS)
+#define DTMF_EXIT_FAILURE() exit(EXIT_FAILURE)
+
 #define DTMF_ASSERT(CONDITION, fmt, ...)  \
     do {                                  \
         if (!(CONDITION)) {               \

@@ -47,17 +47,23 @@ int main(int argc, char *argv[]) {
             return EXIT_FAILURE;
         }
 
-        char *message = NULL;
-        dtmf_decode(dtmf_buffer, &message, (dtmf_count_t)sf_info.frames);
+        char        *message    = NULL;
+        dtmf_count_t count_read = 0;
+        if (dtmf_decode(dtmf_buffer, (dtmf_count_t)sf_info.frames, &message, &count_read)) {
+            DTMF_EXIT_FAILURE();
+        }
+
 
         if (message != NULL) {
             printf("%s\n", message);
-            free(message);
+            free(message);  // FIXME: use lib allocators
         } else {
             fprintf(stderr, "Error: Decoding failed\n");
         }
 
-        free(dtmf_buffer);
+        if (dtmf_buffer != NULL) {
+            free(dtmf_buffer);  // FIXME: use lib allocators
+        }
     } else {
         fprintf(stderr, "Unknown command: %s\n", arguments.command);
         return EXIT_FAILURE;

@@ -12,6 +12,7 @@
 
 #include "dtmf.h"
 #include "dtmf_common.h"
+#include "dtmf_error.h"
 #include "dtmf_utils.h"
 
 #define GOE_MAX_SAMPLES 3800
@@ -111,16 +112,17 @@ static void handle_detected_key(int detected_key, int *last_detected_key, dtmf_c
     }
 }
 
-dtmf_count_t dtmf_decode(dtmf_float_t *dtmf_buffer, char **out_message, dtmf_count_t dtmf_frame_count) {
+bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char **out_message, dtmf_count_t *out_chars_read) {
     assert(dtmf_buffer != NULL);
     assert(out_message != NULL);
-    assert(dtmf_frame_count > 0);
+    assert(out_chars_read != NULL);
+    assert(frame_count > 0);
 
     const dtmf_count_t window_size = DTMF_TONE_REPEAT_NUM_SAMPLES;
     const dtmf_count_t stride_size = DTMF_TONE_REPEAT_NUM_SAMPLES / 2;
 
     dtmf_count_t message_length     = 0;
-    dtmf_count_t max_message_length = dtmf_frame_count / stride_size + 1;
+    dtmf_count_t max_message_length = frame_count / stride_size + 1;
     *out_message                    = (char *)calloc(max_message_length, sizeof(char));
     if (!*out_message) {
         fprintf(stderr, "Error: Could not allocate memory for output message\n");
@@ -134,9 +136,9 @@ dtmf_count_t dtmf_decode(dtmf_float_t *dtmf_buffer, char **out_message, dtmf_cou
     dtmf_count_t       key_cooldown      = 0;
     dtmf_count_t const debounce_window   = DTMF_TONE_NUM_SAMPLES / stride_size;
 
-    _dtmf_preprocess_buffer(dtmf_buffer, dtmf_frame_count, PREPROCESS_THRESHOLD_FACTOR);
+    _dtmf_preprocess_buffer(dtmf_buffer, frame_count, PREPROCESS_THRESHOLD_FACTOR);
 
-    for (dtmf_count_t i = 0; i + window_size <= dtmf_frame_count; i += stride_size) {
+    for (dtmf_count_t i = 0; i + window_size <= frame_count; i += stride_size) {
         dtmf_float_t max_magnitude;
         int          detected_key;
 
@@ -153,5 +155,7 @@ dtmf_count_t dtmf_decode(dtmf_float_t *dtmf_buffer, char **out_message, dtmf_cou
         (*out_message)[message_length++] = letter;
     }
 
-    return message_length;
+    *out_chars_read = message_length;
+
+    DTMF_SUCCEED();
 }

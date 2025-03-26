@@ -13,6 +13,7 @@
 
 #include "dtmf.h"
 #include "dtmf_common.h"
+#include "dtmf_error.h"
 #include "dtmf_utils.h"
 
 
@@ -77,10 +78,10 @@ static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtm
     return detected_key;
 }
 
-dtmf_count_t dtmf_decode(dtmf_float_t *dtmf_buffer, char **out_message, dtmf_count_t dtmf_frame_count) {
+bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char **out_message, dtmf_count_t *out_chars_read) {
     assert(dtmf_buffer != NULL);
 
-    _dtmf_preprocess_buffer(dtmf_buffer, dtmf_frame_count, PREPROCESS_THRESHOLD_FACTOR);
+    _dtmf_preprocess_buffer(dtmf_buffer, frame_count, PREPROCESS_THRESHOLD_FACTOR);
 
     dtmf_count_t buffer_read_ptr = 0;
     dtmf_count_t chunk_size      = DTMF_TONE_REPEAT_NUM_SAMPLES;
@@ -90,7 +91,7 @@ dtmf_count_t dtmf_decode(dtmf_float_t *dtmf_buffer, char **out_message, dtmf_cou
     dtmf_count_t chunks_seen        = 0;
     dtmf_count_t repetitions        = 0;
     dtmf_count_t pause_repetitions  = 0;
-    dtmf_count_t max_message_length = dtmf_frame_count / (DTMF_TONE_NUM_SAMPLES + DTMF_TONE_PAUSE_NUM_SAMPLES) + 1;
+    dtmf_count_t max_message_length = frame_count / (DTMF_TONE_NUM_SAMPLES + DTMF_TONE_PAUSE_NUM_SAMPLES) + 1;
 
     *out_message = (char *)calloc(max_message_length + 1, sizeof(char));
     if (*out_message == NULL) {
@@ -98,7 +99,7 @@ dtmf_count_t dtmf_decode(dtmf_float_t *dtmf_buffer, char **out_message, dtmf_cou
         return 0;
     }
 
-    while (buffer_read_ptr < dtmf_frame_count) {
+    while (buffer_read_ptr < frame_count) {
         int detected_key = fft_detect(dtmf_buffer + buffer_read_ptr, chunk_size, DTMF_SAMPLE_RATE_HZ);
 
         if (detected_key != -1) {
@@ -141,7 +142,7 @@ dtmf_count_t dtmf_decode(dtmf_float_t *dtmf_buffer, char **out_message, dtmf_cou
         }
 
         // Final chunk edge-case handling
-        if (buffer_read_ptr + chunk_size >= dtmf_frame_count && last_detected_key != -1) {
+        if (buffer_read_ptr + chunk_size >= frame_count && last_detected_key != -1) {
             if (chunks_seen >= 2) {
                 repetitions++;
             }
@@ -156,5 +157,7 @@ dtmf_count_t dtmf_decode(dtmf_float_t *dtmf_buffer, char **out_message, dtmf_cou
         buffer_read_ptr += chunk_size;
     }
 
-    return message_length;
+    *out_chars_read = message_length;
+
+    DTMF_SUCCEED();
 }
