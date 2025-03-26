@@ -1,0 +1,68 @@
+name: Build and run tests
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/a-mango/hpc/dtmf-runtime:latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Configure CMake
+        run: "cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTS=ON -DENABLE_SAN=ON -DENABLE_COV=ON"
+        working-directory: code
+
+      - name: Build
+        run: cmake --build build
+        working-directory: code
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: binaries
+          path: code/bin
+
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/a-mango/hpc/dtmf-runtime:latest
+    needs: build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            code/test/samples
+          sparse-checkout-cone-mode: false
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: binaries
+          path: bin
+
+      - name: Make build artifacts executable
+        run: chmod +x bin/*
+
+      - name: Relocate test samples directory
+        run: mv code/test/samples samples
+
+      - name: Run tests
+        run: ./bin/dtmf_encdec_test
+        env:
+          DTMF_TEST_BINARY_PATH: bin/dtmf_encdec
+          DTMF_TEST_SAMPLES_DIR: samples
+          DTMF_TEST_PARAMS_DECODE_TSV: code/test/params_decode.tsv
+          DTMF_TEST_PARAMS_ENCODE_TSV: code/test/params_encode.tsv
