@@ -10,8 +10,10 @@
 
 #include <sndfile.h>
 
+#include "../src/lib/dtmf_error.h"
+
 #ifdef DEBUG
-#define debug_printf(fmt, ...) fprintf(stderr, "[D] " fmt __VA_OPT__(, ) __VA_ARGS__)
+#define debug_printf(fmt, ...) DTMF_DEBUG(fmt, __VA_ARGS__)
 #else
 #define debug_printf(...) ((void)0)
 #endif
