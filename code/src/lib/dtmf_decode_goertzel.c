@@ -8,7 +8,6 @@
 #include <assert.h>
 #include <math.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include "dtmf.h"
 #include "dtmf_common.h"
@@ -144,7 +143,7 @@ bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char
 
         process_window(dtmf_buffer, i, window_size, &max_magnitude, &detected_key);
 
-        debug_printf("Window at %lu detected key %d (mag=%.2f)\n", i, detected_key, max_magnitude);
+        debug_printf("Window at %lu detected key %d (mag=%.2f)", i, detected_key, max_magnitude);
 
         handle_detected_key(detected_key, &last_detected_key, &chunks_seen, &repetitions, &pause_repetitions, &message_length, out_message, debounce_window, &key_cooldown);
     }

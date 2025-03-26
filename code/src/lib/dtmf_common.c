@@ -111,7 +111,7 @@ void _dtmf_init_tones_map() {
     }
 
     dtmf_tones_initialized = true;
-    debug_printf("Tones map initialized\n");
+    debug_printf("Tones map initialized");
 }
 
 void _dtmf_init_table() {
@@ -144,7 +144,7 @@ void _dtmf_init_table() {
     }
 
     dtmf_table_initialized = true;
-    debug_printf("Mappings table initialized\n");
+    debug_printf("Mappings table initialized");
 }
 
 void _dtmf_init() {
@@ -157,7 +157,7 @@ void _dtmf_init() {
 
     dtmf_initialized = true;
 
-    debug_printf("DTMF module initialized\n");
+    debug_printf("DTMF module initialized");
 }
 
 bool _dtmf_allocate_buffer(dtmf_float_t **buffer, size_t num_samples) {
@@ -167,10 +167,10 @@ bool _dtmf_allocate_buffer(dtmf_float_t **buffer, size_t num_samples) {
     *buffer = (dtmf_float_t *)malloc(num_samples * sizeof(dtmf_float_t));
 
     if (*buffer == NULL) {
-        DTMF_ERROR("Could not allocate buffer of size %lu\n", num_samples);
+        DTMF_ERROR("Could not allocate buffer of size %lu", num_samples);
     }
 
-    DTMF_TRACE("Allocated buffer of size %lu x %lu bytes\n", num_samples, sizeof(dtmf_float_t));
+    DTMF_TRACE("Allocated buffer of size %lu x %lu bytes", num_samples, sizeof(dtmf_float_t));
 
     DTMF_SUCCEED();
 }
@@ -194,7 +194,7 @@ char _dtmf_map_presses_to_letter(dtmf_count_t key, dtmf_count_t presses) {
         }
     }
 
-    debug_printf("No matching letter for key %lu with %lu presses.\n", key, presses);
+    debug_printf("No matching letter for key %lu with %lu presses", key, presses);
     return DTMF_UNKNOWN_SYMBOL;
 }
 
@@ -222,7 +222,7 @@ static void _dtmf_noise_reduction(dtmf_float_t *buffer, dtmf_count_t const count
         }
     }
 
-    debug_printf("Noise reduction applied with dynamic threshold %f (RMS: %f, factor: %f)\n", threshold, rms, threshold_factor);
+    debug_printf("Noise reduction applied with dynamic threshold %f (RMS: %f, factor: %f)", threshold, rms, threshold_factor);
 }
 
 static void _dtmf_normalize_signal(dtmf_float_t *buffer, dtmf_count_t const count) {

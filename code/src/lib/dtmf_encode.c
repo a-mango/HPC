@@ -25,14 +25,14 @@ static bool _dtmf_encode_message(char const *message, dtmf_float_t *dtmf_buffer)
 
 
 static bool _dtmf_map_char(char const letter, DtmfMapping *out_mapped_char) {
-    DTMF_DEBUG("Mapping letter %c to DTMF key\n", letter);
+    DTMF_DEBUG("Mapping letter %c to DTMF key", letter);
     assert(IS_DTMF_SYMBOL(letter));
     assert(out_mapped_char != NULL);
 
     for (int i = 0; i < dtmf_table_size; i++) {
         if (dtmf_table_global[i].letter == letter) {
             *out_mapped_char = dtmf_table_global[i];
-            DTMF_TRACE("Mapped %c to %d x %d\n", letter, out_mapped_char->key, out_mapped_char->presses);
+            DTMF_TRACE("Mapped %c to %d x %d", letter, out_mapped_char->key, out_mapped_char->presses);
             DTMF_SUCCEED();
         }
     }
@@ -144,7 +144,7 @@ bool dtmf_encode(char const *message, dtmf_float_t **dtmf_buffer, dtmf_count_t *
     assert(message != NULL);
     assert(dtmf_buffer != NULL);
     assert(out_samples_count != NULL);
-    DTMF_DEBUG("Encoding message %s to DTMF...\n", message);
+    DTMF_DEBUG("Encoding message %s to DTMF...", message);
 
     _dtmf_init();
 
@@ -166,8 +166,8 @@ bool dtmf_encode(char const *message, dtmf_float_t **dtmf_buffer, dtmf_count_t *
 
     dtmf_count_t num_samples = (duration_ms * DTMF_SAMPLE_RATE_HZ / DTMF_MS_PER_HZ);
 
-    DTMF_DEBUG("Signal duration @%d Hz: %lu ms\n", DTMF_SAMPLE_RATE_HZ, duration_ms);
-    DTMF_DEBUG("Number of samples: %lu\n", num_samples);
+    DTMF_DEBUG("Signal duration @%d Hz: %lu ms", DTMF_SAMPLE_RATE_HZ, duration_ms);
+    DTMF_DEBUG("Number of samples: %lu", num_samples);
 
     if (_dtmf_allocate_buffer(dtmf_buffer, num_samples)) {
         _dtmf_free_buffer(*dtmf_buffer);
@@ -178,7 +178,7 @@ bool dtmf_encode(char const *message, dtmf_float_t **dtmf_buffer, dtmf_count_t *
 
     free(normalized_input);
 
-    DTMF_DEBUG("Successfully encoded message of length %lums to DTMF signal\n", duration_ms);
+    DTMF_DEBUG("Successfully encoded message of length %lums to DTMF signal", duration_ms);
 
     *out_samples_count = num_samples;
 

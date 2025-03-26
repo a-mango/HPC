@@ -129,7 +129,7 @@ bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char
 
             if (pause_repetitions >= 3 && last_detected_key != -1) {
                 char letter = _dtmf_map_presses_to_letter((dtmf_count_t)last_detected_key, repetitions);
-                debug_printf("Detected letter %c\n", letter);
+                debug_printf("Detected letter %c", letter);
                 if (message_length < max_message_length) {
                     (*out_message)[message_length++] = letter;
                 }
@@ -148,7 +148,7 @@ bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char
             }
 
             char letter = _dtmf_map_presses_to_letter((dtmf_count_t)last_detected_key, repetitions);
-            debug_printf("Detected letter %c\n", letter);
+            debug_printf("Detected letter %c", letter);
             if (message_length < max_message_length) {
                 (*out_message)[message_length++] = letter;
             }
