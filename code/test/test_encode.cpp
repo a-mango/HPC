@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cstdint>
 #include <cstdio>
 #include <filesystem>
 #include <format>
@@ -59,10 +60,10 @@ std::pair<std::string, int> exec_encode(const std::string& cmd) {
  *
  */
 struct EncodeTestParam {
-    std::string test_name;
-    std::string input;
-    std::string expected_output;
-    std::string exit_code;
+    std::string  test_name;
+    std::string  input;
+    std::string  expected_output;
+    std::int32_t exit_code;
 };
 
 /**
@@ -116,8 +117,8 @@ TEST_P(EncodeFFT, TestExpectedOutput) {
         std::cerr << "Error executing hash command: " << e.what() << std::endl;
     }
 
-    if (result.second != std::stoi(param.exit_code)) {
-        FAIL() << "Exit code: " << result.second << " Expected: " << param.exit_code;
+    if (param.exit_code) {
+        EXPECT_EQ(result.second >> 8, param.exit_code);
     } else {
         EXPECT_EQ(hash_result.first, param.expected_output);
     }
@@ -160,8 +161,8 @@ TEST_P(EncodeGoertzel, TestExpectedOutput) {
         std::cerr << "Error executing hash command: " << e.what() << std::endl;
     }
 
-    if (result.second != std::stoi(param.exit_code)) {
-        FAIL() << "Exit code: " << result.second << " Expected: " << param.exit_code;
+    if (param.exit_code) {
+        EXPECT_EQ(result.second >> 8, param.exit_code);
     } else {
         EXPECT_EQ(hash_result.first, param.expected_output);
     }
@@ -188,7 +189,7 @@ std::vector<EncodeTestParam> loadTestParams_encode(const std::string& tsv_file) 
     while (std::getline(file, line)) {
         std::istringstream ss(line);
         if (std::getline(ss, test_name, '\t') && std::getline(ss, input, '\t') && std::getline(ss, expected_output, '\t') && std::getline(ss, exit_code, '\t')) {
-            params.push_back({test_name, input, expected_output, exit_code});
+            params.push_back({test_name, input, expected_output, std::stoi(exit_code)});
         } else {
             std::cerr << "Failed to parse line: " << line << std::endl;
         }
