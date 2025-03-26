@@ -10,6 +10,7 @@ RUN apt-get update && \
       gcc-13 g++-13 \
       curl \
       build-essential \
+      git \
       cmake \
       gcovr \
       ffmpeg \
