@@ -20,7 +20,9 @@ jobs:
           submodules: recursive
 
       - name: Configure CMake
-        run: "cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTS=ON -DENABLE_SAN=ON -DENABLE_COV=ON"
+        run:
+          "cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTS=ON
+          -DENABLE_SAN=ON -DENABLE_COV=ON"
         working-directory: code
 
       - name: Build
@@ -44,6 +46,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           sparse-checkout: |
+            code/test/params_decode.tsv
+            code/test/params_encode.tsv
             code/test/samples
           sparse-checkout-cone-mode: false
 
@@ -58,6 +62,9 @@ jobs:
 
       - name: Relocate test samples directory
         run: mv code/test/samples samples
+
+      - name: List files
+        run: ls -la bin samples .
 
       - name: Run tests
         run: ./bin/dtmf_encdec_test
