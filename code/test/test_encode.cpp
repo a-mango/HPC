@@ -99,7 +99,7 @@ TEST_P(EncodeFFT, TestExpectedOutput) {
     temp_file << param.input;
     temp_file.close();
 
-    std::string                 command = std::format("{} encode {} {} 2>/dev/null", BINARY_FFT, temp_input_file, temp_output_file);
+    std::string                 command = std::format("{} encode {} {}", BINARY_FFT, temp_input_file, temp_output_file);
     std::pair<std::string, int> result;
 
     try {
