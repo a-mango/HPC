@@ -53,11 +53,11 @@ bool utils_read_wav_file(char const *filename, double **out_buffer, SF_INFO *out
     assert(out_buffer != NULL);
     assert(out_sfinfo != NULL);
 
-    debug_printf("Reading file %s...\n", filename);
+    debug_printf("Reading file %s...", filename);
 
     SNDFILE *infile = sf_open(filename, SFM_READ, out_sfinfo);
     if (!infile) {
-        fprintf(stderr, "Error: could not open file '%s': %s\n", filename, sf_strerror(NULL));
+        fprintf(stderr, "Error: could not open file '%s': %s", filename, sf_strerror(NULL));
         return 1;
     }
 
@@ -65,12 +65,12 @@ bool utils_read_wav_file(char const *filename, double **out_buffer, SF_INFO *out
     format_info.format = out_sfinfo->format;
     sf_command(infile, SFC_GET_FORMAT_INFO, &format_info, sizeof(format_info));
 
-    debug_printf("File information:\n");
-    debug_printf("  - Format: %08x  %s %s\n", format_info.format, format_info.name, format_info.extension);
-    debug_printf("  - Channel count: %d\n", out_sfinfo->channels);
-    debug_printf("  - Sample rate: %d Hz\n", out_sfinfo->samplerate);
-    debug_printf("  - Sample count: %lld\n", (long long)out_sfinfo->frames);
-    debug_printf("  - Duration: %.2f secondes\n", (double)out_sfinfo->frames / out_sfinfo->samplerate);
+    debug_printf("File information:");
+    debug_printf("  - Format: %08x  %s %s", format_info.format, format_info.name, format_info.extension);
+    debug_printf("  - Channel count: %d", out_sfinfo->channels);
+    debug_printf("  - Sample rate: %d Hz", out_sfinfo->samplerate);
+    debug_printf("  - Sample count: %lld", (long long)out_sfinfo->frames);
+    debug_printf("  - Duration: %.2f secondes", (double)out_sfinfo->frames / out_sfinfo->samplerate);
 
     if ((out_sfinfo->format & SF_FORMAT_TYPEMASK) != SF_FORMAT_WAV) {
         fprintf(stderr, "Error: file '%s' is not a WAV file.\n", filename);
@@ -92,7 +92,7 @@ bool utils_read_wav_file(char const *filename, double **out_buffer, SF_INFO *out
 
     sf_close(infile);
 
-    debug_printf("Done reading file %s\n", filename);
+    debug_printf("Done reading file %s", filename);
 
     return true;
 }
@@ -101,7 +101,7 @@ bool utils_write_wav_file(char const *filename, double *values_hz, sf_count_t fr
     assert(filename != NULL);
     assert(values_hz != NULL);
 
-    debug_printf("Writing %lld frames to %s...\n", (long long)frames, filename);
+    debug_printf("Writing %lld frames to %s...", (long long)frames, filename);
 
     SF_INFO sfinfo    = {0};
     sfinfo.samplerate = 44100;
@@ -125,7 +125,7 @@ bool utils_write_wav_file(char const *filename, double *values_hz, sf_count_t fr
     sf_write_sync(outfile);
     sf_close(outfile);
 
-    debug_printf("Done writing file %s\n", filename);
+    debug_printf("Done writing file %s", filename);
 
     return true;
 }
