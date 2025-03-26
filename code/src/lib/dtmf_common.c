@@ -161,17 +161,30 @@ void _dtmf_init() {
 }
 
 bool _dtmf_allocate_buffer(dtmf_float_t **buffer, size_t num_samples) {
+    DTMF_TRACE("Allocating buffer of size %lu\n", num_samples);
     assert(buffer != NULL);
 
     *buffer = (dtmf_float_t *)malloc(num_samples * sizeof(dtmf_float_t));
 
     if (*buffer == NULL) {
-        fprintf(stderr, "Error: Could not allocate buffer of size %lu\n", num_samples);
-        return false;
+        DTMF_ERROR("Could not allocate buffer of size %lu\n", num_samples);
     }
 
-    debug_printf("Allocated buffer of size %lu x %lu bytes\n", num_samples, sizeof(dtmf_float_t));
-    return true;
+    DTMF_TRACE("Allocated buffer of size %lu x %lu bytes\n", num_samples, sizeof(dtmf_float_t));
+
+    DTMF_SUCCEED();
+}
+
+bool _dtmf_free_buffer(dtmf_float_t *buffer) {
+    assert(buffer != NULL);
+
+    if (buffer != NULL) {
+        free(buffer);
+        buffer = NULL;
+        return true;
+    }
+
+    return false;
 }
 
 char _dtmf_map_presses_to_letter(dtmf_count_t key, dtmf_count_t presses) {
