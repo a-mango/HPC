@@ -67,7 +67,7 @@ add_compile_options(
 if(CMAKE_BUILD_TYPE MATCHES Debug)
   message(STATUS "Enabling debug build")
   add_compile_definitions(DEBUG)
-  add_compile_options(-g3 -O0 -fPIE -pie)
+  add_compile_options(-g3 -Og -fPIE -pie)
 elseif(CMAKE_BUILD_TYPE MATCHES Release)
   message(STATUS "Enabling release build")
   add_compile_definitions(NDEBUG)
