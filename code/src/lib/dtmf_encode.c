@@ -176,7 +176,7 @@ dtmf_count_t dtmf_encode(char const *message, dtmf_float_t **dtmf_buffer) {
 
     free(normalized_input);
 
-    DTMF_DEBUG("Successfully encoded message of length %dms to DTMF signal\n", duration_ms);
+    DTMF_DEBUG("Successfully encoded message of length %lums to DTMF signal\n", duration_ms);
 
     return num_samples;
 }
