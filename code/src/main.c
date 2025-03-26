@@ -30,6 +30,7 @@ int main(int argc, char *argv[]) {
         dtmf_float_t *dtmf_buffer = NULL;
         dtmf_count_t  samples_cnt = 0;
         if (dtmf_encode(buffer, &dtmf_buffer, &samples_cnt)) {
+            free(buffer);
             DTMF_EXIT_FAILURE();
         }
 
