@@ -30,7 +30,7 @@ std::string env(const std::string& var, const std::string& default_val) {
     return val == nullptr ? default_val : std::string(val);
 }
 
-const std::string BINARY_PATH     = env("DTMF_BINARY_PATH", "bin/dtmf_encdec");
+const std::string BINARY_PATH     = env("DTMF_TEST_BINARY_PATH", "bin/dtmf_encdec");
 const std::string SAMPLES_DIR     = env("DTMF_TEST_SAMPLES_DIR", "test/samples");
 const std::string TSV_FILE        = env("DTMF_TEST_PARAMS_DECODE_TSV", "test/params_decode.tsv");
 const std::string BINARY_GOERTZEL = BINARY_PATH + "-goertzel";
