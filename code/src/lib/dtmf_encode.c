@@ -149,7 +149,7 @@ bool dtmf_encode(char const *message, dtmf_float_t **dtmf_buffer, dtmf_count_t *
     _dtmf_init();
 
     if (_dtmf_input_validate(message)) {
-        return 0;  // TODO: find a better way to handle this, maybe using out params.
+        DTMF_FAIL();
     }
 
     char *normalized_input = NULL;
