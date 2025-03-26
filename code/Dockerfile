@@ -12,6 +12,7 @@ RUN apt-get update && \
       build-essential \
       cmake \
       gcovr \
+      ffmpeg \
       libsndfile-dev libfftw3-dev && \
     update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 60 && \
     update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 60
