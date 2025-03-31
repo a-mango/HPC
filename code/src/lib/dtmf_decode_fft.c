@@ -7,6 +7,7 @@
 
 #include <assert.h>
 #include <fftw3.h>
+#include <likwid-marker.h>
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -143,7 +144,6 @@ bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char
             }
         }
 
-        LIKWID_MARKER_START("dtmf-decode-fft-text");
         // Final chunk edge-case handling
         if (buffer_read_ptr + chunk_size >= frame_count && last_detected_key != -1) {
             if (chunks_seen >= 2) {
@@ -156,7 +156,6 @@ bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char
                 (*out_message)[message_length++] = letter;
             }
         }
-        LIKWID_MARKER_STOP("dtmf-decode-fft-text");
 
         buffer_read_ptr += chunk_size;
     }
