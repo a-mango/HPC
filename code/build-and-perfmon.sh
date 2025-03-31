@@ -16,7 +16,7 @@ cmake --build $BUILD_DIR -- $MAKE_OPTS
 
 echo -n "1234567890 ABCDEFGHIJKLMNOPQRSTUVWXYZ .!?,#" >input.txt
 
-CMD_OPS="-C 1 -g FLOPS_DP -m $BIN_DIR/dtmf_encdec_test input.txt output.wav"
+CMD_OPS="-C 1 -g FLOPS_DP -m $BIN_DIR/dtmf_encdec_test encode input.txt output.wav"
 CMD="$CMD_NAME $CMD_OPS"
 $CMD
 
