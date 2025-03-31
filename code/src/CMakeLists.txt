@@ -38,6 +38,7 @@ enable_asan(${FFT_TARGET})
 
 # Performance monitoring
 if(ENABLE_PERFMON)
+  message(STATUS "Enabling likwid")
   find_library(LIKWID_LIB likwid PATHS /usr/local/lib)
 
   if(NOT LIKWID_LIB)
