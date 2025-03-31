@@ -79,7 +79,7 @@ static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtm
 }
 
 bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char **out_message, dtmf_count_t *out_chars_read) {
-    LIKWID_MARKER_START("dtmf-decode");
+    LIKWID_MARKER_START("dtmf-decode-fft");
 
     assert(dtmf_buffer != NULL);
 
@@ -143,6 +143,7 @@ bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char
             }
         }
 
+        LIKWID_MARKER_START("dtmf-decode-fft-text");
         // Final chunk edge-case handling
         if (buffer_read_ptr + chunk_size >= frame_count && last_detected_key != -1) {
             if (chunks_seen >= 2) {
@@ -155,13 +156,14 @@ bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char
                 (*out_message)[message_length++] = letter;
             }
         }
+        LIKWID_MARKER_STOP("dtmf-decode-fft-text");
 
         buffer_read_ptr += chunk_size;
     }
 
     *out_chars_read = message_length;
 
-    LIKWID_MARKER_STOP("dtmf-decode");
+    LIKWID_MARKER_STOP("dtmf-decode-fft");
 
     DTMF_SUCCEED();
 }
