@@ -56,9 +56,12 @@ int main(int argc, char *argv[]) {
 
         char        *message    = NULL;
         dtmf_count_t count_read = 0;
+
+        LIKWID_MARKER_START("dtmf-decode");
         if (dtmf_decode(dtmf_buffer, (dtmf_count_t)sf_info.frames, &message, &count_read)) {
             DTMF_EXIT_FAILURE();
         }
+        LIKWID_MARKER_STOP("dtmf-decode");
 
 
         if (message != NULL) {
