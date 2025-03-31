@@ -29,7 +29,7 @@ CMD_OPS="-C 1 -g MEM_DP -m $BIN_DIR/dtmf_encdec-fft encode input.txt output.wav"
 CMD="$CMD_NAME $CMD_OPS"
 $CMD
 
-echo -e "\n===== ENCODE FFT MAXPERF ====="
+echo -e "\n===== DECODE FFT MAXPERF ====="
 CMD_OPS="-C 1 -g FLOPS_DP -m $BIN_DIR/dtmf_encdec-fft decode output.wav" >"$(date +'%Y-%m-%dT%H:%M:%S%z')_maxperf_decode-fft.log"
 CMD="$CMD_NAME $CMD_OPS"
 $CMD
