@@ -12,4 +12,6 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
   endif()
 endif()
 
-add_subdirectory(googletest vendor/googletest)
+if(ENABLE_TESTS)
+  add_subdirectory(googletest vendor/googletest)
+endif()
