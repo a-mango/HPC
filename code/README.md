@@ -122,7 +122,6 @@ To decode a message from `output.wav` and save it to `decoded.txt`, use:
 ```sh
 ./dtmf_encdec decode output.wav decoded.txt
 ```
-
 ## Profiling
 
 The program may be profiled using `gcov`. To do so, enable the `ENABLE_COV`
