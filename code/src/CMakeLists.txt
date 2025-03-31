@@ -33,7 +33,7 @@ list(FILTER SOURCE_FILES EXCLUDE REGEX ".*dtmf_decode_goertzel.c$")
 set(FFT_TARGET ${CMAKE_PROJECT_NAME}-fft)
 add_executable(${FFT_TARGET} ${SOURCE_FILES})
 target_include_directories(${FFT_TARGET} PRIVATE ${COMMON_INCLUDE_DIRS})
-target_link_libraries(${FFT_TARGET} PRIVATE ${COMMON_LINK_LIBS} ${LIB_NAME}-fft fftw3 ${SNDFILE_LIBRARY})
+target_link_libraries(${FFT_TARGET} PRIVATE ${COMMON_LINK_LIBS} ${LIB_NAME}-fft ${FFTW3_LIBRARY} ${SNDFILE_LIBRARY})
 enable_asan(${FFT_TARGET})
 
 # Performance monitoring
@@ -47,15 +47,11 @@ if(ENABLE_PERFMON)
 
   include_directories(/usr/local/include)
 
-  add_compile_definitions(LIKWID_PERFMON)
-
-  set_target_properties(${FFT_TARGET} PROPERTIES COMPILE_OPTIONS "")
   target_compile_definitions(${FFT_TARGET} PRIVATE LIKWID_PERFMON)
   target_compile_options(${FFT_TARGET} PRIVATE -O3 -g3 -w)
   target_link_options(${FFT_TARGET} PRIVATE -O3 -g3 -w)
   target_link_libraries(${FFT_TARGET} PRIVATE ${LIKWID_LIB})
 
-  set_target_properties(${GOERTZEL_TARGET} PROPERTIES COMPILE_OPTIONS "")
   target_compile_definitions(${GOERTZEL_TARGET} PRIVATE LIKWID_PERFMON)
   target_compile_options(${GOERTZEL_TARGET} PRIVATE -O3 -g3 -w)
   target_link_options(${GOERTZEL_TARGET} PRIVATE -O3 -g3 -w)
