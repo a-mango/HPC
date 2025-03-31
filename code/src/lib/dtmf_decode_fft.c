@@ -7,9 +7,7 @@
 
 #include <assert.h>
 #include <fftw3.h>
-#include <math.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include "dtmf.h"
 #include "dtmf_common.h"
