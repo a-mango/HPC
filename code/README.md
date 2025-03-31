@@ -123,6 +123,11 @@ To decode a message from `output.wav` and save it to `decoded.txt`, use:
 ./dtmf_encdec decode output.wav decoded.txt
 ```
 
+## Profiling
+
+The program may be profiled using `gcov`. To do so, enable the `ENABLE_COV`
+option during build then run `../scripts/profile.sh` to generate HTML coverage reports.
+
 ## Development
 
 The `build-and-run.sh` script can be used to build the project and run an
