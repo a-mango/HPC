@@ -9,6 +9,7 @@ project(dtmf_encdec VERSION 0.1 LANGUAGES C CXX)
 option(ENABLE_TESTS "Enable tests" OFF)
 option(ENABLE_COV "Enable coverage reporting" OFF)
 option(ENABLE_SAN "Enable sanitizers " OFF)
+option(ENABLE_PERFMON "Enable likwid perfmon" OFF)
 
 check_c_compiler_flag(-std=c23 CC_HAVE_C23)
 check_cxx_compiler_flag(-std=c++23 CC_HAVE_CXX23)
@@ -72,6 +73,14 @@ elseif(CMAKE_BUILD_TYPE MATCHES Release)
   message(STATUS "Enabling release build")
   add_compile_definitions(NDEBUG)
   add_compile_options(-O3 -Werror)
+endif()
+
+# Performance monitoring
+if(ENABLE_PERFMON)
+  message(STATUS "Enabling LIKWID performance monitoring")
+  add_compile_definitions(LIKWID_PERFMON)
+  add_compile_options(-fopenmp -fPIC -O3 -g3)
+  add_link_options(-fopenmp -fPIC -O3 -g3)
 endif()
 
 # Coverage reporting
