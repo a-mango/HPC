@@ -2,7 +2,7 @@
 
 set -e
 
-SCRIPT_DIR=$(dirname "$(realpath $0)")
+SCRIPT_DIR="$(dirname "$(realpath $0)")/../code"
 BASE_DIR=$SCRIPT_DIR/build/src/lib/CMakeFiles
 GOE_DIR=$BASE_DIR/dtmf_encdec_lib-goertzel.dir
 FFT_DIR=$BASE_DIR/dtmf_encdec_lib-fft.dir
