@@ -13,6 +13,7 @@
 #include <string.h>
 
 #include "dtmf.h"
+#include "dtmf_error.h"
 #include "dtmf_utils.h"
 
 
