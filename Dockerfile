@@ -9,6 +9,7 @@ RUN apt-get update && \
     apt-get install -y \
       gcc-13 g++-13 \
       curl \
+      zip \
       build-essential \
       git \
       cmake \
