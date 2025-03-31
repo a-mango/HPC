@@ -29,22 +29,22 @@ CMD_OPS="-C 1 -g MEM_DP -m $BIN_DIR/dtmf_encdec-fft encode input.txt output.wav"
 CMD="$CMD_NAME $CMD_OPS"
 $CMD
 
-echo -e "\n===== ENCODE GOERTZEL ====="
+echo -e "\n===== ENCODE FFT MAXPERF ====="
 CMD_OPS="-C 1 -g FLOPS_DP -m $BIN_DIR/dtmf_encdec-fft decode output.wav" >"$(date +'%Y-%m-%dT%H:%M:%S%z')_maxperf_decode-fft.log"
 CMD="$CMD_NAME $CMD_OPS"
 $CMD
 
-echo -e "\n===== DECODE MAXBAND ====="
+echo -e "\n===== DECODE FFT MAXBAND ====="
 CMD_OPS="-C 1 -g MEM_DP -m $BIN_DIR/dtmf_encdec-fft decode output.wav" >"$(date +'%Y-%m-%dT%H:%M:%S%z')_maxband_decode-fft.log"
 CMD="$CMD_NAME $CMD_OPS"
 $CMD
 
-echo -e "\n===== DECODE GOERTZEL ====="
+echo -e "\n===== DECODE GOERTZEL MAXPERF ====="
 CMD_OPS="-C 1 -g FLOPS_DP -m $BIN_DIR/dtmf_encdec-goertzel decode output.wav" >"$(date +'%Y-%m-%dT%H:%M:%S%z')_maxperf_decode-goertzel.log"
 CMD="$CMD_NAME $CMD_OPS"
 $CMD
 
-echo -e "\n===== DECODE MAXBAND ====="
+echo -e "\n===== DECODE GOERTZEL MAXBAND ====="
 CMD_OPS="-C 1 -g MEM_DP -m $BIN_DIR/dtmf_encdec-goertzel decode output.wav" >"$(date +'%Y-%m-%dT%H:%M:%S%z')_maxband_decode-goertzel.log"
 CMD="$CMD_NAME $CMD_OPS"
 $CMD
