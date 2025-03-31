@@ -46,6 +46,8 @@ if(ENABLE_PERFMON)
 
   include_directories(/usr/local/include)
 
+  add_compile_definitions(LIKWID_PERFMON)
+
   set_target_properties(${FFT_TARGET} PROPERTIES COMPILE_OPTIONS "")
   target_compile_definitions(${FFT_TARGET} PRIVATE LIKWID_PERFMON)
   target_compile_options(${FFT_TARGET} PRIVATE -O3 -g3 -w)
