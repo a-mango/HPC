@@ -18,6 +18,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
+          lfs: true
 
       - name: Configure CMake
         run: "cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTS=ON -DENABLE_SAN=ON -DENABLE_COV=ON"
