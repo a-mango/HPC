@@ -25,7 +25,7 @@
 #define PREPROCESS_THRESHOLD_FACTOR 1.1
 
 static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtmf_float_t sample_rate) {
-    LIKWID_MARKER_START("decode-fft-detect");
+    LIKWID_MARKER_START("decode-fft-detect-fft");
     assert(samples != NULL);
     assert(num_samples > 0 && num_samples <= FFT_SIZE);
 
@@ -80,11 +80,11 @@ static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtm
     fftw_free(out);
 
     if (max_magnitude < FFT_NOISE_THRESHOLD) {
-        LIKWID_MARKER_STOP("decode-fft-detect");
+        LIKWID_MARKER_STOP("decode-fft-detect-fft");
         return -1;
     }
 
-    LIKWID_MARKER_STOP("decode-fft-detect");
+    LIKWID_MARKER_STOP("decode-fft-detect-fft");
 
     return detected_key;
 }

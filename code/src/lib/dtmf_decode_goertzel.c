@@ -22,6 +22,8 @@
 #define PREPROCESS_THRESHOLD_FACTOR 1.1
 
 static dtmf_float_t goertzel_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtmf_float_t target_freq, dtmf_float_t sample_rate) {
+    LIKWID_MARKER_START("decode-goe-detect-goe");
+
     int          k      = (int)(0.5 + (((dtmf_float_t)num_samples * target_freq) / sample_rate));
     dtmf_float_t omega  = (M_2_PI * k) / (dtmf_float_t)num_samples;
     dtmf_float_t sine   = sin(omega);
@@ -50,10 +52,14 @@ static dtmf_float_t goertzel_detect(dtmf_float_t const *samples, dtmf_count_t nu
     dtmf_float_t imag      = (q2 * sine);
     dtmf_float_t magnitude = sqrt(real * real + imag * imag);
 
+    LIKWID_MARKER_STOP("decode-goe-detect-goe");
+
     return magnitude;
 }
 
 static void process_window(dtmf_float_t *dtmf_buffer, dtmf_count_t window_index, dtmf_count_t window_size, dtmf_float_t *max_magnitude, int *detected_key) {
+    LIKWID_MARKER_START("decode-goe-process-window");
+
     *max_magnitude = 0;
     *detected_key  = -1;
 
@@ -71,9 +77,13 @@ static void process_window(dtmf_float_t *dtmf_buffer, dtmf_count_t window_index,
     if (*max_magnitude < GOE_NOISE_THRESHOLD) {
         *detected_key = -1;
     }
+
+    LIKWID_MARKER_STOP("decode-goe-process-window");
 }
 
 static void handle_detected_key(int detected_key, int *last_detected_key, dtmf_count_t *chunks_seen, dtmf_count_t *repetitions, dtmf_count_t *pause_repetitions, dtmf_count_t *message_length, char **out_message, dtmf_count_t debounce_window, dtmf_count_t *key_cooldown) {
+    LIKWID_MARKER_START("decode-goe-handle-key");
+
     if (detected_key != -1) {
         if (*last_detected_key == -1) {
             *last_detected_key = detected_key;
@@ -110,10 +120,12 @@ static void handle_detected_key(int detected_key, int *last_detected_key, dtmf_c
     if (*key_cooldown > 0) {
         (*key_cooldown)--;
     }
+
+    LIKWID_MARKER_STOP("decode-goe-handle-key");
 }
 
 bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char **out_message, dtmf_count_t *out_chars_read) {
-    LIKWID_MARKER_START("dtmf-decode-goertzel");
+    LIKWID_MARKER_START("decode-goe");
 
     assert(dtmf_buffer != NULL);
     assert(out_message != NULL);
@@ -128,6 +140,7 @@ bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char
     *out_message                    = (char *)calloc(max_message_length, sizeof(char));
     if (!*out_message) {
         fprintf(stderr, "Error: Could not allocate memory for output message\n");
+        LIKWID_MARKER_STOP("decode-goe");
         return 0;
     }
 
@@ -138,18 +151,20 @@ bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char
     dtmf_count_t       key_cooldown      = 0;
     dtmf_count_t const debounce_window   = DTMF_TONE_NUM_SAMPLES / stride_size;
 
+    LIKWID_MARKER_START("decode-goe-preprocess");
     _dtmf_preprocess_buffer(dtmf_buffer, frame_count, PREPROCESS_THRESHOLD_FACTOR);
+    LIKWID_MARKER_STOP("decode-goe-preprocess");
 
+    LIKWID_MARKER_START("decode-goe-mainloop");
     for (dtmf_count_t i = 0; i + window_size <= frame_count; i += stride_size) {
         dtmf_float_t max_magnitude;
         int          detected_key;
 
         process_window(dtmf_buffer, i, window_size, &max_magnitude, &detected_key);
-
-        debug_printf("Window at %lu detected key %d (mag=%.2f)", i, detected_key, max_magnitude);
-
         handle_detected_key(detected_key, &last_detected_key, &chunks_seen, &repetitions, &pause_repetitions, &message_length, out_message, debounce_window, &key_cooldown);
+        debug_printf("Window at %lu detected key %d (mag=%.2f)", i, detected_key, max_magnitude);
     }
+    LIKWID_MARKER_STOP("decode-goe-mainloop");
 
     if (last_detected_key != -1 && (chunks_seen >= 3 || repetitions > 0)) {
         repetitions += (chunks_seen >= 3) ? 1 : 0;
@@ -159,7 +174,7 @@ bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char
 
     *out_chars_read = message_length;
 
-    LIKWID_MARKER_STOP("dtmf-decode-goertzel");
+    LIKWID_MARKER_STOP("decode-goe");
 
     DTMF_SUCCEED();
 }
