@@ -7,7 +7,6 @@
 
 #include <assert.h>
 #include <fftw3.h>
-#include <likwid-marker.h>
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,6 +25,8 @@
 #define PREPROCESS_THRESHOLD_FACTOR 1.1
 
 static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtmf_float_t sample_rate) {
+    LIKWID_MARKER_START("fft-detect");
+
     fftw_complex *in, *out;
     fftw_plan     p;
     int           detected_key  = -1;
@@ -75,6 +76,8 @@ static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtm
     if (max_magnitude < FFT_NOISE_THRESHOLD) {
         return -1;
     }
+
+    LIKWID_MARKER_STOP("fft-detect");
 
     return detected_key;
 }
