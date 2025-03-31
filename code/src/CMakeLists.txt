@@ -35,3 +35,25 @@ add_executable(${FFT_TARGET} ${SOURCE_FILES})
 target_include_directories(${FFT_TARGET} PRIVATE ${COMMON_INCLUDE_DIRS})
 target_link_libraries(${FFT_TARGET} PRIVATE ${COMMON_LINK_LIBS} ${LIB_NAME}-fft fftw3 ${SNDFILE_LIBRARY})
 enable_asan(${FFT_TARGET})
+
+# Performance monitoring
+if(ENABLE_PERFMON)
+  find_library(LIKWID_LIB likwid PATHS /usr/local/lib)
+
+  if(NOT LIKWID_LIB)
+    message(FATAL_ERROR "LIKWID library not found")
+  endif()
+
+  include_directories(/usr/local/include)
+
+  target_compile_definitions(${FFT_TARGET} PRIVATE LIKWID_PERFMON)
+  target_compile_options(${FFT_TARGET} PRIVATE -fopenmp -O3 -g3)
+  target_link_options(${FFT_TARGET} PRIVATE -O3 -g3)
+  target_link_libraries(${FFT_TARGET} PRIVATE ${LIKWID_LIB})
+
+  target_compile_definitions(${GOERTZEL_TARGET} PRIVATE LIKWID_PERFMON)
+  target_compile_options(${GOERTZEL_TARGET} PRIVATE -O3 -g3)
+  target_link_options(${GOERTZEL_TARGET} PRIVATE -O3 -g3)
+  target_link_libraries(${GOERTZEL_TARGET} PRIVATE ${LIKWID_LIB})
+endif()
+

@@ -75,14 +75,6 @@ elseif(CMAKE_BUILD_TYPE MATCHES Release)
   add_compile_options(-O3 -Werror)
 endif()
 
-# Performance monitoring
-if(ENABLE_PERFMON)
-  message(STATUS "Enabling LIKWID performance monitoring")
-  add_compile_definitions(LIKWID_PERFMON)
-  add_compile_options(-fopenmp -fPIC -O3 -g3)
-  add_link_options(-fopenmp -fPIC -O3 -g3)
-endif()
-
 # Coverage reporting
 if(ENABLE_COV)
   message(STATUS "Enabling coverage reporting")
