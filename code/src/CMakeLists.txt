@@ -46,11 +46,13 @@ if(ENABLE_PERFMON)
 
   include_directories(/usr/local/include)
 
+  set_target_properties(${FFT_TARGET} PROPERTIES COMPILE_OPTIONS "")
   target_compile_definitions(${FFT_TARGET} PRIVATE LIKWID_PERFMON)
   target_compile_options(${FFT_TARGET} PRIVATE -O3 -g3 -w)
   target_link_options(${FFT_TARGET} PRIVATE -O3 -g3 -w)
   target_link_libraries(${FFT_TARGET} PRIVATE ${LIKWID_LIB})
 
+  set_target_properties(${GOERTZEL_TARGET} PROPERTIES COMPILE_OPTIONS "")
   target_compile_definitions(${GOERTZEL_TARGET} PRIVATE LIKWID_PERFMON)
   target_compile_options(${GOERTZEL_TARGET} PRIVATE -O3 -g3 -w)
   target_link_options(${GOERTZEL_TARGET} PRIVATE -O3 -g3 -w)
