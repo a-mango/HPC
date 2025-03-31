@@ -20,9 +20,7 @@ jobs:
           submodules: recursive
 
       - name: Configure CMake
-        run:
-          "cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTS=ON
-          -DENABLE_SAN=ON -DENABLE_COV=ON"
+        run: "cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTS=ON -DENABLE_SAN=ON -DENABLE_COV=ON"
         working-directory: code
 
       - name: Build
@@ -44,12 +42,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            code/test/params_decode.tsv
-            code/test/params_encode.tsv
-            code/test/samples
-          sparse-checkout-cone-mode: false
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -60,16 +52,25 @@ jobs:
       - name: Make build artifacts executable
         run: chmod +x bin/*
 
-      - name: Relocate test samples directory
-        run: mv code/test/samples samples
+      - name: Extract test samples
+        run: unzip code/test/samples.zip -d samples
 
       - name: List files
         run: ls -la bin samples .
 
       - name: Run tests
-        run: ./bin/dtmf_encdec_test
+        run: ./bin/dtmf_encdec_test --gtest_output=xml:gtest_results.xml
         env:
           DTMF_TEST_BINARY_PATH: bin/dtmf_encdec
           DTMF_TEST_SAMPLES_DIR: samples
           DTMF_TEST_PARAMS_DECODE_TSV: code/test/params_decode.tsv
           DTMF_TEST_PARAMS_ENCODE_TSV: code/test/params_encode.tsv
+
+      - name: Generate HTML test report
+        run: xsltproc scripts/gtest_report.xslt gtest_results.xml > gtest_report.html
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: gtest_report
+          path: "gtest_report.html"
