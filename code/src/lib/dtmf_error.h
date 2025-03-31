@@ -23,8 +23,18 @@ typedef enum {
 #define DTMF_SUCCEED() return DTMF_SUCCESS
 #define DTMF_FAIL() return DTMF_FAILURE
 
-#define DTMF_EXIT_SUCCESS() exit(EXIT_SUCCESS)
-#define DTMF_EXIT_FAILURE() exit(EXIT_FAILURE)
+#define DTMF_EXIT_SUCCESS()  \
+    do {                     \
+        LIKWID_MARKER_CLOSE; \
+        exit(EXIT_SUCCESS);  \
+    } while (0)
+
+#define DTMF_EXIT_FAILURE()  \
+    do {                     \
+        LIKWID_MARKER_CLOSE; \
+        exit(EXIT_FAILURE);  \
+    } while (0)
+
 
 #ifdef DEBUG
 #define DTMF_TRACE(fmt, ...) fprintf(stderr, "Trace: " fmt "\n"__VA_OPT__(, )__VA_ARGS__)

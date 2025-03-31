@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
             fprintf(stderr, "Error: Could not write to file %s\n", arguments.output);
             free(buffer);
             free(dtmf_buffer);
-            return EXIT_FAILURE;
+            DTMF_EXIT_FAILURE();
         }
 
         free(buffer);
@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
 
         if (!utils_read_wav_file(arguments.input, &dtmf_buffer, &sf_info)) {
             fprintf(stderr, "Error: Could not read file %s\n", arguments.input);
-            return EXIT_FAILURE;
+            DTMF_EXIT_FAILURE();
         }
 
         char        *message    = NULL;
@@ -73,10 +73,10 @@ int main(int argc, char *argv[]) {
         }
     } else {
         fprintf(stderr, "Unknown command: %s\n", arguments.command);
-        return EXIT_FAILURE;
+        DTMF_EXIT_FAILURE();
     }
 
     LIKWID_MARKER_CLOSE;
 
-    return 0;
+    return EXIT_SUCCESS;
 }
