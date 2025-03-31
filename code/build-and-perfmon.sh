@@ -35,11 +35,11 @@ CMD_OPS="-C 1 -g MEM_DP -m $BIN_DIR/dtmf_encdec-fft decode output.wav" >"$(date 
 CMD="$CMD_NAME $CMD_OPS"
 $CMD
 
-CMD_OPS="-C 1 -g FLOPS_DP -m $BIN_DIR/dtmf_encdec-goerzel decode output.wav" >"$(date +'%Y-%m-%dT%H:%M:%S%z')_maxperf_decode-goerzel.log"
+CMD_OPS="-C 1 -g FLOPS_DP -m $BIN_DIR/dtmf_encdec-goertzel decode output.wav" >"$(date +'%Y-%m-%dT%H:%M:%S%z')_maxperf_decode-goertzel.log"
 CMD="$CMD_NAME $CMD_OPS"
 $CMD
 
-CMD_OPS="-C 1 -g MEM_DP -m $BIN_DIR/dtmf_encdec-goerzel decode output.wav" >"$(date +'%Y-%m-%dT%H:%M:%S%z')_maxband_decode-goerzel.log"
+CMD_OPS="-C 1 -g MEM_DP -m $BIN_DIR/dtmf_encdec-goertzel decode output.wav" >"$(date +'%Y-%m-%dT%H:%M:%S%z')_maxband_decode-goertzel.log"
 CMD="$CMD_NAME $CMD_OPS"
 $CMD
 
