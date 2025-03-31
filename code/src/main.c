@@ -17,6 +17,8 @@
  * Program entry point.
  */
 int main(int argc, char *argv[]) {
+    LIKWID_MARKER_INIT;
+
     struct arguments arguments;
     parse_arguments(argc, argv, &arguments);
 
@@ -73,6 +75,8 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "Unknown command: %s\n", arguments.command);
         return EXIT_FAILURE;
     }
+
+    LIKWID_MARKER_CLOSE;
 
     return 0;
 }

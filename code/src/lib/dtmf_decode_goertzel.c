@@ -112,6 +112,8 @@ static void handle_detected_key(int detected_key, int *last_detected_key, dtmf_c
 }
 
 bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char **out_message, dtmf_count_t *out_chars_read) {
+    LIKWID_MARKER_START("dtmf-decode-goertzel");
+
     assert(dtmf_buffer != NULL);
     assert(out_message != NULL);
     assert(out_chars_read != NULL);
@@ -155,6 +157,8 @@ bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char
     }
 
     *out_chars_read = message_length;
+
+    LIKWID_MARKER_STOP("dtmf-decode-goertzel");
 
     DTMF_SUCCEED();
 }

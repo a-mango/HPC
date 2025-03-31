@@ -13,6 +13,7 @@
 #include "dtmf.h"
 #include "dtmf_common.h"
 #include "dtmf_error.h"
+#include "dtmf_utils.h"
 
 #define IS_DTMF_SYMBOL(symbol) (isalnum(symbol) || isdigit(symbol) || symbol == '!' || symbol == '?' || symbol == '.' || symbol == ',' || symbol == ' ' || symbol == '#' || symbol == '*')
 
@@ -140,6 +141,8 @@ static bool _dtmf_encode_message(char const *message, dtmf_float_t *dtmf_buffer)
 
 // Encodes a message into a DTMF signal.
 bool dtmf_encode(char const *message, dtmf_float_t **dtmf_buffer, dtmf_count_t *out_samples_count) {
+    LIKWID_MARKER_START("dtmf-encode")
+
     assert(message != NULL);
     assert(dtmf_buffer != NULL);
     assert(out_samples_count != NULL);
@@ -180,6 +183,8 @@ bool dtmf_encode(char const *message, dtmf_float_t **dtmf_buffer, dtmf_count_t *
     DTMF_DEBUG("Successfully encoded message of length %lums to DTMF signal", duration_ms);
 
     *out_samples_count = num_samples;
+
+    LIKWID_MARKER_STOP("dtmf-encode")
 
     DTMF_SUCCEED();
 }
