@@ -8,6 +8,7 @@
 #include "dtmf_common.h"
 
 #include <assert.h>
+#include <dtmf_utils.h>
 #include <stdlib.h>
 #include <string.h>
 
