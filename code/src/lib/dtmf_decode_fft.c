@@ -79,7 +79,7 @@ static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtm
 }
 
 bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char **out_message, dtmf_count_t *out_chars_read) {
-    LIKWID_MARKER_START("dtmf-decode-fft");
+    LIKWID_MARKER_START("dtmf-decode");
 
     assert(dtmf_buffer != NULL);
 
@@ -161,7 +161,7 @@ bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char
 
     *out_chars_read = message_length;
 
-    LIKWID_MARKER_STOP("dtmf-decode-fft");
+    LIKWID_MARKER_STOP("dtmf-decode");
 
     DTMF_SUCCEED();
 }
