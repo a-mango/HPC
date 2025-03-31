@@ -21,17 +21,19 @@ if(NOT FFTW3_INCLUDE_DIR OR NOT FFTW3_LIBRARY)
 endif()
 
 # Filter source files for Goertzel implementation
-list(FILTER SOURCE_FILES EXCLUDE REGEX ".*dtmf_decode_fft.c$")
+set(SOURCE_FILES_GOERTZEL ${SOURCE_FILES})
+list(FILTER SOURCE_FILES_GOERTZEL EXCLUDE REGEX ".*dtmf_decode_fft.c$")
 set(GOERTZEL_TARGET ${CMAKE_PROJECT_NAME}-goertzel)
-add_executable(${GOERTZEL_TARGET} ${SOURCE_FILES})
+add_executable(${GOERTZEL_TARGET} ${SOURCE_FILES_GOERTZEL})
 target_include_directories(${GOERTZEL_TARGET} PRIVATE ${COMMON_INCLUDE_DIRS})
 target_link_libraries(${GOERTZEL_TARGET} PRIVATE ${COMMON_LINK_LIBS} ${LIB_NAME}-goertzel ${SNDFILE_LIBRARY})
 enable_asan(${GOERTZEL_TARGET})
 
 # Filter source files for FFT implementation
-list(FILTER SOURCE_FILES EXCLUDE REGEX ".*dtmf_decode_goertzel.c$")
+set(SOURCE_FILES_FFT ${SOURCE_FILES})
+list(FILTER SOURCE_FILES_FFT EXCLUDE REGEX ".*dtmf_decode_goertzel.c$")
 set(FFT_TARGET ${CMAKE_PROJECT_NAME}-fft)
-add_executable(${FFT_TARGET} ${SOURCE_FILES})
+add_executable(${FFT_TARGET} ${SOURCE_FILES_FFT})
 target_include_directories(${FFT_TARGET} PRIVATE ${COMMON_INCLUDE_DIRS})
 target_link_libraries(${FFT_TARGET} PRIVATE ${COMMON_LINK_LIBS} ${LIB_NAME}-fft ${FFTW3_LIBRARY} ${SNDFILE_LIBRARY})
 enable_asan(${FFT_TARGET})
