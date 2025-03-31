@@ -141,7 +141,7 @@ static bool _dtmf_encode_message(char const *message, dtmf_float_t *dtmf_buffer)
 
 // Encodes a message into a DTMF signal.
 bool dtmf_encode(char const *message, dtmf_float_t **dtmf_buffer, dtmf_count_t *out_samples_count) {
-    LIKWID_MARKER_START("dtmf-encode")
+    LIKWID_MARKER_START("dtmf-encode");
 
     assert(message != NULL);
     assert(dtmf_buffer != NULL);
@@ -184,7 +184,7 @@ bool dtmf_encode(char const *message, dtmf_float_t **dtmf_buffer, dtmf_count_t *
 
     *out_samples_count = num_samples;
 
-    LIKWID_MARKER_STOP("dtmf-encode")
+    LIKWID_MARKER_STOP("dtmf-encode");
 
     DTMF_SUCCEED();
 }
