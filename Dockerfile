@@ -17,6 +17,7 @@ RUN apt-get update && \
       cmake \
       gcovr \
       ffmpeg \
+      likwid \
       libsndfile-dev libfftw3-dev && \
     update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 60 && \
     update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 60
