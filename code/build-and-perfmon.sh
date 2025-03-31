@@ -6,7 +6,7 @@ SCRIPT_DIR=$(dirname "$(realpath $0)")
 BUILD_DIR=$SCRIPT_DIR/build
 BIN_DIR=$SCRIPT_DIR/bin
 CMD_NAME=likwid-perfctr
-CMD_OPS="-C 0 -g FLOPS_DP -m $BIN_DIR/dtmf_encdec_test input.txt output.wav"
+CMD_OPS="-a $BIN_DIR/dtmf_encdec_test encode input.txt output.wav"
 CMD="$CMD_NAME $CMD_OPS"
 
 BUILD_MODE=Release
