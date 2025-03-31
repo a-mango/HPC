@@ -13,7 +13,6 @@
 #include "dtmf.h"
 #include "dtmf_common.h"
 #include "dtmf_error.h"
-#include "dtmf_utils.h"
 
 #define IS_DTMF_SYMBOL(symbol) (isalnum(symbol) || isdigit(symbol) || symbol == '!' || symbol == '?' || symbol == '.' || symbol == ',' || symbol == ' ' || symbol == '#' || symbol == '*')
 
