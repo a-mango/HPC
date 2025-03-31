@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
         char *buffer = NULL;
         if (!utils_read_text_file(arguments.input, &buffer)) {
             fprintf(stderr, "Error: Could not read file %s\n", arguments.input);
-            return EXIT_FAILURE;
+            DTMF_EXIT_FAILURE();
         }
 
         dtmf_float_t *dtmf_buffer = NULL;
