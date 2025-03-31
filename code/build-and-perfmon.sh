@@ -2,6 +2,8 @@
 
 set -e
 
+DATE_CMD='date +"%Y-%m-%dT%H:%M:%S%z"'
+
 SCRIPT_DIR=$(dirname "$(realpath $0)")
 BUILD_DIR=$SCRIPT_DIR/build
 BIN_DIR=$SCRIPT_DIR/bin
@@ -16,11 +18,28 @@ cmake --build $BUILD_DIR -- $MAKE_OPTS
 
 echo -n "1234567890 ABCDEFGHIJKLMNOPQRSTUVWXYZ .!?,#" >input.txt
 
-CMD_OPS="-C 1 -g FLOPS_DP -m $BIN_DIR/dtmf_encdec_test encode input.txt output.wav"
+# Run encode and both versions of decode
+CMD_OPS="-C 1 -g FLOPS_DP -m $BIN_DIR/dtmf_encdec-fft encode input.txt output.wav" >"$(date +'%Y-%m-%dT%H:%M:%S%z')_maxperf_encode.log"
 CMD="$CMD_NAME $CMD_OPS"
 $CMD
 
-CMD_OPS="-C 1 -g MEM_DP -m $BIN_DIR/dtmf_encdec_test input.txt output.wav"
+CMD_OPS="-C 1 -g MEM_DP -m $BIN_DIR/dtmf_encdec-fft encode input.txt output.wav" >"$(date +'%Y-%m-%dT%H:%M:%S%z')_maxband_encode.log"
+CMD="$CMD_NAME $CMD_OPS"
+$CMD
+
+CMD_OPS="-C 1 -g FLOPS_DP -m $BIN_DIR/dtmf_encdec-fft decode output.wav" >"$(date +'%Y-%m-%dT%H:%M:%S%z')_maxperf_decode-fft.log"
+CMD="$CMD_NAME $CMD_OPS"
+$CMD
+
+CMD_OPS="-C 1 -g MEM_DP -m $BIN_DIR/dtmf_encdec-fft decode output.wav" >"$(date +'%Y-%m-%dT%H:%M:%S%z')_maxband_decode-fft.log"
+CMD="$CMD_NAME $CMD_OPS"
+$CMD
+
+CMD_OPS="-C 1 -g FLOPS_DP -m $BIN_DIR/dtmf_encdec-goerzel decode output.wav" >"$(date +'%Y-%m-%dT%H:%M:%S%z')_maxperf_decode-goerzel.log"
+CMD="$CMD_NAME $CMD_OPS"
+$CMD
+
+CMD_OPS="-C 1 -g MEM_DP -m $BIN_DIR/dtmf_encdec-goerzel decode output.wav" >"$(date +'%Y-%m-%dT%H:%M:%S%z')_maxband_decode-goerzel.log"
 CMD="$CMD_NAME $CMD_OPS"
 $CMD
 
