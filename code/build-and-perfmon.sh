@@ -2,8 +2,6 @@
 
 set -e
 
-DATE_CMD='date +"%Y-%m-%dT%H:%M:%S%z"'
-
 SCRIPT_DIR=$(dirname "$(realpath $0)")
 BUILD_DIR=$SCRIPT_DIR/build
 BIN_DIR=$SCRIPT_DIR/bin
@@ -18,8 +16,9 @@ cmake --build $BUILD_DIR -- $MAKE_OPTS
 
 echo -n "1234567890 ABCDEFGHIJKLMNOPQRSTUVWXYZ .!?,#" >input.txt
 
-pushd "$SCRIPT_DIR/../log/perfmon"
-mkdir "$(date +'%Y-%m-%dT%H:%M:%S%z')"
+NOW=$(date +'%Y-%m-%dT%H:%M:%S%z')
+mkdir -p "$SCRIPT_DIR/../log/perfmon/$NOW"
+pushd "$SCRIPT_DIR/../log/perfmon/$NOW"
 
 # Run encode and both versions of decode
 echo -e "\n===== ENCODE MAXPERF ====="
