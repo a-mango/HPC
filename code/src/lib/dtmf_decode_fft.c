@@ -178,7 +178,7 @@ bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char
 
     *out_chars_read = message_length;
 
-    LIKWID_MARKER_STOP("dtmf-decode-fft");
+    LIKWID_MARKER_STOP("decode-fft");
 
     DTMF_SUCCEED();
 }
