@@ -21,35 +21,52 @@ mkdir -p "$SCRIPT_DIR/../log/perfmon/$NOW"
 pushd "$SCRIPT_DIR/../log/perfmon/$NOW"
 
 # Run encode and both versions of decode
-echo -e "\n===== ENCODE MAXPERF ====="
-CMD_OPS="-o maxperf_encode.json -C 2 -g FLOPS_DP -m $BIN_DIR/dtmf_encdec-fft encode $SCRIPT_DIR/input.txt $SCRIPT_DIR/output.wav"
+# echo -e "\n===== ENCODE MAXPERF ====="
+# CMD_OPS="-o maxperf_encode.json -C 2 -g HPC -m $BIN_DIR/dtmf_encdec-fft encode $SCRIPT_DIR/input.txt $SCRIPT_DIR/output.wav"
+# CMD="$CMD_NAME $CMD_OPS"
+# $CMD
+#
+# echo -e "\n===== ENCODE MAXBAND ====="
+# CMD_OPS="-o maxband_encode.json -C 2 -g MEM_DP -m $BIN_DIR/dtmf_encdec-fft encode $SCRIPT_DIR/input.txt $SCRIPT_DIR/output.wav"
+# CMD="$CMD_NAME $CMD_OPS"
+# $CMD
+#
+# echo -e "\n===== DECODE FFT MAXPERF ====="
+# CMD_OPS="-o maxperf_decode-fft.json -C 2 -g FLOPS_DP -m $BIN_DIR/dtmf_encdec-fft decode $SCRIPT_DIR/output.wav"
+# CMD="$CMD_NAME $CMD_OPS"
+# $CMD
+#
+# echo -e "\n===== DECODE FFT MAXBAND ====="
+# CMD_OPS="-o maxband_decode-fft.json -C 2 -g MEM_DP -m $BIN_DIR/dtmf_encdec-fft decode $SCRIPT_DIR/output.wav"
+# CMD="$CMD_NAME $CMD_OPS"
+# $CMD
+#
+# echo -e "\n===== DECODE GOERTZEL MAXPERF ====="
+# CMD_OPS="-o maxperf_decode-goertzel.json -C 2 -g FLOPS_DP -m $BIN_DIR/dtmf_encdec-goertzel decode $SCRIPT_DIR/output.wav"
+# CMD="$CMD_NAME $CMD_OPS"
+# $CMD
+#
+# echo -e "\n===== DECODE GOERTZEL MAXBAND ====="
+# CMD_OPS="-o maxband_decode-goertzel.json -C 2 -g MEM_DP -m $BIN_DIR/dtmf_encdec-goertzel decode $SCRIPT_DIR/output.wav"
+# CMD="$CMD_NAME $CMD_OPS"
+# $CMD
+
+echo "Running encode benchmark..."
+CMD_OPS="-o encode.json -C 2 -g HPC -m $BIN_DIR/dtmf_encdec-fft encode $SCRIPT_DIR/input.txt $SCRIPT_DIR/output.wav"
 CMD="$CMD_NAME $CMD_OPS"
 $CMD
 
-echo -e "\n===== ENCODE MAXBAND ====="
-CMD_OPS="-o maxband_encode.json -C 2 -g MEM_DP -m $BIN_DIR/dtmf_encdec-fft encode $SCRIPT_DIR/input.txt $SCRIPT_DIR/output.wav"
+echo "Running decode benchmark with FFT..."
+CMD_OPS="-o maxperf_decode-fft.json -C 2 -g HPC -m $BIN_DIR/dtmf_encdec-fft decode $SCRIPT_DIR/output.wav"
 CMD="$CMD_NAME $CMD_OPS"
 $CMD
 
-echo -e "\n===== DECODE FFT MAXPERF ====="
-CMD_OPS="-o maxperf_decode-fft.json -C 2 -g FLOPS_DP -m $BIN_DIR/dtmf_encdec-fft decode $SCRIPT_DIR/output.wav"
+echo "Running decode benchmark with Goertzel..."
+CMD_OPS="-o maxperf_decode-goertzel.json -C 2 -g HPC -m $BIN_DIR/dtmf_encdec-goertzel decode $SCRIPT_DIR/output.wav"
 CMD="$CMD_NAME $CMD_OPS"
 $CMD
 
-echo -e "\n===== DECODE FFT MAXBAND ====="
-CMD_OPS="-o maxband_decode-fft.json -C 2 -g MEM_DP -m $BIN_DIR/dtmf_encdec-fft decode $SCRIPT_DIR/output.wav"
-CMD="$CMD_NAME $CMD_OPS"
-$CMD
-
-echo -e "\n===== DECODE GOERTZEL MAXPERF ====="
-CMD_OPS="-o maxperf_decode-goertzel.json -C 2 -g FLOPS_DP -m $BIN_DIR/dtmf_encdec-goertzel decode $SCRIPT_DIR/output.wav"
-CMD="$CMD_NAME $CMD_OPS"
-$CMD
-
-echo -e "\n===== DECODE GOERTZEL MAXBAND ====="
-CMD_OPS="-o maxband_decode-goertzel.json -C 2 -g MEM_DP -m $BIN_DIR/dtmf_encdec-goertzel decode $SCRIPT_DIR/output.wav"
-CMD="$CMD_NAME $CMD_OPS"
-$CMD
+echo "Done! Reports saved in log/perfmon/$NOW"
 
 popd
 
