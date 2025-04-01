@@ -23,32 +23,32 @@ mkdir "$(date +'%Y-%m-%dT%H:%M:%S%z')"
 
 # Run encode and both versions of decode
 echo -e "\n===== ENCODE MAXPERF ====="
-CMD_OPS="-o maxperf_encode.json -C 2 -g FLOPS_DP -m $BIN_DIR/dtmf_encdec-fft encode input.txt output.wav"
+CMD_OPS="-o maxperf_encode.json -C 2 -g FLOPS_DP -m $BIN_DIR/dtmf_encdec-fft encode $SCRIPT_DIR/input.txt $SCRIPT_DIR/output.wav"
 CMD="$CMD_NAME $CMD_OPS"
 $CMD
 
 echo -e "\n===== ENCODE MAXBAND ====="
-CMD_OPS="-o maxband_encode.json -C 2 -g MEM_DP -m $BIN_DIR/dtmf_encdec-fft encode input.txt output.wav"
+CMD_OPS="-o maxband_encode.json -C 2 -g MEM_DP -m $BIN_DIR/dtmf_encdec-fft encode $SCRIPT_DIR/input.txt $SCRIPT_DIR/output.wav"
 CMD="$CMD_NAME $CMD_OPS"
 $CMD
 
 echo -e "\n===== DECODE FFT MAXPERF ====="
-CMD_OPS="-o maxperf_decode-fft.json -C 2 -g FLOPS_DP -m $BIN_DIR/dtmf_encdec-fft decode output.wav"
+CMD_OPS="-o maxperf_decode-fft.json -C 2 -g FLOPS_DP -m $BIN_DIR/dtmf_encdec-fft decode $SCRIPT_DIR/output.wav"
 CMD="$CMD_NAME $CMD_OPS"
 $CMD
 
 echo -e "\n===== DECODE FFT MAXBAND ====="
-CMD_OPS="-o maxband_decode-fft.json -C 2 -g MEM_DP -m $BIN_DIR/dtmf_encdec-fft decode output.wav"
+CMD_OPS="-o maxband_decode-fft.json -C 2 -g MEM_DP -m $BIN_DIR/dtmf_encdec-fft decode $SCRIPT_DIR/output.wav"
 CMD="$CMD_NAME $CMD_OPS"
 $CMD
 
 echo -e "\n===== DECODE GOERTZEL MAXPERF ====="
-CMD_OPS="-o maxperf_decode-goertzel.json -C 2 -g FLOPS_DP -m $BIN_DIR/dtmf_encdec-goertzel decode output.wav"
+CMD_OPS="-o maxperf_decode-goertzel.json -C 2 -g FLOPS_DP -m $BIN_DIR/dtmf_encdec-goertzel decode $SCRIPT_DIR/output.wav"
 CMD="$CMD_NAME $CMD_OPS"
 $CMD
 
 echo -e "\n===== DECODE GOERTZEL MAXBAND ====="
-CMD_OPS="-o maxband_decode-goertzel.json -C 2 -g MEM_DP -m $BIN_DIR/dtmf_encdec-goertzel decode output.wav"
+CMD_OPS="-o maxband_decode-goertzel.json -C 2 -g MEM_DP -m $BIN_DIR/dtmf_encdec-goertzel decode $SCRIPT_DIR/output.wav"
 CMD="$CMD_NAME $CMD_OPS"
 $CMD
 
