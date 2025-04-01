@@ -16,7 +16,7 @@ cmake --build $BUILD_DIR -- $MAKE_OPTS
 
 echo -n "1234567890 ABCDEFGHIJKLMNOPQRSTUVWXYZ .!?,#" >input.txt
 
-NOW=$(date +'%Y-%m-%dT%H:%M:%S%z')
+NOW=$(date +'%Y-%m-%dT%H:%M:%S')
 mkdir -p "$SCRIPT_DIR/../log/perfmon/$NOW"
 pushd "$SCRIPT_DIR/../log/perfmon/$NOW"
 
