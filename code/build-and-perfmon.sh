@@ -25,19 +25,19 @@ mkdir -p "$SCRIPT_DIR/../log/perfmon/$NOW"
 pushd "$SCRIPT_DIR/../log/perfmon/$NOW"
 
 echo "Running encode benchmark..."
-CMD_OPS="-o encode.json -C 2 -g MEM_DP -m $BIN_DIR/dtmf_encdec-fft encode $SCRIPT_DIR/input.txt $SCRIPT_DIR/output.wav"
+CMD_OPS="-o encode.json -C 2 -g MEM_DP -m $BIN_DIR/dtmf_encdec-fft encode $SCRIPT_DIR/input.txt $SCRIPT_DIR/output.wav 1>/dev/null"
 CMD="$CMD_NAME $CMD_OPS"
 $CMD
 pretty_print encode.json
 
 echo "Running decode benchmark with FFT..."
-CMD_OPS="-o decode-fft.json -C 2 -g MEM_DP -m $BIN_DIR/dtmf_encdec-fft decode $SCRIPT_DIR/output.wav"
+CMD_OPS="-o decode-fft.json -C 2 -g MEM_DP -m $BIN_DIR/dtmf_encdec-fft decode $SCRIPT_DIR/output.wav 1>/dev/null"
 CMD="$CMD_NAME $CMD_OPS"
 $CMD
 pretty_print decode-fft.json
 
 echo "Running decode benchmark with Goertzel..."
-CMD_OPS="-o decode-goe.json -C 2 -g MEM_DP -m $BIN_DIR/dtmf_encdec-goertzel decode $SCRIPT_DIR/output.wav"
+CMD_OPS="-o decode-goe.json -C 2 -g MEM_DP -m $BIN_DIR/dtmf_encdec-goertzel decode $SCRIPT_DIR/output.wav 1>/dev/null"
 CMD="$CMD_NAME $CMD_OPS"
 $CMD
 pretty_print decode-goe.json
