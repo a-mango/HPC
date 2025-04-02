@@ -11,7 +11,6 @@ SCRIPT_DIR=$(dirname "$(realpath $0)")
 BUILD_DIR=$SCRIPT_DIR/build
 BIN_DIR=$SCRIPT_DIR/bin
 TEST_NAME=dtmf_encdec_test
-TEST_OPS="--gtest_output=xml:gtest_results.xml"
 TEST_CMD="$BIN_DIR/$TEST_NAME $TEST_OPS"
 
 BUILD_MODE=${1:-Release}
