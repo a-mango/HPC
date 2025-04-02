@@ -18,7 +18,7 @@ MAKE_OPTS="-j8"
 cmake -S . -B "$BUILD_DIR" "$BUILD_OPTS"
 cmake --build "$BUILD_DIR" -- "$MAKE_OPTS"
 
-python3 -c 'print("ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789 *!?,." * 12, end="")' >input.txt
+python3 -c 'print("ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789 *!?,." * 30, end="")' >input.txt
 
 NOW=$(date +'%Y-%m-%dT%H:%M:%S')
 mkdir -p "$SCRIPT_DIR/../log/perfmon/$NOW"
