@@ -43,7 +43,7 @@ static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtm
     p   = fftw_plan_dft_1d(DTMF_FFT_SIZE, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
 
     // Hanning window
-    LIKWID_MARKER_STOP("decode-fft-hanning");
+    LIKWID_MARKER_START("decode-fft-hanning");
     for (int i = 0; i < DTMF_FFT_SIZE; i++) {
         dtmf_float_t window = 0.5 * (1 - cos(M_2_PI * i / (DTMF_FFT_SIZE - 1)));
         in[i][0]            = ((dtmf_count_t)i < num_samples) ? samples[i] * window : 0.0;
