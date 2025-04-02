@@ -28,7 +28,7 @@ static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtm
     assert(samples != NULL);
     assert(num_samples > 0 && num_samples <= FFT_SIZE);
 
-    LIKWID_MARKER_START("decode-fft-detect-fft");
+    LIKWID_MARKER_START("decode-fft-detect");
 
     fftw_complex *in, *out;
     fftw_plan     p;
@@ -81,11 +81,11 @@ static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtm
     fftw_free(out);
 
     if (max_magnitude < FFT_NOISE_THRESHOLD) {
-        LIKWID_MARKER_STOP("decode-fft-detect-fft");
+        LIKWID_MARKER_STOP("decode-fft-detect");
         return -1;
     }
 
-    LIKWID_MARKER_STOP("decode-fft-detect-fft");
+    LIKWID_MARKER_STOP("decode-fft-detect");
 
     return detected_key;
 }

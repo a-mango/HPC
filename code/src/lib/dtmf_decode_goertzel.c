@@ -22,7 +22,7 @@
 #define PREPROCESS_THRESHOLD_FACTOR 1.1
 
 static dtmf_float_t goertzel_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtmf_float_t target_freq, dtmf_float_t sample_rate) {
-    LIKWID_MARKER_START("decode-goe-detect-goe");
+    LIKWID_MARKER_START("decode-goe-detect");
 
     int          k      = (int)(0.5 + (((dtmf_float_t)num_samples * target_freq) / sample_rate));
     dtmf_float_t omega  = (M_2_PI * k) / (dtmf_float_t)num_samples;
@@ -52,7 +52,7 @@ static dtmf_float_t goertzel_detect(dtmf_float_t const *samples, dtmf_count_t nu
     dtmf_float_t imag      = (q2 * sine);
     dtmf_float_t magnitude = sqrt(real * real + imag * imag);
 
-    LIKWID_MARKER_STOP("decode-goe-detect-goe");
+    LIKWID_MARKER_STOP("decode-goe-detect");
 
     return magnitude;
 }
