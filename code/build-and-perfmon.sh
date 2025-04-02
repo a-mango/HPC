@@ -24,25 +24,25 @@ NOW=$(date +'%Y-%m-%dT%H:%M:%S')
 mkdir -p "$SCRIPT_DIR/../log/perfmon/$NOW"
 pushd "$SCRIPT_DIR/../log/perfmon/$NOW"
 
-echo "Running encode benchmark..."
+echo "==> Running encode benchmark..."
 CMD_OPS="-o encode.csv -C 2 -g MEM_DP -m $BIN_DIR/dtmf_encdec-fft encode $SCRIPT_DIR/input.txt $SCRIPT_DIR/output.wav"
 CMD="$CMD_NAME $CMD_OPS"
 $CMD
 pretty_print encode.csv
 
-echo "Running decode benchmark with FFT..."
+echo "==> Running decode benchmark with FFT..."
 CMD_OPS="-o decode-fft.csv -C 2 -g MEM_DP -m $BIN_DIR/dtmf_encdec-fft decode $SCRIPT_DIR/output.wav"
 CMD="$CMD_NAME $CMD_OPS"
 $CMD
 pretty_print decode-fft.csv
 
-echo "Running decode benchmark with Goertzel..."
+echo "==> Running decode benchmark with Goertzel..."
 CMD_OPS="-o decode-goe.csv -C 2 -g MEM_DP -m $BIN_DIR/dtmf_encdec-goertzel decode $SCRIPT_DIR/output.wav"
 CMD="$CMD_NAME $CMD_OPS"
 $CMD
 pretty_print decode-goe.csv
 
-echo "Done! Reports saved in log/perfmon/$NOW"
+echo "==> Done! Reports saved in log/perfmon/$NOW"
 
 popd
 
