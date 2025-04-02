@@ -3,7 +3,7 @@
 set -e
 
 pretty_print() {
-  jq -r '"FLOPS/s: \(.MEM_DP.MEM_DP.Metric["DP [MFLOP/s]"].Values[0])\nMemory BW: \(.MEM_DP.MEM_DP.Metric["Memory bandwidth [MBytes/s]"].Values[0]) MB/s\nOI: \(.MEM_DP.MEM_DP.Metric["Operational intensity [FLOP/Byte]"].Values[0]) FLOP/Byte"' "$1"
+  jq -r '"MFLOPS/s:\t \(.MEM_DP.MEM_DP.Metric["DP [MFLOP/s]"].Values[0])\nMBytes/s:\t \(.MEM_DP.MEM_DP.Metric["Memory bandwidth [MBytes/s]"].Values[0]) MB/s\nOI:\t\t \(.MEM_DP.MEM_DP.Metric["Operational intensity [FLOP/Byte]"].Values[0]) FLOP/Byte"' "$1"
 }
 
 SCRIPT_DIR=$(dirname "$(realpath $0)")
