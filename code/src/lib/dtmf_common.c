@@ -299,5 +299,5 @@ void _dtmf_preprocess_buffer(dtmf_float_t *buffer, dtmf_count_t frame_count, dtm
     _dtmf_apply_bandpass(buffer, frame_count);
     _dtmf_pre_emphasis(buffer, frame_count);
 
-    LIKWID_MARKER_START("decode-preprocess");
+    LIKWID_MARKER_STOP("decode-preprocess");
 }

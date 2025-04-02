@@ -77,7 +77,7 @@ static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtm
             detected_key  = key + 1;
         }
     }
-    LIKWID_MARKER_STOP("decode-magnitude");
+    LIKWID_MARKER_STOP("decode-fft-magnitude");
 
     fftw_destroy_plan(p);
     fftw_free(in);
