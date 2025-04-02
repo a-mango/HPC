@@ -107,11 +107,8 @@ bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char
     dtmf_count_t       key_cooldown      = 0;
     dtmf_count_t const debounce_window   = DTMF_TONE_NUM_SAMPLES / stride_size;
 
-    LIKWID_MARKER_START("decode-goe-preprocess");
     _dtmf_preprocess_buffer(dtmf_buffer, frame_count, DTMF_PREPROCESS_THRESHOLD_FACTOR);
-    LIKWID_MARKER_STOP("decode-goe-preprocess");
 
-    LIKWID_MARKER_START("decode-goe-mainloop");
     for (dtmf_count_t i = 0; i + window_size <= frame_count; i += stride_size) {
         dtmf_float_t max_magnitude;
         int          detected_key;
@@ -156,7 +153,6 @@ bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char
 
         debug_printf("Window at %lu detected key %d (mag=%.2f)", i, detected_key, max_magnitude);
     }
-    LIKWID_MARKER_STOP("decode-goe-mainloop");
 
     if (last_detected_key != -1 && (chunks_seen >= 3 || repetitions > 0)) {
         repetitions += (chunks_seen >= 3) ? 1 : 0;
