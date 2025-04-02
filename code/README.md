@@ -137,3 +137,9 @@ The `build-and-run.sh` script can be used to build the project and run an
 example encoding and decoding operation. The script will take input from the
 `bin/input.txt` file if present, otherwise it will generate one. The encoded
 output will be saved to `bin/output.wav`, and the decoded output on `stdout`.
+
+## Known bugs
+
+- There is a nasty heap-based buffer overflow in the
+  [FFT implementation](./src/lib/dtmf_decode_fft.c) of the detection that is
+  only picked up by _ASAN_ with the `glitchy` (as of now).
