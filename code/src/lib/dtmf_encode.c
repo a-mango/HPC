@@ -17,14 +17,16 @@
 
 #define IS_DTMF_SYMBOL(symbol) (isalnum(symbol) || isdigit(symbol) || symbol == '!' || symbol == '?' || symbol == '.' || symbol == ',' || symbol == ' ' || symbol == '#' || symbol == '*')
 
-static bool _dtmf_map_char(char const letter, DtmfMapping *out_mapped_char);
-static bool _dtmf_input_validate(char const *str);
-static bool _dtmf_input_normalize(char const *str, char **normalized_str);
-static bool _dtmf_calc_duration(char const *message, dtmf_count_t *out_count);
-static bool _dtmf_encode_message(char const *message, dtmf_float_t *dtmf_buffer);
+// Advanced declarations
+static bool map_char(char const letter, DtmfMapping *out_mapped_char);
+static bool input_validate(char const *str);
+static bool input_normalize(char const *str, char **normalized_str);
+static bool calc_duration(char const *message, dtmf_count_t *out_count);
+static bool encode_message(char const *message, dtmf_float_t *dtmf_buffer);
 
 
-static bool _dtmf_map_char(char const letter, DtmfMapping *out_mapped_char) {
+// Maps a character to its corresponding DTMF key and number of presses.
+static bool map_char(char const letter, DtmfMapping *out_mapped_char) {
     DTMF_DEBUG("Mapping letter %c to DTMF key", letter);
     assert(IS_DTMF_SYMBOL(letter));
     assert(out_mapped_char != NULL);
@@ -41,7 +43,8 @@ static bool _dtmf_map_char(char const letter, DtmfMapping *out_mapped_char) {
     DTMF_ERROR("invalid character in message: %c", letter);
 }
 
-static bool _dtmf_input_validate(char const *str) {
+// Validates the input string by checking if all characters are valid DTMF symbols.
+static bool input_validate(char const *str) {
     DTMF_DEBUG("Validating input\n");
     assert(str != NULL);
 
@@ -54,7 +57,8 @@ static bool _dtmf_input_validate(char const *str) {
     DTMF_SUCCEED();
 }
 
-static bool _dtmf_input_normalize(char const *str, char **out_normalized) {
+// Normalizes the input string by converting it to uppercase and allocating memory for the output.
+static bool input_normalize(char const *str, char **out_normalized) {
     DTMF_DEBUG("Normalizing input\n");
     assert(str != NULL);
     assert(out_normalized != NULL);
@@ -75,7 +79,8 @@ static bool _dtmf_input_normalize(char const *str, char **out_normalized) {
     DTMF_SUCCEED();
 }
 
-static bool _dtmf_calc_duration(char const *message, dtmf_count_t *out_count) {
+// Calculates the duration of a message in milliseconds.
+static bool calc_duration(char const *message, dtmf_count_t *out_count) {
     DTMF_DEBUG("Computing audio duration\n");
     assert(message != NULL);
     assert(out_count != NULL);
@@ -86,7 +91,7 @@ static bool _dtmf_calc_duration(char const *message, dtmf_count_t *out_count) {
     // Iterate over the chars of the message to compute it's duration.
     for (char const *c = message; *c != 0; c++) {
         DtmfMapping letter;
-        if (_dtmf_map_char(*c, &letter)) {
+        if (map_char(*c, &letter)) {
             DTMF_FAIL();
         }
         duration_total += letter.presses * DTMF_TONE_DURATION_MS;
@@ -110,7 +115,8 @@ static bool _dtmf_calc_duration(char const *message, dtmf_count_t *out_count) {
     DTMF_SUCCEED();
 }
 
-static bool _dtmf_encode_message(char const *message, dtmf_float_t *dtmf_buffer) {
+// Encodes a message into a DTMF signal by copying the tone samples from the global table.
+static bool encode_message(char const *message, dtmf_float_t *dtmf_buffer) {
     assert(message != NULL);
     assert(dtmf_buffer != NULL);
     DTMF_DEBUG("Processing message %s\n", message);
@@ -119,7 +125,7 @@ static bool _dtmf_encode_message(char const *message, dtmf_float_t *dtmf_buffer)
     for (char const *c = message; *c != '\0'; c++) {
         DtmfMapping mapping;
 
-        if (_dtmf_map_char(*c, &mapping)) {
+        if (map_char(*c, &mapping)) {
             DTMF_FAIL();
         }
 
@@ -139,7 +145,6 @@ static bool _dtmf_encode_message(char const *message, dtmf_float_t *dtmf_buffer)
     DTMF_SUCCEED();
 }
 
-// Encodes a message into a DTMF signal.
 bool dtmf_encode(char const *message, dtmf_float_t **dtmf_buffer, dtmf_count_t *out_samples_count) {
     assert(message != NULL);
     assert(dtmf_buffer != NULL);
@@ -150,19 +155,19 @@ bool dtmf_encode(char const *message, dtmf_float_t **dtmf_buffer, dtmf_count_t *
 
     _dtmf_init();
 
-    if (_dtmf_input_validate(message)) {
+    if (input_validate(message)) {
         LIKWID_MARKER_STOP("encode");
         DTMF_FAIL();
     }
 
     char *normalized_input = NULL;
-    if (_dtmf_input_normalize(message, &normalized_input)) {
+    if (input_normalize(message, &normalized_input)) {
         LIKWID_MARKER_STOP("encode");
         DTMF_FAIL();
     }
 
     dtmf_count_t duration_ms;
-    if (_dtmf_calc_duration(normalized_input, &duration_ms)) {
+    if (calc_duration(normalized_input, &duration_ms)) {
         LIKWID_MARKER_STOP("encode");
         DTMF_FAIL();
     }
@@ -180,7 +185,7 @@ bool dtmf_encode(char const *message, dtmf_float_t **dtmf_buffer, dtmf_count_t *
         DTMF_FATAL("could not allocate buffer for DTMF signal");
     }
 
-    _dtmf_encode_message(normalized_input, *dtmf_buffer);
+    encode_message(normalized_input, *dtmf_buffer);
 
     free(normalized_input);
 

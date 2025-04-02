@@ -17,16 +17,20 @@
 #include "dtmf_utils.h"
 
 
-#define FFT_SIZE 2048
-#define MIN_PAUSE_BEFORE_NEW_TONE 2
+#define DTMF_FFT_SIZE 2048
+#define DTMF_MIN_PAUSE_BEFORE_NEW_TONE 2
+#define DTMF_DETECT_KEY_INVALID -1
 
 // Magic numbers
-#define FFT_NOISE_THRESHOLD 70
-#define PREPROCESS_THRESHOLD_FACTOR 1.1
+#define DTMF_FFT_NOISE_THRESHOLD 70
+#define DTMF_PREPROCESS_THRESHOLD_FACTOR 1.1
+
+// Advanced declaration
+static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtmf_float_t sample_rate);
 
 static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtmf_float_t sample_rate) {
     assert(samples != NULL);
-    assert(num_samples > 0 && num_samples <= FFT_SIZE);
+    assert(num_samples > 0 && num_samples <= DTMF_FFT_SIZE);
 
 
     fftw_complex *in, *out;
@@ -34,13 +38,13 @@ static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtm
     int           detected_key  = -1;
     dtmf_float_t  max_magnitude = 0;
 
-    in  = (fftw_complex *)fftw_malloc(sizeof(fftw_complex) * FFT_SIZE);
-    out = (fftw_complex *)fftw_malloc(sizeof(fftw_complex) * FFT_SIZE);
-    p   = fftw_plan_dft_1d(FFT_SIZE, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
+    in  = (fftw_complex *)fftw_malloc(sizeof(fftw_complex) * DTMF_FFT_SIZE);
+    out = (fftw_complex *)fftw_malloc(sizeof(fftw_complex) * DTMF_FFT_SIZE);
+    p   = fftw_plan_dft_1d(DTMF_FFT_SIZE, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
 
     // Hanning window
-    for (int i = 0; i < FFT_SIZE; i++) {
-        dtmf_float_t window = 0.5 * (1 - cos(M_2_PI * i / (FFT_SIZE - 1)));
+    for (int i = 0; i < DTMF_FFT_SIZE; i++) {
+        dtmf_float_t window = 0.5 * (1 - cos(M_2_PI * i / (DTMF_FFT_SIZE - 1)));
         in[i][0]            = ((dtmf_count_t)i < num_samples) ? samples[i] * window : 0.0;
         in[i][1]            = 0.0;
     }
@@ -50,8 +54,8 @@ static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtm
     for (int key = 0; key < DTMF_NUM_TONES; key++) {
         dtmf_float_t low_freq   = DTMF_FREQUENCIES_MAP[key].low;
         dtmf_float_t high_freq  = DTMF_FREQUENCIES_MAP[key].high;
-        int          low_index  = (int)(low_freq * FFT_SIZE / sample_rate);
-        int          high_index = (int)(high_freq * FFT_SIZE / sample_rate);
+        int          low_index  = (int)(low_freq * DTMF_FFT_SIZE / sample_rate);
+        int          high_index = (int)(high_freq * DTMF_FFT_SIZE / sample_rate);
 
         dtmf_float_t magnitude = 0.0;
 
@@ -59,9 +63,9 @@ static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtm
             int li = low_index + delta;
             int hi = high_index + delta;
 
-            if (li >= 0 && li < FFT_SIZE)
+            if (li >= 0 && li < DTMF_FFT_SIZE)
                 magnitude += hypot(out[li][0], out[li][1]);
-            if (hi >= 0 && hi < FFT_SIZE)
+            if (hi >= 0 && hi < DTMF_FFT_SIZE)
                 magnitude += hypot(out[hi][0], out[hi][1]);
         }
 
@@ -75,8 +79,8 @@ static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtm
     fftw_free(in);
     fftw_free(out);
 
-    if (max_magnitude < FFT_NOISE_THRESHOLD) {
-        return -1;
+    if (max_magnitude < DTMF_FFT_NOISE_THRESHOLD) {
+        return DTMF_DETECT_KEY_INVALID;
     }
 
     return detected_key;
@@ -84,10 +88,14 @@ static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtm
 
 bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char **out_message, dtmf_count_t *out_chars_read) {
     assert(dtmf_buffer != NULL);
+    assert(frame_count > 0);
+    assert(out_message != NULL);
+    assert(out_chars_read != NULL);
+    DTMF_DEBUG("Decoding DTMF signal using FFT...", message);
 
     LIKWID_MARKER_START("decode-fft");
 
-    _dtmf_preprocess_buffer(dtmf_buffer, frame_count, PREPROCESS_THRESHOLD_FACTOR);
+    _dtmf_preprocess_buffer(dtmf_buffer, frame_count, DTMF_PREPROCESS_THRESHOLD_FACTOR);
 
     dtmf_count_t buffer_read_ptr = 0;
     dtmf_count_t chunk_size      = DTMF_TONE_REPEAT_NUM_SAMPLES;
@@ -109,8 +117,8 @@ bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char
     while (buffer_read_ptr < frame_count) {
         int detected_key = fft_detect(dtmf_buffer + buffer_read_ptr, chunk_size, DTMF_SAMPLE_RATE_HZ);
 
-        if (detected_key != -1) {
-            if (pause_repetitions < MIN_PAUSE_BEFORE_NEW_TONE && last_detected_key != -1 && detected_key != last_detected_key) {
+        if (detected_key != DTMF_DETECT_KEY_INVALID) {
+            if (pause_repetitions < DTMF_MIN_PAUSE_BEFORE_NEW_TONE && last_detected_key != -1 && detected_key != last_detected_key) {
                 // Reject fast switch between tones
                 detected_key = last_detected_key;
             }
@@ -169,5 +177,6 @@ bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char
 
     LIKWID_MARKER_STOP("decode-fft");
 
+    DTMF_DEBUG("Message successfully decoded.");
     DTMF_SUCCEED();
 }

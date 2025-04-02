@@ -63,13 +63,13 @@ int main(int argc, char *argv[]) {
 
         if (message != NULL) {
             printf("%s\n", message);
-            free(message);  // FIXME: use lib allocators
+            free(message);
         } else {
             fprintf(stderr, "Error: Decoding failed\n");
         }
 
         if (dtmf_buffer != NULL) {
-            free(dtmf_buffer);  // FIXME: use lib allocators
+            free(dtmf_buffer);
         }
     } else {
         fprintf(stderr, "Unknown command: %s\n", arguments.command);
