@@ -6,13 +6,14 @@
  */
 
 #include <assert.h>
+#include <likwid-marker.h>
 #include <math.h>
 #include <stdlib.h>
 
 #include "dtmf.h"
 #include "dtmf_common.h"
 #include "dtmf_error.h"
-#include "dtmf_utils.h"
+#include "dtmf_utils.h"  // likwid
 
 
 #define DTMF_GOE_MAX_SAMPLES 3800
@@ -44,6 +45,7 @@ static dtmf_float_t goertzel_detect(dtmf_float_t const *samples, dtmf_count_t nu
         window_initialized = 1;
     }
 
+    LIKWID_MARKER_START("decode-goe-magnitude");
     for (dtmf_count_t i = 0; i < num_samples; i++) {
         dtmf_float_t windowed_sample = samples[i] * window[i];
         q0                           = coeff * q1 - q2 + windowed_sample;
@@ -54,6 +56,7 @@ static dtmf_float_t goertzel_detect(dtmf_float_t const *samples, dtmf_count_t nu
     dtmf_float_t real      = (q1 - q2 * cosine);
     dtmf_float_t imag      = (q2 * sine);
     dtmf_float_t magnitude = sqrt(real * real + imag * imag);
+    LIKWID_MARKER_STOP("decode-goe-magnitude");
 
     return magnitude;
 }
@@ -109,6 +112,7 @@ bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char
 
     _dtmf_preprocess_buffer(dtmf_buffer, frame_count, DTMF_PREPROCESS_THRESHOLD_FACTOR);
 
+    LIKWID_MARKER_START("decode-goe-mainloop");
     for (dtmf_count_t i = 0; i + window_size <= frame_count; i += stride_size) {
         dtmf_float_t max_magnitude;
         int          detected_key;
@@ -153,6 +157,8 @@ bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char
 
         debug_printf("Window at %lu detected key %d (mag=%.2f)", i, detected_key, max_magnitude);
     }
+    LIKWID_MARKER_STOP("decode-goe-mainloop");
+
 
     if (last_detected_key != -1 && (chunks_seen >= 3 || repetitions > 0)) {
         repetitions += (chunks_seen >= 3) ? 1 : 0;

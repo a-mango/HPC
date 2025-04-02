@@ -94,12 +94,16 @@ static bool dtmf_tones_initialized = false;
 void _dtmf_gen_tone(DtmfFrequencyPair const frequencies, dtmf_float_t *buffer) {
     assert(buffer != NULL);
 
+    LIKWID_MARKER_START("encode-tone-gen");
+
     for (size_t n = 0; n < DTMF_TONE_NUM_SAMPLES; n++) {
         dtmf_float_t t = (dtmf_float_t)n / (dtmf_float_t)DTMF_SAMPLE_RATE_HZ;
 
         buffer[n] = (DTMF_AMPLITUDE) * (sin(2 * M_PI * frequencies.low * t) +
                                         sin(2 * M_PI * frequencies.high * t));
     }
+
+    LIKWID_MARKER_STOP("encode-tone-gen");
 }
 
 void _dtmf_init_tones_map() {
@@ -287,9 +291,13 @@ static void _dtmf_pre_emphasis(dtmf_float_t *buffer, dtmf_count_t const count) {
 }
 
 void _dtmf_preprocess_buffer(dtmf_float_t *buffer, dtmf_count_t frame_count, dtmf_float_t const threshold_factor) {
+    LIKWID_MARKER_START("decode-preprocess");
+
     dtmf_float_t const noise_threshold = _dtmf_calculate_noise_threshold(buffer, frame_count, threshold_factor);
     _dtmf_noise_reduction(buffer, frame_count, noise_threshold);
     _dtmf_normalize_signal(buffer, frame_count);
     _dtmf_apply_bandpass(buffer, frame_count);
     _dtmf_pre_emphasis(buffer, frame_count);
+
+    LIKWID_MARKER_START("decode-preprocess");
 }

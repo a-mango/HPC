@@ -7,9 +7,9 @@
 
 #include <assert.h>
 #include <fftw3.h>
+#include <likwid-marker.h>
 #include <math.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include "dtmf.h"
 #include "dtmf_common.h"
@@ -43,14 +43,17 @@ static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtm
     p   = fftw_plan_dft_1d(DTMF_FFT_SIZE, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
 
     // Hanning window
+    LIKWID_MARKER_STOP("decode-fft-hanning");
     for (int i = 0; i < DTMF_FFT_SIZE; i++) {
         dtmf_float_t window = 0.5 * (1 - cos(M_2_PI * i / (DTMF_FFT_SIZE - 1)));
         in[i][0]            = ((dtmf_count_t)i < num_samples) ? samples[i] * window : 0.0;
         in[i][1]            = 0.0;
     }
+    LIKWID_MARKER_STOP("decode-fft-hanning");
 
     fftw_execute(p);
 
+    LIKWID_MARKER_START("decode-fft-magnitude");
     for (int key = 0; key < DTMF_NUM_TONES; key++) {
         dtmf_float_t low_freq   = DTMF_FREQUENCIES_MAP[key].low;
         dtmf_float_t high_freq  = DTMF_FREQUENCIES_MAP[key].high;
@@ -74,6 +77,7 @@ static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtm
             detected_key  = key + 1;
         }
     }
+    LIKWID_MARKER_STOP("decode-magnitude");
 
     fftw_destroy_plan(p);
     fftw_free(in);
@@ -114,6 +118,7 @@ bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char
         return 0;
     }
 
+    LIKWID_MARKER_START("decode-fft-mainloop");
     while (buffer_read_ptr < frame_count) {
         int detected_key = fft_detect(dtmf_buffer + buffer_read_ptr, chunk_size, DTMF_SAMPLE_RATE_HZ);
 
@@ -171,6 +176,7 @@ bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char
 
         buffer_read_ptr += chunk_size;
     }
+    LIKWID_MARKER_STOP("decode-fft-mainloop");
 
 
     *out_chars_read = message_length;

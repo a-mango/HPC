@@ -8,7 +8,6 @@
 #ifndef DTMF_COMMON_H
 #define DTMF_COMMON_H
 
-#include <dtmf_utils.h>
 #include <stddef.h>
 
 #include "dtmf.h"
