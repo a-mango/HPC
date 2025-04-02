@@ -4,12 +4,14 @@
 
 The program relies on the following system dependencies:
 
-- A `GCC` version compatible with the `C23` standard
-- `cmake`
-- `libfftw3-dev`
+- A `GCC` version compatible with the `C23` standard (probably `gcc-13` or
+  later)
+- `cmake` >= `3.22`
 - `libsndfile`
-- Sanitizers (if desired): `libtsan`, `libtsan`, `liblsan`, `liblsan`
-- `ffmpeg` and `ffprobe` (for testing)
+- `libfftw3-dev`
+- `libtsan`, `libtsan`, `liblsan` and `liblsan` for sanitizing
+- `ffmpeg` and `ffprobe` for testing
+- `likwid` for performance profiling
 
 Additionally, you'll have to initialise the Git submodules:
 
@@ -122,10 +124,12 @@ To decode a message from `output.wav` and save it to `decoded.txt`, use:
 ```sh
 ./dtmf_encdec decode output.wav decoded.txt
 ```
+
 ## Profiling
 
 The program may be profiled using `gcov`. To do so, enable the `ENABLE_COV`
-option during build then run `../scripts/profile.sh` to generate HTML coverage reports.
+option during build then run `../scripts/profile.sh` to generate HTML coverage
+reports.
 
 ## Development
 
