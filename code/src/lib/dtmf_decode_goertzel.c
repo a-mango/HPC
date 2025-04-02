@@ -2,7 +2,7 @@
  * @file dtmf_decode_goertzel.c
  * @brief DTMF decoding functions implementation using Goertzel algorithm.
  * @author Aubry Mangold <aubry.mangold@heig-vd.ch>
- * @date 2025-03-11
+ * @date 2025-04-02
  */
 
 #include <assert.h>
@@ -125,12 +125,12 @@ static void handle_detected_key(int detected_key, int *last_detected_key, dtmf_c
 }
 
 bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char **out_message, dtmf_count_t *out_chars_read) {
-    LIKWID_MARKER_START("decode-goe");
-
     assert(dtmf_buffer != NULL);
     assert(out_message != NULL);
     assert(out_chars_read != NULL);
     assert(frame_count > 0);
+
+    LIKWID_MARKER_START("decode-goe");
 
     const dtmf_count_t window_size = DTMF_TONE_REPEAT_NUM_SAMPLES;
     const dtmf_count_t stride_size = DTMF_TONE_REPEAT_NUM_SAMPLES / 2;

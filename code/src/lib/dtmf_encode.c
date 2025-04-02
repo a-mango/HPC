@@ -2,7 +2,7 @@
  * @file dtmf_encode.c
  * @brief DTMF encoding functions implementation.
  * @author Aubry Mangold <aubry.mangold@heig-vd.ch>
- * @date 2025-03-11
+ * @date 2025-04-02
  */
 
 #include <assert.h>
@@ -13,7 +13,7 @@
 #include "dtmf.h"
 #include "dtmf_common.h"
 #include "dtmf_error.h"
-#include "dtmf_utils.h"
+#include "dtmf_utils.h"  // Likwid markers
 
 #define IS_DTMF_SYMBOL(symbol) (isalnum(symbol) || isdigit(symbol) || symbol == '!' || symbol == '?' || symbol == '.' || symbol == ',' || symbol == ' ' || symbol == '#' || symbol == '*')
 
@@ -82,11 +82,14 @@ static bool _dtmf_calc_duration(char const *message, dtmf_count_t *out_count) {
 
     DTMF_DEBUG("Letter\tKey\tPresses\n");
 
+    LIKWID_MARKER_START("encode-calc-length");
+
     dtmf_count_t duration_total = 0;
     // Iterate over the chars of the message to compute it's duration.
     for (char const *c = message; *c != 0; c++) {
         DtmfMapping letter;
         if (_dtmf_map_char(*c, &letter)) {
+            LIKWID_MARKER_STOP("encode-calc-length");
             DTMF_FAIL();
         }
         duration_total += letter.presses * DTMF_TONE_DURATION_MS;
@@ -101,10 +104,14 @@ static bool _dtmf_calc_duration(char const *message, dtmf_count_t *out_count) {
     }
 
     if (duration_total == 0) {
+        LIKWID_MARKER_STOP("encode-calc-length");
         DTMF_ERROR("could not calculate duration of message");
     }
 
     *out_count = duration_total;
+
+    LIKWID_MARKER_STOP("encode-calc-length");
+
     DTMF_DEBUG("Computed duration: %lums\n", duration_total);
     DTMF_SUCCEED();
 }
@@ -114,12 +121,14 @@ static bool _dtmf_encode_message(char const *message, dtmf_float_t *dtmf_buffer)
     assert(dtmf_buffer != NULL);
     DTMF_DEBUG("Processing message %s\n", message);
 
+    LIKWID_MARKER_START("encode-encode-msg");
 
     size_t buffer_write_ptr = 0;
     for (char const *c = message; *c != '\0'; c++) {
         DtmfMapping mapping;
 
         if (_dtmf_map_char(*c, &mapping)) {
+            LIKWID_MARKER_STOP("encode-encode-msg");
             DTMF_FAIL();
         }
 
@@ -136,31 +145,36 @@ static bool _dtmf_encode_message(char const *message, dtmf_float_t *dtmf_buffer)
         }
     }
 
+    LIKWID_MARKER_STOP("encode-encode-msg");
+
     DTMF_SUCCEED();
 }
 
 // Encodes a message into a DTMF signal.
 bool dtmf_encode(char const *message, dtmf_float_t **dtmf_buffer, dtmf_count_t *out_samples_count) {
-    LIKWID_MARKER_START("dtmf-encode");
-
     assert(message != NULL);
     assert(dtmf_buffer != NULL);
     assert(out_samples_count != NULL);
     DTMF_DEBUG("Encoding message %s to DTMF...", message);
 
+    LIKWID_MARKER_START("encode");
+
     _dtmf_init();
 
     if (_dtmf_input_validate(message)) {
+        LIKWID_MARKER_STOP("encode");
         DTMF_FAIL();
     }
 
     char *normalized_input = NULL;
     if (_dtmf_input_normalize(message, &normalized_input)) {
+        LIKWID_MARKER_STOP("encode");
         DTMF_FAIL();
     }
 
     dtmf_count_t duration_ms;
     if (_dtmf_calc_duration(normalized_input, &duration_ms)) {
+        LIKWID_MARKER_STOP("encode");
         DTMF_FAIL();
     }
 
@@ -173,6 +187,7 @@ bool dtmf_encode(char const *message, dtmf_float_t **dtmf_buffer, dtmf_count_t *
 
     if (_dtmf_allocate_buffer(dtmf_buffer, num_samples)) {
         _dtmf_free_buffer(*dtmf_buffer);
+        LIKWID_MARKER_STOP("encode");
         DTMF_FATAL("could not allocate buffer for DTMF signal");
     }
 
@@ -184,7 +199,7 @@ bool dtmf_encode(char const *message, dtmf_float_t **dtmf_buffer, dtmf_count_t *
 
     *out_samples_count = num_samples;
 
-    LIKWID_MARKER_STOP("dtmf-encode");
+    LIKWID_MARKER_STOP("encode");
 
     DTMF_SUCCEED();
 }

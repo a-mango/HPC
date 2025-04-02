@@ -55,6 +55,7 @@ typedef enum {
 
 #define DTMF_FATAL(fmt, ...)                                          \
     do {                                                              \
+        LIKWID_MARKER_CLOSE;                                          \
         fprintf(stderr, "Fatal: " fmt "\n"__VA_OPT__(, )__VA_ARGS__); \
         exit(EXIT_FAILURE);                                           \
     } while (0)

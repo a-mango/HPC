@@ -2,7 +2,7 @@
  * @file dtmf_decode_fft.c
  * @brief DTMF decoding functions implementation using FFT algorithm.
  * @author Aubry Mangold <aubry.mangold@heig-vd.ch>
- * @date 2025-03-11
+ * @date 2025-04-02
  */
 
 #include <assert.h>
@@ -25,9 +25,10 @@
 #define PREPROCESS_THRESHOLD_FACTOR 1.1
 
 static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtmf_float_t sample_rate) {
-    LIKWID_MARKER_START("decode-fft-detect-fft");
     assert(samples != NULL);
     assert(num_samples > 0 && num_samples <= FFT_SIZE);
+
+    LIKWID_MARKER_START("decode-fft-detect-fft");
 
     fftw_complex *in, *out;
     fftw_plan     p;
@@ -90,9 +91,9 @@ static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtm
 }
 
 bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char **out_message, dtmf_count_t *out_chars_read) {
-    LIKWID_MARKER_START("decode-fft");
-
     assert(dtmf_buffer != NULL);
+
+    LIKWID_MARKER_START("decode-fft");
 
     LIKWID_MARKER_START("decode-fft-preprocess");
     _dtmf_preprocess_buffer(dtmf_buffer, frame_count, PREPROCESS_THRESHOLD_FACTOR);
