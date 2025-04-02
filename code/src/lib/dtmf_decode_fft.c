@@ -28,7 +28,6 @@ static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtm
     assert(samples != NULL);
     assert(num_samples > 0 && num_samples <= FFT_SIZE);
 
-    LIKWID_MARKER_START("decode-fft-detect");
 
     fftw_complex *in, *out;
     fftw_plan     p;
@@ -40,17 +39,14 @@ static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtm
     p   = fftw_plan_dft_1d(FFT_SIZE, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
 
     // Hanning window
-    LIKWID_MARKER_START("decode-fft-hanning");
     for (int i = 0; i < FFT_SIZE; i++) {
         dtmf_float_t window = 0.5 * (1 - cos(M_2_PI * i / (FFT_SIZE - 1)));
         in[i][0]            = ((dtmf_count_t)i < num_samples) ? samples[i] * window : 0.0;
         in[i][1]            = 0.0;
     }
-    LIKWID_MARKER_STOP("decode-fft-hanning");
 
     fftw_execute(p);
 
-    LIKWID_MARKER_START("decode-fft-magnitude");
     for (int key = 0; key < DTMF_NUM_TONES; key++) {
         dtmf_float_t low_freq   = DTMF_FREQUENCIES_MAP[key].low;
         dtmf_float_t high_freq  = DTMF_FREQUENCIES_MAP[key].high;
@@ -74,18 +70,14 @@ static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtm
             detected_key  = key + 1;
         }
     }
-    LIKWID_MARKER_STOP("decode-fft-magnitude");
 
     fftw_destroy_plan(p);
     fftw_free(in);
     fftw_free(out);
 
     if (max_magnitude < FFT_NOISE_THRESHOLD) {
-        LIKWID_MARKER_STOP("decode-fft-detect");
         return -1;
     }
-
-    LIKWID_MARKER_STOP("decode-fft-detect");
 
     return detected_key;
 }
@@ -95,9 +87,7 @@ bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char
 
     LIKWID_MARKER_START("decode-fft");
 
-    LIKWID_MARKER_START("decode-fft-preprocess");
     _dtmf_preprocess_buffer(dtmf_buffer, frame_count, PREPROCESS_THRESHOLD_FACTOR);
-    LIKWID_MARKER_STOP("decode-fft-preprocess");
 
     dtmf_count_t buffer_read_ptr = 0;
     dtmf_count_t chunk_size      = DTMF_TONE_REPEAT_NUM_SAMPLES;
@@ -116,7 +106,6 @@ bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char
         return 0;
     }
 
-    LIKWID_MARKER_START("decode-fft-mainloop");
     while (buffer_read_ptr < frame_count) {
         int detected_key = fft_detect(dtmf_buffer + buffer_read_ptr, chunk_size, DTMF_SAMPLE_RATE_HZ);
 
@@ -174,7 +163,6 @@ bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char
 
         buffer_read_ptr += chunk_size;
     }
-    LIKWID_MARKER_STOP("decode-fft-mainloop");
 
 
     *out_chars_read = message_length;
