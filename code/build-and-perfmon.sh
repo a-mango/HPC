@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
 pretty_print() {
   jq -r '"MFLOPS/s:\t \(.MEM_DP.MEM_DP.Metric["DP [MFLOP/s]"].Values[0])\nMBytes/s:\t \(.MEM_DP.MEM_DP.Metric["Memory bandwidth [MBytes/s]"].Values[0]) MB/s\nOI:\t\t \(.MEM_DP.MEM_DP.Metric["Operational intensity [FLOP/Byte]"].Values[0]) FLOP/Byte"' "$1"
@@ -25,19 +25,19 @@ mkdir -p "$SCRIPT_DIR/../log/perfmon/$NOW"
 pushd "$SCRIPT_DIR/../log/perfmon/$NOW"
 
 echo "Running encode benchmark..."
-CMD_OPS="-o encode.json -C 2 -g MEM_DP -m $BIN_DIR/dtmf_encdec-fft encode $SCRIPT_DIR/input.txt $SCRIPT_DIR/output.wav >/dev/null"
+CMD_OPS="-o encode.json -C 2 -g MEM_DP -m $BIN_DIR/dtmf_encdec-fft encode $SCRIPT_DIR/input.txt $SCRIPT_DIR/output.wav"
 CMD="$CMD_NAME $CMD_OPS"
 $CMD
 pretty_print encode.json
 
 echo "Running decode benchmark with FFT..."
-CMD_OPS="-o decode-fft.json -C 2 -g MEM_DP -m $BIN_DIR/dtmf_encdec-fft decode $SCRIPT_DIR/output.wav >/dev/null"
+CMD_OPS="-o decode-fft.json -C 2 -g MEM_DP -m $BIN_DIR/dtmf_encdec-fft decode $SCRIPT_DIR/output.wav"
 CMD="$CMD_NAME $CMD_OPS"
 $CMD
 pretty_print decode-fft.json
 
 echo "Running decode benchmark with Goertzel..."
-CMD_OPS="-o decode-goe.json -C 2 -g MEM_DP -m $BIN_DIR/dtmf_encdec-goertzel decode $SCRIPT_DIR/output.wav >/dev/null"
+CMD_OPS="-o decode-goe.json -C 2 -g MEM_DP -m $BIN_DIR/dtmf_encdec-goertzel decode $SCRIPT_DIR/output.wav"
 CMD="$CMD_NAME $CMD_OPS"
 $CMD
 pretty_print decode-goe.json
