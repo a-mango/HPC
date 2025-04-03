@@ -72,7 +72,7 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
 elseif(CMAKE_BUILD_TYPE MATCHES Release)
   message(STATUS "Enabling release build")
   add_compile_definitions(NDEBUG)
-  add_compile_options(-Ofast -march=native -mtune=native -flto -funroll-loops -fstrict-aliasing -fomit-frame-pointer -ffast-math -funsafe-math-optimizations -fno-math-errno -fipa-pta -Werror)
+  add_compile_options(-Ofast -march=native -mtune=native -flto -ffast-math -funsafe-math-optimizations -fno-math-errno -fipa-pta -Werror)
 endif()
 
 # Coverage reporting
