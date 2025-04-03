@@ -26,9 +26,9 @@
 #define DTMF_PREPROCESS_THRESHOLD_FACTOR 1.1
 
 // Advanced declaration
-static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtmf_float_t sample_rate);
+inline static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtmf_float_t sample_rate);
 
-static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtmf_float_t sample_rate) {
+inline static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtmf_float_t sample_rate) {
     assert(samples != NULL);
     assert(num_samples > 0 && num_samples <= DTMF_FFT_SIZE);
 
