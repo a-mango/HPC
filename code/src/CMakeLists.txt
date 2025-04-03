@@ -1,4 +1,3 @@
-message("Enable perfmon is ${ENABLE_PERFMON}")
 add_subdirectory(lib)
 
 set(COMMON_INCLUDE_DIRS ${SNDFILE_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/vendor)
