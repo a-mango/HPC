@@ -1,0 +1,10 @@
+5568.76
+25732.69
+0.01 28.51 encode
+8.94 2035.57 gen-tone
+0.88 151.76 fft
+2.30 117.65 fft-mainloop
+2.23 2403.93 fft-hanning
+0.11 1099.19 fft-magnitude
+0.32 13.84 goertzel
+0.62 907.72 goe-magnitude
