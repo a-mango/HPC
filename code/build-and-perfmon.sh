@@ -15,8 +15,8 @@ BUILD_MODE=Release
 BUILD_OPTS="-DCMAKE_BUILD_TYPE=$BUILD_MODE -DENABLE_PERFMON=ON"
 MAKE_OPTS="-j8"
 
-cmake -S . -B "$BUILD_DIR" "$BUILD_OPTS"
-cmake --build "$BUILD_DIR" -- "$MAKE_OPTS"
+cmake -S . -B $BUILD_DIR $BUILD_OPTS
+cmake --build $BUILD_DIR -- $MAKE_OPTS
 
 python3 -c 'print("ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789 *!?,." * 30, end="")' >input.txt
 
