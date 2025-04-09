@@ -1,0 +1,35 @@
+name: Build Docker image
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "dtmf/Dockerfile"
+      - ".github/workflows/docker-build.yml"
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        run:
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u \ ${{
+          github.actor }} --password-stdin >/dev/null
+
+      - name: Build Docker Image
+        run:
+          docker build --progress plain -t
+          ghcr.io/a-mango/hpc/dtmf-runtime:latest .
+        working-directory: dtmf
+
+      - name: Push Docker Image
+        run: docker push ghcr.io/a-mango/hpc/dtmf-runtime:latest
+        working-directory: dtmf

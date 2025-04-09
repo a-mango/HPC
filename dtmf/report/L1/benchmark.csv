@@ -1,0 +1,5 @@
+Size,Goertzel Decoding Time (ms),FFT Decoding Time (ms)
+10,20,0
+100,170,40
+1000,1760,420
+10000,17110,3900

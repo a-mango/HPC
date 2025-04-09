@@ -1,0 +1,5 @@
+Test name	Input	Expected hash	Exit code
+hello	Hello, world!	144d1bb3ac8849ff05eb956042bda2f1  -	0
+symbols_full	1234567890 ABCDEFGHIJKLMNOPQRSTUVWXYZ .!?,#	c2ebf909642dc235496149b1d1419d7a  -	0
+unicode	1¢1¼<-}#:🐍Гœ	<CRASH>	1
+long_text	Satoshi Nakamoto was some safe central ledger, or they returns the bagholder because Tether thought the stale block behind few hardware wallet. Golem allowed lots of peer to peer bagholder after some zero confirmation transaction, so Mt. Gox built lots of genesis block for lots of block. Gwei serves few instant crypto behind the cryptocurrency, or Tezos chose a dump. Decred formed lots of dust transaction. Since VeChain did the hard fork, Golem identified many dead cat bounce in many vaporware. Although Cardano generates a considerable volume, IOTA sharded few max supply, but because Maker expected the dead cat bounce, Lightning Network required some automated all time low. Augur managed some proof of stake, but Zcash froze lots of trusted side chain during few dead cat bounce although Nexo slept on some constant fundamental analysis! Tezos waited lots of trusted oracle.	4d7fe4eb18a0290243727e9d5d65af49  -	0

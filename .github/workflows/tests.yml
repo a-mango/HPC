@@ -1,0 +1,84 @@
+name: Build and run tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - dtmf/**
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/a-mango/hpc/dtmf-runtime:latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Configure CMake
+        run:
+          "cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTS=ON
+          -DENABLE_SAN=ON -DENABLE_COV=ON"
+
+        working-directory: dtmf/code
+
+      - name: Build
+        run: cmake --build build
+        working-directory: dtmf/code
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: binaries
+          path: dtmf/code/bin
+
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/a-mango/hpc/dtmf-runtime:latest
+    needs: build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: binaries
+          path: bin
+
+      - name: Make build artifacts executable
+        run: chmod +x bin/*
+
+      - name: Extract test samples
+        run: unzip dtmf/code/test/samples.zip -d samples
+
+      - name: List files
+        run: ls -la bin samples .
+
+      - name: Run tests
+        run: ./bin/dtmf_encdec_test --gtest_output=xml:gtest_results.xml
+        env:
+          DTMF_TEST_BINARY_PATH: bin/dtmf_encdec
+          DTMF_TEST_SAMPLES_DIR: samples
+          DTMF_TEST_PARAMS_DECODE_TSV: dtmf/code/test/params_decode.tsv
+          DTMF_TEST_PARAMS_ENCODE_TSV: dtmf/code/test/params_encode.tsv
+
+      - name: Generate HTML test report
+        run:
+          xsltproc scripts/gtest_report.xslt gtest_results.xml >
+          gtest_report.html
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: gtest_report
+          path: "gtest_report.html"
