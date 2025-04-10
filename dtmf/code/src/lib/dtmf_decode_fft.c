@@ -120,7 +120,9 @@ bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char
 
     LIKWID_MARKER_START("decode-fft-mainloop");
     while (buffer_read_ptr < frame_count) {
-        int detected_key = fft_detect(dtmf_buffer + buffer_read_ptr, chunk_size, DTMF_SAMPLE_RATE_HZ);
+        int detected_key = fft_detect(dtmf_buffer + buffer_read_ptr,
+                                      (frame_count - buffer_read_ptr < chunk_size) ? frame_count - buffer_read_ptr : chunk_size,
+                                      DTMF_SAMPLE_RATE_HZ);
 
         if (detected_key != DTMF_DETECT_KEY_INVALID) {
             if (pause_repetitions < DTMF_MIN_PAUSE_BEFORE_NEW_TONE && last_detected_key != -1 && detected_key != last_detected_key) {
