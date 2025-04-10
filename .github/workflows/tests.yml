@@ -21,9 +21,7 @@ jobs:
           submodules: recursive
 
       - name: Configure CMake
-        run:
-          "cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTS=ON
-          -DENABLE_SAN=ON -DENABLE_COV=ON"
+        run: "cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DENABLE_TESTS=ON -DENABLE_SAN=ON -DENABLE_COV=ON"
 
         working-directory: dtmf/code
 
@@ -73,9 +71,7 @@ jobs:
           DTMF_TEST_PARAMS_ENCODE_TSV: dtmf/code/test/params_encode.tsv
 
       - name: Generate HTML test report
-        run:
-          xsltproc scripts/gtest_report.xslt gtest_results.xml >
-          gtest_report.html
+        run: xsltproc dtmf/scripts/gtest_report.xslt gtest_results.xml > gtest_report.html
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
