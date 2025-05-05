@@ -16,7 +16,7 @@ set -e
 BIN=$1
 BIN_NAME=$(basename "$BIN")
 DIR_IN=img
-DIR_OUT=benchmark_results
+DIR_OUT=benchmark
 FILE_OUT=benchmark.csv
 
 # Core counts for columns
