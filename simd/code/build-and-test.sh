@@ -7,6 +7,7 @@ if [ "$#" -eq 1 ] && [ "$1" != "Debug" ] && [ "$1" != "Release" ]; then
   exit 1
 fi
 
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 BUILD_DIR=build
 BIN_DIR=build
 BIN_NAME=segmentation
@@ -28,7 +29,7 @@ echo -e "\n===== PROGRAM ====="
 echo -e "$CMD"
 
 echo -e "\n===== TEST ====="
-DIFF_FILE=$(mktemp "/tmp/smid_diff_XXXXX.png")
-echo "Diff file: $DIFF_FILE"
-compare img/sample_640_2.png ./sample_segmented.png "$DIFF_FILE"
-xdg-open $DIFF_FILE
+# Call test/test.sh
+pushd "test" &>/dev/null
+./test.sh
+popd
