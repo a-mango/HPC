@@ -4,7 +4,9 @@ set -e
 
 # Check if the converter converts the images as per the expected images
 
-BIN_DIR=../build
+# get script directory using realpath
+SCRIPT_DIR=$(realpath "$(dirname "$0")")
+BIN_DIR="$SCRIPT_DIR/../build"
 BIN_NAME=segmentation
 DIR_OUT=$(mktemp -d)
 DIR_IN=img
