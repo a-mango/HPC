@@ -1,4 +1,4 @@
 CompileFlags:
   Add:
-    - "-I./include/stb"
-    - "-I./include"
+    - "-Iinclude/stb"
+    - "-Iinclude"
