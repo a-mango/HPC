@@ -87,7 +87,7 @@ bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char
     assert(frame_count > 0);
     assert(out_message != NULL);
     assert(out_chars_read != NULL);
-    DTMF_DEBUG("Decoding DTMF signal using Goertzel...", message);
+    DTMF_DEBUG("Decoding DTMF signal using Goertzel...");
 
     LIKWID_MARKER_START("decode-goe");
 

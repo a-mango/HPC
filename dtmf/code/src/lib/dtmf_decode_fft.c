@@ -30,8 +30,6 @@ static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtm
 
 static int fft_detect(dtmf_float_t const *samples, dtmf_count_t num_samples, dtmf_float_t sample_rate) {
     assert(samples != NULL);
-    assert(num_samples > 0 && num_samples <= DTMF_FFT_SIZE);
-
 
     fftw_complex *in, *out;
     fftw_plan     p;
@@ -95,7 +93,7 @@ bool dtmf_decode(dtmf_float_t *dtmf_buffer, dtmf_count_t const frame_count, char
     assert(frame_count > 0);
     assert(out_message != NULL);
     assert(out_chars_read != NULL);
-    DTMF_DEBUG("Decoding DTMF signal using FFT...", message);
+    DTMF_DEBUG("Decoding DTMF signal using FFT...");
 
     LIKWID_MARKER_START("decode-fft");
 
