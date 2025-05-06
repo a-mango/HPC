@@ -13,7 +13,7 @@ BIN_NAME=segmentation
 
 PARAM_IMG_IN=./test/img/sample_640.png
 PARAM_CLUSTER_CNT=4
-PARAM_IMG_OUT=./sample_segmented.png
+PARAM_IMG_OUT=./segmented.png
 
 CMD="$BIN_DIR/$BIN_NAME $PARAM_IMG_IN $PARAM_CLUSTER_CNT $PARAM_IMG_OUT"
 
