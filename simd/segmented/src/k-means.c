@@ -82,7 +82,7 @@ void kmeans_pp(struct img_t *image, int num_clusters, uint8_t *centers) {
 void kmeans(struct img_t *image, int num_clusters) {
     const int comps         = image->components;
     const int npixels       = image->width * image->height;
-    const int npad_clusters = ((num_clusters + 7) / 8) * 8;
+    const int npad_clusters = num_clusters + 7;
 
     // Aligned allocations with size validation
     uint8_t *centers     = alloc(ALIGN, num_clusters * comps);
