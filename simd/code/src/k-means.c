@@ -1,176 +1,210 @@
 #include "k-means.h"
 
-#include <float.h>
+#include <immintrin.h>
 #include <limits.h>
+#include <math.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #define R_OFFSET 0
 #define G_OFFSET 1
 #define B_OFFSET 2
-#define CACHE_LINE 64
-#define UNROLL 4
+#define ALIGN 32
 
-// Fast Xorshift64* PRNG
-static inline uint32_t xorshift64s() {
-    static uint64_t xorshift_state = 88172645463325252ULL;
-    xorshift_state ^= xorshift_state >> 12;
-    xorshift_state ^= xorshift_state << 25;
-    xorshift_state ^= xorshift_state >> 27;
-    return (xorshift_state * 0x2545F4914F6CDD1DULL) >> 32;
+// Xorshift32 PRNG
+static inline uint32_t xor_rand() {
+    static uint32_t y = 2463534242UL;
+    y ^= (y << 13);
+    y ^= (y >> 17);
+    return (y ^= (y << 15));
 }
 
-// Cache-aligned allocation
 static inline void *alloc(size_t align, size_t size) {
-    void *ptr;
-    posix_memalign(&ptr, align, size);
+    void *ptr = NULL;
+    if (posix_memalign(&ptr, align, size) != 0 || !ptr) {
+        fprintf(stderr, "Aligned allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     return ptr;
 }
 
 void kmeans_pp(struct img_t *image, int num_clusters, uint8_t *centers) {
-    const int comps = image->components;
+    const int comps   = image->components;
     const int npixels = image->width * image->height;
-    const size_t pixel_size = comps * sizeof(uint8_t);
 
-    // Align critical data structures to cache lines
-    uint32_t *distances = alloc(CACHE_LINE, npixels * sizeof(uint32_t));
+    // Initial random center
+    int first_idx = (xor_rand() % npixels) * comps;
+    memcpy(centers, image->data + first_idx, comps);
 
-    // Initialize first center using cache-line aligned random access
-    const int first_idx = (xorshift64s() % npixels) * comps;
-    memcpy(centers, &image->data[first_idx], pixel_size);
-
-    // Precompute squared distances in cache-friendly blocks
+    float         *distances    = alloc(ALIGN, npixels * sizeof(float));
     const uint8_t *first_center = centers;
-#pragma unroll(4)
-    for (int i = 0; i < npixels; i += CACHE_LINE / sizeof(uint32_t)) {
-        const int end = (i + CACHE_LINE / sizeof(uint32_t)) < npixels
-                            ? i + CACHE_LINE / sizeof(uint32_t)
-                            : npixels;
-        for (int j = i; j < end; j++) {
-            const uint8_t *pix = &image->data[j * comps];
-            const int dr = pix[R_OFFSET] - first_center[R_OFFSET];
-            const int dg = pix[G_OFFSET] - first_center[G_OFFSET];
-            const int db = pix[B_OFFSET] - first_center[B_OFFSET];
-            distances[j] = dr * dr + dg * dg + db * db;
-        }
+
+    // Precompute distances from the first center
+    for (int i = 0; i < npixels; ++i) {
+        const uint8_t *px = image->data + i * comps;
+        int            dr = px[R_OFFSET] - first_center[R_OFFSET];
+        int            dg = px[G_OFFSET] - first_center[G_OFFSET];
+        int            db = px[B_OFFSET] - first_center[B_OFFSET];
+        distances[i]      = dr * dr + dg * dg + db * db;
     }
 
-    // Select subsequent centers with weighted probability
-    for (int c = 1; c < num_clusters; c++) {
-        // Parallel sum using 64-bit accumulator
-        uint64_t total = 0;
-        for (int i = 0; i < npixels; i += 4) {
-            total += distances[i] + distances[i + 1] + distances[i + 2] + distances[i + 3];
-        }
+    // Select remaining centers
+    for (int c = 1; c < num_clusters; ++c) {
+        float total = 0;
+        for (int i = 0; i < npixels; ++i)
+            total += distances[i];
 
-        // Binary search inspired selection with early exit
-        const uint64_t threshold = (xorshift64s() * total) >> 32;
-        uint64_t accum = 0;
-        int sel = 0;
-        while (sel < npixels && accum < threshold) {
-            accum += distances[sel];
-            sel += (threshold - accum) > (threshold >> 8) ? 16 : 1;
-        }
+        float threshold = (float)xor_rand() / UINT32_MAX * total;
+        int   sel       = 0;
+        while (sel < npixels && threshold > distances[sel])
+            threshold -= distances[sel++];
         sel = sel < npixels ? sel : npixels - 1;
 
-        // Update centers and distances
-        const uint8_t *new_center = &image->data[sel * comps];
-#pragma unroll(4)
-        for (int i = 0; i < npixels; i += CACHE_LINE / sizeof(uint32_t)) {
-            const int end = (i + CACHE_LINE / sizeof(uint32_t)) < npixels
-                                ? i + (CACHE_LINE / sizeof(uint32_t))
-                                : npixels;
-            for (int j = i; j < end; j++) {
-                const uint8_t *pix = &image->data[j * comps];
-                const int dr = pix[R_OFFSET] - new_center[R_OFFSET];
-                const int dg = pix[G_OFFSET] - new_center[G_OFFSET];
-                const int db = pix[B_OFFSET] - new_center[B_OFFSET];
-                const uint32_t dist = dr * dr + dg * dg + db * db;
-                distances[j] = dist < distances[j] ? dist : distances[j];
-            }
+        memcpy(centers + c * comps, image->data + sel * comps, comps);
+        const uint8_t *new_center = centers + c * comps;
+
+        // Update distances
+        for (int i = 0; i < npixels; ++i) {
+            const uint8_t *pix  = image->data + i * comps;
+            int            dr   = pix[R_OFFSET] - new_center[R_OFFSET];
+            int            dg   = pix[G_OFFSET] - new_center[G_OFFSET];
+            int            db   = pix[B_OFFSET] - new_center[B_OFFSET];
+            float          dist = dr * dr + dg * dg + db * db;
+            if (dist < distances[i])
+                distances[i] = dist;
         }
-        memcpy(&centers[c * comps], new_center, pixel_size);
     }
     free(distances);
 }
 
 void kmeans(struct img_t *image, int num_clusters) {
-    const int comps = image->components;
-    const int npixels = image->width * image->height;
+    const int comps         = image->components;
+    const int npixels       = image->width * image->height;
+    const int npad_clusters = ((num_clusters + 7) / 8) * 8;
 
-    // Aligned allocations
-    uint8_t *centers = alloc(CACHE_LINE, num_clusters * comps);
-    int *assignments = alloc(CACHE_LINE, npixels * sizeof(int));
-    ClusterData *clusters = alloc(CACHE_LINE, num_clusters * sizeof(ClusterData));
+    // Aligned allocations with size validation
+    uint8_t *centers     = alloc(ALIGN, num_clusters * comps);
+    uint8_t *centers_r   = alloc(ALIGN, npad_clusters);
+    uint8_t *centers_g   = alloc(ALIGN, npad_clusters);
+    uint8_t *centers_b   = alloc(ALIGN, npad_clusters);
+    int     *assignments = alloc(ALIGN, npixels * sizeof(int));
 
     kmeans_pp(image, num_clusters, centers);
 
-    // Precompute squared center values
-    for (int c = 0; c < num_clusters; c++) {
-        const uint8_t *ctr = &centers[c * comps];
-        clusters[c].sqsum = ctr[R_OFFSET] * ctr[R_OFFSET] + ctr[G_OFFSET] * ctr[G_OFFSET] + ctr[B_OFFSET] * ctr[B_OFFSET];
+    // Transpose centers to struct of arrays with padding
+    for (int c = 0; c < num_clusters; ++c) {
+        centers_r[c] = centers[c * comps + R_OFFSET];
+        centers_g[c] = centers[c * comps + G_OFFSET];
+        centers_b[c] = centers[c * comps + B_OFFSET];
+    }
+    for (int c = num_clusters; c < npad_clusters; ++c) {
+        centers_r[c] = UINT8_MAX;
+        centers_g[c] = UINT8_MAX;
+        centers_b[c] = UINT8_MAX;
     }
 
-    // Vectorized-style processing without SIMD
-    for (int i = 0; i < npixels; i++) {
-        const uint8_t *pix = &image->data[i * comps];
-        int best_c = 0;
-        int max_val = INT_MIN;
+    // Vectorized assignment of pixels to clusters
+    for (int i = 0; i < npixels; ++i) {
+        const uint8_t *pix = image->data + i * comps;
+        const uint8_t  pr = pix[R_OFFSET], pg = pix[G_OFFSET], pb = pix[B_OFFSET];
 
-        // Process 4 clusters at a time
-        for (int c = 0; c < num_clusters; c += UNROLL) {
-            int vals[UNROLL];
-            int max_unroll = (num_clusters - c) < UNROLL ? (num_clusters - c) : UNROLL;
+        __m256i min_dist    = _mm256_set1_epi32(INT_MAX);
+        __m256i best_idx    = _mm256_setzero_si256();
+        __m256i current_idx = _mm256_setr_epi32(0, 1, 2, 3, 4, 5, 6, 7);
 
-            for (int u = 0; u < max_unroll; u++) {
-                const uint8_t *ctr = &centers[(c + u) * comps];
-                const int dot = pix[R_OFFSET] * ctr[R_OFFSET] + pix[G_OFFSET] * ctr[G_OFFSET] + pix[B_OFFSET] * ctr[B_OFFSET];
-                vals[u] = 2 * dot - clusters[c + u].sqsum;
+        for (int c = 0; c < npad_clusters; c += 8) {
+            // Load 8 elements using 64-bit load
+            __m128i cr8 = _mm_loadl_epi64((__m128i *)(centers_r + c));
+            __m128i cg8 = _mm_loadl_epi64((__m128i *)(centers_g + c));
+            __m128i cb8 = _mm_loadl_epi64((__m128i *)(centers_b + c));
+
+            // Expand to 32-bit integers
+            __m256i cr = _mm256_cvtepu8_epi32(cr8);
+            __m256i cg = _mm256_cvtepu8_epi32(cg8);
+            __m256i cb = _mm256_cvtepu8_epi32(cb8);
+
+            // Broadcast pixel values
+            __m256i vr = _mm256_set1_epi32(pr);
+            __m256i vg = _mm256_set1_epi32(pg);
+            __m256i vb = _mm256_set1_epi32(pb);
+
+            // Compute squared differences
+            __m256i dr = _mm256_sub_epi32(cr, vr);
+            __m256i dg = _mm256_sub_epi32(cg, vg);
+            __m256i db = _mm256_sub_epi32(cb, vb);
+
+            dr = _mm256_mullo_epi32(dr, dr);
+            dg = _mm256_mullo_epi32(dg, dg);
+            db = _mm256_mullo_epi32(db, db);
+
+            __m256i dist = _mm256_add_epi32(dr, _mm256_add_epi32(dg, db));
+
+            // Update minimums
+            __m256i mask = _mm256_cmpgt_epi32(min_dist, dist);
+            min_dist     = _mm256_blendv_epi8(min_dist, dist, mask);
+            best_idx     = _mm256_blendv_epi8(best_idx, current_idx, mask);
+
+            // Increment the index by 8 to process the next cluster.
+            current_idx = _mm256_add_epi32(current_idx, _mm256_set1_epi32(8));
+        }
+
+        // Extract the minimum value.
+        int distances[8] __attribute__((aligned(32)));
+        int indices[8] __attribute__((aligned(32)));
+        _mm256_store_si256((__m256i *)distances, min_dist);
+        _mm256_store_si256((__m256i *)indices, best_idx);
+
+        int best = 0;
+        for (int j = 1; j < 8; ++j) {
+            if (distances[j] < distances[best]) {
+                best = j;
             }
-
-            for (int u = 0; u < max_unroll; u++) {
-                if (vals[u] > max_val) {
-                    max_val = vals[u];
-                    best_c = c + u;
-                }
-            }
         }
-        assignments[i] = best_c;
-
-        // Update cluster sums immediately
-        clusters[best_c].count++;
-        clusters[best_c].sum_r += pix[R_OFFSET];
-        clusters[best_c].sum_g += pix[G_OFFSET];
-        clusters[best_c].sum_b += pix[B_OFFSET];
+        assignments[i] = indices[best] < num_clusters ? indices[best] : 0;
     }
 
-    // Update centers using fast reciprocal approximation
-    for (int c = 0; c < num_clusters; c++) {
-        if (clusters[c].count) {
-            const float inv = 1.0f / clusters[c].count;
-            centers[c * comps + R_OFFSET] = clusters[c].sum_r * inv + 0.5f;
-            centers[c * comps + G_OFFSET] = clusters[c].sum_g * inv + 0.5f;
-            centers[c * comps + B_OFFSET] = clusters[c].sum_b * inv + 0.5f;
+    // Update the clusters and compute new centers.
+    ClusterData *cd = alloc(ALIGN, num_clusters * sizeof(ClusterData));
+    memset(cd, 0, num_clusters * sizeof(ClusterData));
+
+    for (int i = 0; i < npixels; ++i) {
+        int c = assignments[i];
+        if (c >= num_clusters) {
+            c = 0;
         }
+        const uint8_t *pix = image->data + i * comps;
+        cd[c].count++;
+        cd[c].sum_r += pix[R_OFFSET];
+        cd[c].sum_g += pix[G_OFFSET];
+        cd[c].sum_b += pix[B_OFFSET];
     }
 
-    // Direct write with coalesced memory access
-    for (int i = 0; i < npixels; i += CACHE_LINE / sizeof(uint8_t)) {
-        const int end = (i + CACHE_LINE / sizeof(uint8_t)) < npixels
-                            ? i + CACHE_LINE / sizeof(uint8_t)
-                            : npixels;
-        for (int j = i; j < end; j++) {
-            const int c = assignments[j];
-            uint8_t *pix = &image->data[j * comps];
-            const uint8_t *ctr = &centers[c * comps];
-            pix[R_OFFSET] = ctr[R_OFFSET];
-            pix[G_OFFSET] = ctr[G_OFFSET];
-            pix[B_OFFSET] = ctr[B_OFFSET];
+    // Update RGB centers.
+    for (int c = 0; c < num_clusters; ++c) {
+        if (cd[c].count > 0) {
+            centers[c * comps + R_OFFSET] = (cd[c].sum_r + cd[c].count / 2) / cd[c].count;
+            centers[c * comps + G_OFFSET] = (cd[c].sum_g + cd[c].count / 2) / cd[c].count;
+            centers[c * comps + B_OFFSET] = (cd[c].sum_b + cd[c].count / 2) / cd[c].count;
         }
     }
 
-    free(clusters);
+    // Copy the final pixel
+    for (int i = 0; i < npixels; ++i) {
+        int c = assignments[i];
+        if (c >= num_clusters)
+            c = 0;
+        uint8_t       *pix    = image->data + i * comps;
+        const uint8_t *center = centers + c * comps;
+        memcpy(pix, center, comps);
+    }
+
+    // Cleanup
+    free(cd);
     free(assignments);
+    free(centers_r);
+    free(centers_g);
+    free(centers_b);
     free(centers);
 }

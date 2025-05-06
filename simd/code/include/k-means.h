@@ -3,11 +3,10 @@
 #include "image.h"
 
 typedef struct {
-    int      count;
-    int      sum_r;
-    int      sum_g;
-    int      sum_b;
-    uint32_t sqsum;  // Precomputed squared sum for distance optimization
+    int count;
+    int sum_r;
+    int sum_g;
+    int sum_b;
 } ClusterData;
 
 
