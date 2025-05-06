@@ -39,7 +39,7 @@ echo -e "\n===== sample_640.png ====="
 times=()
 for c in "${cores_list[@]}"; do
   json_file=$(mktemp)
-  hyperfine --warmup 3 --runs 5 --export-json "$json_file" \
+  hyperfine --warmup 5 --runs 5 --export-json "$json_file" \
     "taskset -c 2 $BIN $DIR_IN/sample_640.png $c $DIR_OUT/sample_640_$c.png" >/dev/null
   time=$(jq -r '.results[0].mean' "$json_file")
   rm "$json_file"
