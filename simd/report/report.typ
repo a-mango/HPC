@@ -20,8 +20,7 @@
 
 = Traitement d'image avec K-Means
 
-The k-means image processig program per
-
+Le programme de segmentation d'image fourni implémente les algorithmes de clustering K-Means et K-Means++ pour segmenter les pixels d'une image selon leur tente. Cette section présente l'optimisation manuelle du programme, l'introduction de SIMD pour améliorer le temps de traitement ainsi que les résultats obtenus.
 
 == Tests
 
@@ -29,7 +28,7 @@ Un système de test automatisé est mis en place afin de valider le comportement
 
 == Benchmark
 
-Le temps d'exécution est mesuré après un lot de changement restreint. Les paramètres de test sont l'image originale de 640x426 pixels produite par le programme et un nombre de bins allant de $2^0$ à $2^8$. Les données récoltées sont présentées dans @fig-simd-benchmark.
+Le temps d'exécution est mesuré avec `hyperfine` après un lot de changement condensé. Les paramètres de test sont l'image originale de 640x426 pixels produite par le programme et un nombre de bins allant de $2^0$ à $2^8$. `hyperfine` est configuré pour utiliser un coeur préchauffé et effectuer les mesures 5 fois. Les données récoltées sont présentées dans @fig-simd-benchmark.
 
 #figure(
   placement: auto,
@@ -104,7 +103,19 @@ La vectorialisation est une optimisation supplémentaire qui est appliquée une 
 
 Finalement, il est difficile de juger de l'impact réel des options de compilations sur le temps d'exécution. Si certaines options (tel que l'inlining) sont un apport considérable dans certains cas, d'autres options n'ont qu'un apport infime. Il faudrait que les contraintes en temps d'exécution soient très strictes pour justifier de s'en soucier plus.
 
-= Traitement d'image avec SIMD
+= Traitement d'image en nuance de gris avec SIMD
+
+Le traitement d'image choisi est la conversion en nuance de gris. L'algorithme de conversion calcule une somme pondérée des trois canaux de couleur pour chaque pixel. Ce type de calcul est particulièrement adapté à la vectorisation car il peut être effectué en parallèle sur plusieurs pixels à l'aide d'instructions SIMD. Aucune option d'optimisation n'est utilisée dans ce programme afin de se concentrer sur les effets de l'optimisation SIMD.
+
+== Benchmark
+
+Le benchmarking est effectué sur une unique image de référence de 1024x1024 pixels. Le temps d'exécution est mesuré avec `hyperfine` pour le programme original et le programme optimisé avec SIMD. Les résultats sont présentés dans @fig-simd-benchmark-grayscale.
+
+#TODO[Fig.]
+
+== Programme C
+
+Le squelette du programme (`main.c`, `image.c` et les fichiers de build) est copié du programme SIMD fourni pour le laboratoire.
 
 = Optimisation SIMD sur le programme DTMF
 

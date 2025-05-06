@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(HPC_lab04_smid_img_processing)
+project(HPC_lab04_smid)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -10,7 +10,7 @@ set(SEG_SRC
     src/image.c
 )
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -Wall")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -Wall -mavx2 -O3")
 
 include_directories(
     include/stb

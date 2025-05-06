@@ -10,7 +10,7 @@ set(SEG_SRC
     src/image.c
 )
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -Wall -mavx2 -mfma -O3")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -Wall -mavx2 -O0")
 
 include_directories(
     include/stb
