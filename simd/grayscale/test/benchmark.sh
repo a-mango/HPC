@@ -7,14 +7,8 @@ set -e
   tuned-adm profile throughput-performance
 }
 
-# Check that $1 contains the name of the binary to benchmark
-[[ $1 =~ ^[a-zA-Z0-9_\.\/]+$ ]] || {
-  echo "Usage: $0 <binary_path>"
-  exit 1
-}
-
-BIN=$1
-BIN_NAME=$(basename "$BIN")
+BINS=(grayscale_c grayscale_simd)
+BIN_DIR=../build
 DIR_IN=img
 DIR_OUT=benchmark
 FILE_OUT=benchmark.csv
@@ -27,31 +21,37 @@ mkdir -p "$DIR_OUT"
 
 # Prepare CSV header
 if ! [ -e "$FILE_OUT" ]; then
-  header="bin_name"
+  header="image,bin_name"
   for c in "${cores_list[@]}"; do
     header+=",$c"
   done
   echo "$header" >"$FILE_OUT"
 fi
 
-# Benchmark sample_640.png
-echo -e "\n===== sample_640.png ====="
-times=()
-for c in "${cores_list[@]}"; do
-  json_file=$(mktemp)
-  hyperfine --warmup 5 --runs 5 --export-json "$json_file" \
-    "taskset -c 2 $BIN $DIR_IN/sample_640.png $c $DIR_OUT/sample_640_$c.png" >/dev/null
-  time=$(jq -r '.results[0].mean' "$json_file")
-  rm "$json_file"
-  times+=("$time")
-  echo "cores=$c -> $time s"
-done
+# Images to benchmark
+images=("forest_2k.png" "forest_4k.png" "forest_8k.png")
 
-# Append times as row to CSV
-row="$BIN_NAME"
-for t in "${times[@]}"; do
-  row+=",$t"
+# Benchmark each image with both binaries
+for image in "${images[@]}"; do
+  for bin in "${BINS[@]}"; do
+    echo "- Benchmarking $image with $bin"
+    times=()
+    json_file=$(mktemp)
+    hyperfine --shell=none --warmup 5 --runs 5 --export-json "$json_file" \
+      "taskset -c 2 $BIN_DIR/$bin $DIR_IN/$image $DIR_OUT/${image}_${bin}.png" >/dev/null
+    time=$(jq -r '.results[0].mean' "$json_file")
+    rm "$json_file"
+    times+=("$time")
+    echo "  -> $time s"
+
+    # Append times as row to CSV
+    row="$image,$(basename "$bin")"
+    for t in "${times[@]}"; do
+      row+=",$t"
+    done
+    echo "$row" >>"$FILE_OUT"
+  done
 done
-echo "$row" >>"$FILE_OUT"
 
 echo "Results saved to $FILE_OUT"
+

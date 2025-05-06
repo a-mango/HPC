@@ -15,7 +15,6 @@
 
 = Introduction
 
-
 == Topologie du système
 
 = Traitement d'image avec K-Means
@@ -93,13 +92,13 @@ On observe dans @fig-simd-benchmark que l'implémentation de SIMD entraine une s
 - `-fno-inline` est enlevé. L'inlining est une un échange ou l'on accepte de sacrifier la taille pour gagner en vitesse d'exécution en réduisant la quantité d'appels de fonctions. Dans notre cas, la plupart des fonctions internes à l'unité ont déjà été inlinées manuellement dans les fonctions `kmeans` et `kmeans_pp`. Seuls quelques appels restent à être inlinés par le compilateur. Le temps d'exécution s'améliore de façon surprenante pour une faible quantité de bins mais est similaire au résultat de la version SIMD pour une quantité importante de bins.
 - `-Ofast` est ajouté pour un test. On observe que le comportement du programme reste exact dans notre cas d'utilisation malgré l'imprécision des calculs mathématiques engendrés. Néanmoins, l'option est retirée par souci de portabilité (il se peut que les calculs soient faussés sur d'autres machines).
 
-== Bilan
+== Résultat
+
+L'optimisation générale du programme est très efficace. L'amélioration du temps d'exécution lors de l'optimisation manuelle démontre qu'il ne faut pas obligatoirement commencer par vectorialiser le code pour gagner en performance. En effet, des optimisations (algorithmiques ou syntaxiques) peuvent être appliquées pour réduire le temps d'exécution de manière significative.
 
 Les paramètres choisis pour le benchmarking étaient pratiques car ils permettaient un temps d'exécution viable sur la machine de développement, mais rend difficile de discerner quelle fonction est la plus efficace, surtout lorsque les optimisations ne font que perdre que quelques millisecondes.
 
-L'amélioration du temps d'exécution lors de l'optimisation manuelle démontre qu'il ne faut pas obligatoirement commencer par vectorialiser le code pour gagner en performance. En effet, des optimisations (algorithmiques ou syntaxiques) peuvent être appliquées pour réduire le temps d'exécution de manière significative.
-
-La vectorialisation est une optimisation supplémentaire qui est appliquée une fois que le code est déjà optimisé. Elle permet de tirer avantage des architectures modernes mais introduit plus de complexité ainsi qu'un surcoût si les données ne sont pas de volume suffisant.
+La vectorisation permet de tirer avantage des architectures modernes mais introduit plus de complexité ainsi qu'un surcoût de temps de traitement si les données ne sont pas de volume suffisant. Le programme doit aussi pouvoir être adapté pour pouvoir être vectorisé correctement avec SIMD (dans notre cas en ramenant nos opérations mathématiques sur des entiers). Par ailleurs, l'implémentation de la vectorisation hybride avec des entiers et flottant a été tentée sans succès.
 
 Finalement, il est difficile de juger de l'impact réel des options de compilations sur le temps d'exécution. Si certaines options (tel que l'inlining) sont un apport considérable dans certains cas, d'autres options n'ont qu'un apport infime. Il faudrait que les contraintes en temps d'exécution soient très strictes pour justifier de s'en soucier plus.
 
@@ -109,17 +108,54 @@ Le traitement d'image choisi est la conversion en nuance de gris. L'algorithme d
 
 == Benchmark
 
-Le benchmarking est effectué sur une unique image de référence de 1024x1024 pixels. Le temps d'exécution est mesuré avec `hyperfine` pour le programme original et le programme optimisé avec SIMD. Les résultats sont présentés dans @fig-simd-benchmark-grayscale.
+Le benchmarking est effectué sur une unique image de référence PNG en 2k, 4k et 8k. Le temps d'exécution est mesuré avec `hyperfine` pour le programme original et le programme optimisé avec SIMD avec. `hyperfine` est configuré pour utiliser un seul coeur, effectuer un warmup et prendre le temps moyen sur 5 exécutions. Les résultats sont présentés dans @fig-grayscale.
 
-#TODO[Fig.]
+#figure(
+  placement: auto,
+  image("./assets/benchmark_grayscale.png", width: 95%),
+  caption: [Temps d'exécution par image et par version du programme grayscale],
+) <fig-grayscale>
 
-== Programme C
+== Programmes
 
-Le squelette du programme (`main.c`, `image.c` et les fichiers de build) est copié du programme SIMD fourni pour le laboratoire.
+Le squelette du programme C (`main.c`, `image.c` et les fichiers de build) est copié du programme SIMD fourni pour le laboratoire. Le programme applique la formule de conversion NTSC.
+
+Le programme SIMD calcule la valeur en nuance de gris de 8 pixels à la fois. L'algorithme est le suivant:
+- Boucle par blocs de 8
+  1. Chargement de 32 octets
+  2. Extraction des moitiés basses et hautes des 256 bits
+  3. Pour chaque moitié :
+    1. Convertir 8 bytes en $8 times 32$ bits
+    1. Multiplier par les constantes et sommer
+  4. Regrouper les résultats en 8 bytes
+  5. Ecrire les 8 bytes
+
+== Résultats
+
+Le résultat n'est pas celui attendu, a savoir la baisse du temps d'exécution du programme. Au contraire, les résultats du benchmarking montrent que la version SIMD est presque un peu moins performante. Cela est peut-être du aux facteurs suivants :
+- L'overhead introduit par la vectorisation n'est pas compensé sur le jeu de données de test (peu probable).
+- Le programme est memory-bound sur un ordinateur moderne (très probable).
+- L'algorithme de traitement d'image n'effectue pas assez d'opérations pour bien démontrer la différence.
+
 
 = Optimisation SIMD sur le programme DTMF
 
-= Travail complémentaire
+L'implémentation de l'algorithme à base de FFT a été choisi pour l'optimisation car Goertzel n'est pas un bon candidat puisqu'il se base sur un état interne à un échantillon.
+
+Les
+
+== Benchmark
+
+Le benchmarking est effectué sur des fichiers contenant respectivement 10, 100 et 1000 fois l'alphabet (afin de ne pas se faire piéger par un jeu de données de test trop peu volumineux). `hyperfine` est configuré pour utiliser un seul coeur, effectuer un warmup et prendre le temps moyen sur 2 exécutions. Les résultats sont présentés dans @fig-dtmf.
+
+#figure(
+  placement: auto,
+  image("./assets/benchmark_dtmf.png", width: 95%),
+  caption: [Temps d'exécution par image et par version du programme DTMF],
+) <fig-dtmf>
+
+== Résultats
 
 = Conclusion
 
+L'expérience effectuée avec l'algorithme de nuance de gris prouve que l'algorithme utilisé ainsi que les limites du matériel sont des facteurs clés à prendre en compte lors de l'optimisation par SIMD; il est possible que la vectorisation d'un programme ne soit simplement pas la meilleure stratégie d'optimisation.

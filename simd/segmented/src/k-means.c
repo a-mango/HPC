@@ -53,13 +53,15 @@ void kmeans_pp(struct img_t *image, int num_clusters, uint8_t *centers) {
     // Select remaining centers
     for (int c = 1; c < num_clusters; ++c) {
         float total = 0;
-        for (int i = 0; i < npixels; ++i)
+        for (int i = 0; i < npixels; ++i) {
             total += distances[i];
+        }
 
         float threshold = (float)xor_rand() / UINT32_MAX * total;
         int   sel       = 0;
-        while (sel < npixels && threshold > distances[sel])
+        while (sel < npixels && threshold > distances[sel]) {
             threshold -= distances[sel++];
+        }
         sel = sel < npixels ? sel : npixels - 1;
 
         memcpy(centers + c * comps, image->data + sel * comps, comps);
@@ -72,49 +74,52 @@ void kmeans_pp(struct img_t *image, int num_clusters, uint8_t *centers) {
             int            dg   = pix[G_OFFSET] - new_center[G_OFFSET];
             int            db   = pix[B_OFFSET] - new_center[B_OFFSET];
             float          dist = dr * dr + dg * dg + db * db;
-            if (dist < distances[i])
+
+            if (dist < distances[i]) {
                 distances[i] = dist;
+            }
         }
     }
     free(distances);
 }
 
-void kmeans(struct img_t *image, int num_clusters) {
-    const int comps         = image->components;
-    const int npixels       = image->width * image->height;
-    const int npad_clusters = num_clusters + 7;
+void kmeans(struct img_t *image, int n_clusters) {
+    const int n_comp = image->components;
+    const int n_px   = image->width * image->height;
+    const int n_pad  = ((n_clusters + 7) / 8) * 8;  // Pad to 8
 
-    // Aligned allocations with size validation
-    uint8_t *centers     = alloc(ALIGN, num_clusters * comps);
-    uint8_t *centers_r   = alloc(ALIGN, npad_clusters);
-    uint8_t *centers_g   = alloc(ALIGN, npad_clusters);
-    uint8_t *centers_b   = alloc(ALIGN, npad_clusters);
-    int     *assignments = alloc(ALIGN, npixels * sizeof(int));
+    // Aligned allocs
+    uint8_t *centers     = alloc(ALIGN, n_clusters * n_comp);
+    uint8_t *centers_r   = alloc(ALIGN, n_pad);
+    uint8_t *centers_g   = alloc(ALIGN, n_pad);
+    uint8_t *centers_b   = alloc(ALIGN, n_pad);
+    int     *assignments = alloc(ALIGN, n_px * sizeof(int));
 
-    kmeans_pp(image, num_clusters, centers);
+    kmeans_pp(image, n_clusters, centers);
 
-    // Transpose centers to struct of arrays with padding
-    for (int c = 0; c < num_clusters; ++c) {
-        centers_r[c] = centers[c * comps + R_OFFSET];
-        centers_g[c] = centers[c * comps + G_OFFSET];
-        centers_b[c] = centers[c * comps + B_OFFSET];
+    // Transpose centers to struct of arrays
+    for (int c = 0; c < n_clusters; ++c) {
+        centers_r[c] = centers[c * n_comp + R_OFFSET];
+        centers_g[c] = centers[c * n_comp + G_OFFSET];
+        centers_b[c] = centers[c * n_comp + B_OFFSET];
     }
-    for (int c = num_clusters; c < npad_clusters; ++c) {
+
+    for (int c = n_clusters; c < n_pad; ++c) {
         centers_r[c] = UINT8_MAX;
         centers_g[c] = UINT8_MAX;
         centers_b[c] = UINT8_MAX;
     }
 
     // Vectorized assignment of pixels to clusters
-    for (int i = 0; i < npixels; ++i) {
-        const uint8_t *pix = image->data + i * comps;
+    for (int i = 0; i < n_px; ++i) {
+        const uint8_t *pix = image->data + i * n_comp;
         const uint8_t  pr = pix[R_OFFSET], pg = pix[G_OFFSET], pb = pix[B_OFFSET];
 
         __m256i min_dist    = _mm256_set1_epi32(INT_MAX);
         __m256i best_idx    = _mm256_setzero_si256();
         __m256i current_idx = _mm256_setr_epi32(0, 1, 2, 3, 4, 5, 6, 7);
 
-        for (int c = 0; c < npad_clusters; c += 8) {
+        for (int c = 0; c < n_pad; c += 8) {
             // Load 8 elements using 64-bit load
             __m128i cr8 = _mm_loadl_epi64((__m128i *)(centers_r + c));
             __m128i cg8 = _mm_loadl_epi64((__m128i *)(centers_g + c));
@@ -130,11 +135,12 @@ void kmeans(struct img_t *image, int num_clusters) {
             __m256i vg = _mm256_set1_epi32(pg);
             __m256i vb = _mm256_set1_epi32(pb);
 
-            // Compute squared differences
+            // Compute differences
             __m256i dr = _mm256_sub_epi32(cr, vr);
             __m256i dg = _mm256_sub_epi32(cg, vg);
             __m256i db = _mm256_sub_epi32(cb, vb);
 
+            // Square differences
             dr = _mm256_mullo_epi32(dr, dr);
             dg = _mm256_mullo_epi32(dg, dg);
             db = _mm256_mullo_epi32(db, db);
@@ -146,11 +152,11 @@ void kmeans(struct img_t *image, int num_clusters) {
             min_dist     = _mm256_blendv_epi8(min_dist, dist, mask);
             best_idx     = _mm256_blendv_epi8(best_idx, current_idx, mask);
 
-            // Increment the index by 8 to process the next cluster.
+            // Increment the index by 8 to process the next cluster
             current_idx = _mm256_add_epi32(current_idx, _mm256_set1_epi32(8));
         }
 
-        // Extract the minimum value.
+        // Extract the minimum value
         int distances[8] __attribute__((aligned(32)));
         int indices[8] __attribute__((aligned(32)));
         _mm256_store_si256((__m256i *)distances, min_dist);
@@ -162,45 +168,45 @@ void kmeans(struct img_t *image, int num_clusters) {
                 best = j;
             }
         }
-        assignments[i] = indices[best] < num_clusters ? indices[best] : 0;
+        assignments[i] = indices[best] < n_clusters ? indices[best] : 0;
     }
 
-    // Update the clusters and compute new centers.
-    ClusterData *cd = alloc(ALIGN, num_clusters * sizeof(ClusterData));
-    memset(cd, 0, num_clusters * sizeof(ClusterData));
+    // Update the clusters and compute the centers
+    ClusterData *cd = alloc(ALIGN, n_clusters * sizeof(ClusterData));
+    memset(cd, 0, n_clusters * sizeof(ClusterData));
 
-    for (int i = 0; i < npixels; ++i) {
+    for (int i = 0; i < n_px; ++i) {
         int c = assignments[i];
-        if (c >= num_clusters) {
+        if (c >= n_clusters) {
             c = 0;
         }
-        const uint8_t *pix = image->data + i * comps;
+        const uint8_t *pix = image->data + i * n_comp;
         cd[c].count++;
         cd[c].sum_r += pix[R_OFFSET];
         cd[c].sum_g += pix[G_OFFSET];
         cd[c].sum_b += pix[B_OFFSET];
     }
 
-    // Update RGB centers.
-    for (int c = 0; c < num_clusters; ++c) {
+    // Update centers
+    for (int c = 0; c < n_clusters; ++c) {
         if (cd[c].count > 0) {
-            centers[c * comps + R_OFFSET] = (cd[c].sum_r + cd[c].count / 2) / cd[c].count;
-            centers[c * comps + G_OFFSET] = (cd[c].sum_g + cd[c].count / 2) / cd[c].count;
-            centers[c * comps + B_OFFSET] = (cd[c].sum_b + cd[c].count / 2) / cd[c].count;
+            centers[c * n_comp + R_OFFSET] = (cd[c].sum_r + cd[c].count / 2) / cd[c].count;
+            centers[c * n_comp + G_OFFSET] = (cd[c].sum_g + cd[c].count / 2) / cd[c].count;
+            centers[c * n_comp + B_OFFSET] = (cd[c].sum_b + cd[c].count / 2) / cd[c].count;
         }
     }
 
-    // Copy the final pixel
-    for (int i = 0; i < npixels; ++i) {
+    // Finally copy the pixel
+    for (int i = 0; i < n_px; ++i) {
         int c = assignments[i];
-        if (c >= num_clusters)
+        if (c >= n_clusters) {
             c = 0;
-        uint8_t       *pix    = image->data + i * comps;
-        const uint8_t *center = centers + c * comps;
-        memcpy(pix, center, comps);
+        }
+        uint8_t       *pix    = image->data + i * n_comp;
+        const uint8_t *center = centers + c * n_comp;
+        memcpy(pix, center, n_comp);
     }
 
-    // Cleanup
     free(cd);
     free(assignments);
     free(centers_r);

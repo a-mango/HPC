@@ -9,13 +9,12 @@ fi
 
 BUILD_DIR=build
 BIN_DIR=build
-BIN_NAME=segmentation
+BIN_NAME=grayscale_simd
 
-PARAM_IMG_IN=./test/img/sample_640.png
-PARAM_CLUSTER_CNT=4
-PARAM_IMG_OUT=./sample_segmented.png
+PARAM_IMG_IN=./test/img/forest_2k.png
+PARAM_IMG_OUT=./grayscale.png
 
-CMD="$BIN_DIR/$BIN_NAME $PARAM_IMG_IN $PARAM_CLUSTER_CNT $PARAM_IMG_OUT"
+CMD="$BIN_DIR/$BIN_NAME $PARAM_IMG_IN $PARAM_IMG_OUT"
 
 BUILD_MODE=${1:-Release}
 BUILD_OPTS="-DCMAKE_BUILD_TYPE=$BUILD_MODE"
@@ -29,3 +28,4 @@ echo -e "$CMD"
 
 echo -e "\n===== RUN ====="
 $CMD
+

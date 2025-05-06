@@ -1,30 +1,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "k-means.h"
+#include "grayscale.h"
 
 int main(int argc, char** argv) {
     struct img_t* img;
-    int nb_cluster = 0;
-    printf("%d\n", argc);
-    if (argc < 4) {
-        fprintf(stderr, "Usage : %s <img_src.png> <nb_clusters> <img_dest.png>\n", argv[0]);
+    if (argc < 3) {
+        fprintf(stderr, "Usage : %s <img_src.png> <img_dest.png>\n", argv[0]);
         return EXIT_FAILURE;
-    }
-
-    nb_cluster = atoi(argv[2]);
-    if (nb_cluster <= 0) {
-        printf("The number of clusters should be greater than 0\n");
-        return 1;
     }
 
     img = load_image(argv[1]);
 
     printf("Image loaded!\n");
 
-    kmeans(img, nb_cluster);
+    grayscale(img);
 
-    save_image(argv[3], img);
+    save_image(argv[2], img);
 
     free_image(img);
 
