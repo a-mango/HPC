@@ -60,9 +60,12 @@ include_directories(${INC_PATH}/lib)
 add_compile_options(
   -Wall -Wextra -Wconversion -Wsign-conversion -pedantic
   -Wformat -Wshadow -Wpointer-arith -Wcast-align -Wstrict-overflow
-  -Wparentheses -Wunreachable-code -Winline -Wlogical-op
+  -Wparentheses -Wunreachable-code -Wlogical-op
   -Wnull-dereference -Wformat-nonliteral -Wvla -Wdouble-promotion
 )
+
+# Enable AVX2
+add_compile_options(-mavx2)
 
 # Conditional compilation flags
 if(CMAKE_BUILD_TYPE MATCHES Debug)

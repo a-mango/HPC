@@ -24,7 +24,7 @@
 #endif
 
 #ifdef DEBUG
-#define debug_printf(fmt, ...) DTMF_DEBUG(fmt, __VA_ARGS__)
+#define debug_printf(fmt, ...) fprintf(stderr, "Debug: " fmt "\n"__VA_OPT__(, )__VA_ARGS__)
 #else
 #define debug_printf(...) ((void)0)
 #endif

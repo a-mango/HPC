@@ -1,0 +1,10 @@
+version,file,mean_time
+Original,alphabet_10.wav,0.9204644042
+Original,alphabet_100.wav,7.4225830566
+Original,alphabet_1000.wav,36.3155649622
+FFT SIMD,alphabet_10.wav,0.5714814805
+FFT SIMD,alphabet_100.wav,4.091083158
+FFT SIMD,alphabet_1000.wav,20.044634699
+Noise reduction SIMD,alphabet_10.wav,0.56822733
+Noise reduction SIMD,alphabet_100.wav,4.0492485254999995
+Noise reduction SIMD,alphabet_1000.wav,19.963450253
