@@ -9,6 +9,7 @@
 
 #include <assert.h>
 #include <dtmf_utils.h>
+#include <immintrin.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -216,19 +217,35 @@ static dtmf_float_t _dtmf_compute_rms(const dtmf_float_t *buffer, dtmf_count_t c
     return sqrt(sum_squares / (dtmf_float_t)count);
 }
 
-static void _dtmf_noise_reduction(dtmf_float_t *buffer, dtmf_count_t const count, dtmf_float_t const threshold_factor) {
+static void _dtmf_noise_reduction(dtmf_float_t *buffer,
+                                  dtmf_count_t  count,
+                                  dtmf_float_t  threshold_factor) {
     assert(buffer != NULL);
 
     dtmf_float_t rms       = _dtmf_compute_rms(buffer, count);
     dtmf_float_t threshold = rms * threshold_factor;
 
-    for (size_t i = 0; i < count; i++) {
+    const __m256d abs_mask = _mm256_castsi256_pd(_mm256_set1_epi64x(0x7FFFFFFFFFFFFFFFULL));
+    const __m256d thr_v    = _mm256_set1_pd(threshold);
+    size_t        i        = 0;
+    // Vectorized loop 4 samples at a time
+    for (; i + 3 < count; i += 4) {
+        __m256d v     = _mm256_loadu_pd(&buffer[i]);              // Load
+        __m256d abs_v = _mm256_and_pd(v, abs_mask);               // |v| = v & abs_mask
+        __m256d m     = _mm256_cmp_pd(abs_v, thr_v, _CMP_LT_OS);  // mask = (abs_v < threshold)
+        __m256d zero  = _mm256_setzero_pd();
+        __m256d res   = _mm256_blendv_pd(v, zero, m);  // blend to 0 or keep v
+        _mm256_storeu_pd(&buffer[i], res);             // store
+    }
+
+    for (; i < count; ++i) {
         if (fabs(buffer[i]) < threshold) {
             buffer[i] = 0.0;
         }
     }
 
-    debug_printf("Noise reduction applied with dynamic threshold %f (RMS: %f, factor: %f)", threshold, rms, threshold_factor);
+    debug_printf("Noise reduction applied with dynamic threshold %f (RMS: %f, factor: %f)",
+                 threshold, rms, threshold_factor);
 }
 
 static void _dtmf_normalize_signal(dtmf_float_t *buffer, dtmf_count_t const count) {
