@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -eo pipefail
 
 # Check if the converter converts the images as per the expected images
 
@@ -29,7 +29,7 @@ check_expected() {
     local img_expected="${DIR_EXPECTED}/${img_in%.png}.${cluster_cnt}.png"
     local img_diff="${DIR_OUT}/${img_in%.png}.${cluster_cnt}.diff.png"
     # check with magick compare if the images are the same, otherwise write false in ok
-    if ! magick compare -metric rmse "${img_actual}" "${img_expected}" "${img_diff}" null: 2>&1 | grep -q "0"; then
+    if !(magick compare -metric rmse "${img_actual}" "${img_expected}" "${img_diff}" >/dev/null 2>&1); then
       echo -e "\e[31mImage ${img_actual} failed the test\e[0m"
       echo "Diff file: ${img_diff}"
       return 1
