@@ -19,7 +19,6 @@ run_perf() {
   echo "Running perf against binary $bin_name"
   perf record -o "$perf_data" \
     --call-graph dwarf \
-    --all-user \
     "$BUILD_DIR/$bin_name" "$@"
 }
 
