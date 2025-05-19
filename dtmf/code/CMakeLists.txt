@@ -10,6 +10,7 @@ option(ENABLE_TESTS "Enable tests" OFF)
 option(ENABLE_COV "Enable coverage reporting" OFF)
 option(ENABLE_SAN "Enable sanitizers " OFF)
 option(ENABLE_PERFMON "Enable likwid perfmon" OFF)
+option(ENABLE_DEBUG_SYMBOLS "Enable debug symbols" OFF)
 
 check_c_compiler_flag(-std=c23 CC_HAVE_C23)
 check_cxx_compiler_flag(-std=c++23 CC_HAVE_CXX23)
@@ -76,6 +77,11 @@ elseif(CMAKE_BUILD_TYPE MATCHES Release)
   message(STATUS "Enabling release build")
   add_compile_definitions(NDEBUG)
   add_compile_options(-Ofast -Werror)
+endif()
+
+if(ENABLE_DEBUG_SYMBOLS)
+  message(STATUS "Enabling debug symbols")
+  add_compile_options(-g3 -Og)
 endif()
 
 # Coverage reporting
