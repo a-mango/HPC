@@ -4,7 +4,7 @@ set -e
 
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 BUILD_DIR="$SCRIPT_DIR/src/build"
-OUT_DIR="$SCRIPT_DIR/perf_data"
+OUT_DIR="$SCRIPT_DIR/reports/perf"
 BIN_CRE=create-sample
 BIN_ANA=analyze
 SIZE=10000000

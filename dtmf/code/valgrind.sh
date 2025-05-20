@@ -5,11 +5,10 @@ set -e
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 BUILD_DIR="$SCRIPT_DIR/build"
 BIN_DIR="$SCRIPT_DIR/bin"
-OUT_DIR="$SCRIPT_DIR/reports/perf"
+OUT_DIR="$SCRIPT_DIR/reports/valgrind"
 BIN_GOE=dtmf_encdec-goertzel
 BIN_FFT=dtmf_encdec-fft
 BIN_ENC=dtmf_encdec-enc
-DATASET_SIZE=10
 BUILD_OPTS="-DCMAKE_BUILD_TYPE=Release -DENABLE_DEBUG_SYMBOLS=ON"
 MAKE_OPTS="-j8"
 TOOLS=("memcheck" "cachegrind" "callgrind")
@@ -73,7 +72,7 @@ input_file=input.txt
 output_file=output.wav
 
 echo "Generating sample data..."
-python -c "print('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789' * $DATASET_SIZE, end='')" >$input_file
+python -c "print('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789' * 10, end='')" >$input_file
 
 analyze_binary $BIN_ENC "encode $input_file $output_file"
 analyze_binary $BIN_GOE "decode $output_file"

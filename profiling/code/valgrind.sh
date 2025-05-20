@@ -4,7 +4,7 @@ set -e
 
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 BUILD_DIR="$SCRIPT_DIR/src/build"
-OUT_DIR="$SCRIPT_DIR/valgrind_data"
+OUT_DIR="$SCRIPT_DIR/reports/valgrind"
 BIN_CRE=create-sample
 BIN_ANA=analyze
 SIZE=100000
