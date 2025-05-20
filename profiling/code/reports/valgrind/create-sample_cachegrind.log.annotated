@@ -1,0 +1,458 @@
+--------------------------------------------------------------------------------
+-- Metadata
+--------------------------------------------------------------------------------
+Invocation:       /usr/bin/cg_annotate /home/acm/Documents/heig/HPC/lab/profiling/code/valgrind_data/create-sample_cachegrind.out
+Command:          /home/acm/Documents/heig/HPC/lab/profiling/code/src/build/create-sample 100000
+Events recorded:  Ir
+Events shown:     Ir
+Event sort order: Ir
+Threshold:        0.1%
+Annotation:       on
+
+--------------------------------------------------------------------------------
+-- Summary
+--------------------------------------------------------------------------------
+Ir__________________ 
+
+220,787,294 (100.0%)  PROGRAM TOTALS
+
+--------------------------------------------------------------------------------
+-- File:function summary
+--------------------------------------------------------------------------------
+  Ir_______________________  file:function
+
+< 76,312,175 (34.6%, 34.6%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/printf_fp.c:
+  52,167,911 (23.6%)           __printf_fp_buffer_1.isra.0
+  18,944,212  (8.6%)           hack_digit
+   5,200,052  (2.4%)           __printf_fp_l_buffer
+
+< 26,600,263 (12.0%, 46.6%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/vfprintf-internal.c:
+  21,700,216  (9.8%)           __printf_buffer
+   4,900,047  (2.2%)           __vfprintf_internal
+
+< 15,910,351  (7.2%, 53.8%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/Xprintf_buffer_write.c:__printf_buffer_write
+
+< 13,317,019  (6.0%, 59.8%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/divrem.c:__mpn_divrem
+
+<  7,905,033  (3.6%, 63.4%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/../sysdeps/x86_64/mul_1.S:__mpn_mul_1
+
+<  7,898,105  (3.6%, 67.0%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S:
+   7,897,748  (3.6%)           __memcpy_avx_unaligned_erms
+
+<  7,755,794  (3.5%, 70.5%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/math/../sysdeps/ieee754/dbl-64/s_sin.c:
+   3,909,490  (1.8%)           __cos_fma
+   3,846,304  (1.7%)           __sin_fma
+
+<  6,700,045  (3.0%, 73.6%)  /home/acm/Documents/heig/HPC/lab/profiling/code/src/create-sample.c:
+   4,300,000  (1.9%)           rand_nd
+   2,400,045  (1.1%)           main
+
+<  5,700,078  (2.6%, 76.1%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/strchr-avx2.S:
+   5,700,057  (2.6%)           __strchrnul_avx2
+
+<  5,393,549  (2.4%, 78.6%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/random_r.c:random_r
+
+<  5,320,946  (2.4%, 81.0%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/printf_buffer_to_file.c:
+   2,617,508  (1.2%)           __printf_buffer_flush_to_file
+   1,200,012  (0.5%)           __printf_buffer_to_file_done
+   1,003,421  (0.5%)           __printf_buffer_to_file_switch
+     500,005  (0.2%)           __printf_buffer_to_file_init
+
+<  4,600,000  (2.1%, 83.1%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/random.c:random
+
+<  4,568,440  (2.1%, 85.1%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/math/../sysdeps/ieee754/dbl-64/e_log.c:__ieee754_log_fma
+
+<  3,500,000  (1.6%, 86.7%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/fprintf.c:fprintf
+
+<  3,300,093  (1.5%, 88.2%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/vfprintf-process-arg.c:__printf_buffer
+
+<  2,812,965  (1.3%, 89.5%)  ???:
+   2,812,953  (1.3%)           ???
+
+<  2,803,802  (1.3%, 90.8%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/strlen-avx2.S:__strlen_avx2
+
+<  2,749,176  (1.2%, 92.0%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/../sysdeps/x86_64/rshift.S:__mpn_rshift
+
+<  2,100,021  (1.0%, 93.0%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/../sysdeps/ieee754/dbl-64/dbl2mpn.c:__mpn_extract_double
+
+<  2,000,013  (0.9%, 93.9%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/printf-parse.h:__printf_buffer
+
+<  1,800,018  (0.8%, 94.7%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/Xprintf_buffer_done.c:__printf_buffer_done
+
+<  1,600,016  (0.7%, 95.4%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/../sysdeps/x86_64/lshift.S:__mpn_lshift
+
+<  1,507,657  (0.7%, 96.1%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../string/bits/string_fortified.h:
+   1,201,371  (0.5%)           __printf_buffer_write
+     306,286  (0.1%)           __printf_fp_buffer_1.isra.0
+
+<  1,200,000  (0.5%, 96.6%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/rand.c:rand
+
+<  1,163,529  (0.5%, 97.2%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../include/printf_buffer.h:
+     600,006  (0.3%)           __printf_buffer_to_file_init
+     562,325  (0.3%)           __printf_fp_buffer_1.isra.0
+
+<  1,000,010  (0.5%, 97.6%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/nptl/alloca_cutoff.c:__libc_alloca_cutoff
+
+<  1,000,000  (0.5%, 98.1%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/math/../sysdeps/x86/fpu/fenv_private.h:
+     500,000  (0.2%)           __sin_fma
+     500,000  (0.2%)           __cos_fma
+
+<    985,338  (0.4%, 98.5%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/cmp.c:__mpn_cmp
+
+<    800,008  (0.4%, 98.9%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../sysdeps/generic/get-rounding-mode.h:__printf_fp_buffer_1.isra.0
+
+<    700,007  (0.3%, 99.2%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../sysdeps/pthread/allocalim.h:__printf_fp_buffer_1.isra.0
+
+<    500,000  (0.2%, 99.4%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/math/./w_log_template.c:log@@GLIBC_2.29
+
+<    400,498  (0.2%, 99.6%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../include/rounding-mode.h:__printf_fp_buffer_1.isra.0
+
+<    300,003  (0.1%, 99.7%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../include/../locale/localeinfo.h:__printf_fp_l_buffer
+
+--------------------------------------------------------------------------------
+-- Function:file summary
+--------------------------------------------------------------------------------
+  Ir_______________________  function:file
+
+> 54,937,035 (24.9%, 24.9%)  __printf_fp_buffer_1.isra.0:
+  52,167,911 (23.6%)           /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/printf_fp.c
+     800,008  (0.4%)           /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../sysdeps/generic/get-rounding-mode.h
+     700,007  (0.3%)           /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../sysdeps/pthread/allocalim.h
+     562,325  (0.3%)           /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../include/printf_buffer.h
+     400,498  (0.2%)           /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../include/rounding-mode.h
+     306,286  (0.1%)           /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../string/bits/string_fortified.h
+
+> 27,000,326 (12.2%, 37.1%)  __printf_buffer:
+  21,700,216  (9.8%)           /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/vfprintf-internal.c
+   3,300,093  (1.5%)           /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/vfprintf-process-arg.c
+   2,000,013  (0.9%)           /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/printf-parse.h
+
+> 18,944,212  (8.6%, 45.7%)  hack_digit:/usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/printf_fp.c
+
+> 17,111,722  (7.8%, 53.4%)  __printf_buffer_write:
+  15,910,351  (7.2%)           /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/Xprintf_buffer_write.c
+   1,201,371  (0.5%)           /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../string/bits/string_fortified.h
+
+> 13,317,019  (6.0%, 59.5%)  __mpn_divrem:/usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/divrem.c
+
+>  7,905,033  (3.6%, 63.1%)  __mpn_mul_1:/usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/../sysdeps/x86_64/mul_1.S
+
+>  7,897,748  (3.6%, 66.6%)  __memcpy_avx_unaligned_erms:/usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+
+>  5,700,057  (2.6%, 69.2%)  __strchrnul_avx2:/usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/strchr-avx2.S
+
+>  5,593,549  (2.5%, 71.7%)  random_r:
+   5,393,549  (2.4%)           /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/random_r.c
+
+>  5,500,055  (2.5%, 74.2%)  __printf_fp_l_buffer:
+   5,200,052  (2.4%)           /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/printf_fp.c
+     300,003  (0.1%)           /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../include/../locale/localeinfo.h
+
+>  4,900,047  (2.2%, 76.5%)  __vfprintf_internal:/usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/vfprintf-internal.c
+
+>  4,668,440  (2.1%, 78.6%)  __ieee754_log_fma:
+   4,568,440  (2.1%)           /usr/src/debug/glibc-2.41-5.fc42.x86_64/math/../sysdeps/ieee754/dbl-64/e_log.c
+
+>  4,600,000  (2.1%, 80.7%)  random:/usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/random.c
+
+>  4,409,490  (2.0%, 82.7%)  __cos_fma:
+   3,909,490  (1.8%)           /usr/src/debug/glibc-2.41-5.fc42.x86_64/math/../sysdeps/ieee754/dbl-64/s_sin.c
+     500,000  (0.2%)           /usr/src/debug/glibc-2.41-5.fc42.x86_64/math/../sysdeps/x86/fpu/fenv_private.h
+
+>  4,346,304  (2.0%, 84.6%)  __sin_fma:
+   3,846,304  (1.7%)           /usr/src/debug/glibc-2.41-5.fc42.x86_64/math/../sysdeps/ieee754/dbl-64/s_sin.c
+     500,000  (0.2%)           /usr/src/debug/glibc-2.41-5.fc42.x86_64/math/../sysdeps/x86/fpu/fenv_private.h
+
+>  4,300,000  (1.9%, 86.6%)  rand_nd:/home/acm/Documents/heig/HPC/lab/profiling/code/src/create-sample.c
+
+>  3,500,000  (1.6%, 88.2%)  fprintf:/usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/fprintf.c
+
+>  2,812,953  (1.3%, 89.4%)  ???:???
+
+>  2,803,802  (1.3%, 90.7%)  __strlen_avx2:/usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/strlen-avx2.S
+
+>  2,749,176  (1.2%, 91.9%)  __mpn_rshift:/usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/../sysdeps/x86_64/rshift.S
+
+>  2,617,688  (1.2%, 93.1%)  __printf_buffer_flush_to_file:
+   2,617,508  (1.2%)           /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/printf_buffer_to_file.c
+
+>  2,400,045  (1.1%, 94.2%)  main:/home/acm/Documents/heig/HPC/lab/profiling/code/src/create-sample.c
+
+>  2,100,021  (1.0%, 95.2%)  __mpn_extract_double:/usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/../sysdeps/ieee754/dbl-64/dbl2mpn.c
+
+>  1,800,018  (0.8%, 96.0%)  __printf_buffer_done:/usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/Xprintf_buffer_done.c
+
+>  1,600,016  (0.7%, 96.7%)  __mpn_lshift:/usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/../sysdeps/x86_64/lshift.S
+
+>  1,200,012  (0.5%, 97.2%)  __printf_buffer_to_file_done:/usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/printf_buffer_to_file.c
+
+>  1,200,000  (0.5%, 97.8%)  rand:/usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/rand.c
+
+>  1,100,011  (0.5%, 98.3%)  __printf_buffer_to_file_init:
+     600,006  (0.3%)           /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../include/printf_buffer.h
+     500,005  (0.2%)           /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/printf_buffer_to_file.c
+
+>  1,003,421  (0.5%, 98.7%)  __printf_buffer_to_file_switch:/usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/printf_buffer_to_file.c
+
+>  1,000,010  (0.5%, 99.2%)  __libc_alloca_cutoff:/usr/src/debug/glibc-2.41-5.fc42.x86_64/nptl/alloca_cutoff.c
+
+>    985,338  (0.4%, 99.6%)  __mpn_cmp:/usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/cmp.c
+
+>    500,000  (0.2%, 99.9%)  log@@GLIBC_2.29:/usr/src/debug/glibc-2.41-5.fc42.x86_64/math/./w_log_template.c
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /home/acm/Documents/heig/HPC/lab/profiling/code/src/create-sample.c
+--------------------------------------------------------------------------------
+Ir______________ 
+
+-- line 422 ----------------------------------------
+        .             {"Yellowknife", -4.3},
+        .             {"Yerevan", 12.4},
+        .             {"Yinchuan", 9.0},
+        .             {"Zagreb", 10.7},
+        .             {"Zanzibar City", 26.0},
+        .             {"Zürich", 9.3},
+        .         };
+        .         
+  500,000 (0.2%)  double rand_nd(double mean, double stddev) {
+        .           static double U, V;
+        .           static int phase = 0;
+        .           double Z;
+        .         
+  350,000 (0.2%)    if (phase == 0) {
+  350,000 (0.2%)      U = (rand() + 1.) / (RAND_MAX + 2.);
+  300,000 (0.1%)      V = rand() / (RAND_MAX + 1.);
+  850,000 (0.4%)      Z = sqrt(-2 * log(U)) * sin(2 * M_PI * V);
+        .           } else {
+  850,000 (0.4%)      Z = sqrt(-2 * log(U)) * cos(2 * M_PI * V);
+        .           }
+  300,000 (0.1%)    phase = 1 - phase;
+        .         
+  300,000 (0.1%)    return Z * stddev + mean;
+  500,000 (0.2%)  }
+        .         
+        5 (0.0%)  int main(int argc, char **argv) {
+        3 (0.0%)    if (argc <= 1) {
+        .             fprintf(stderr, "usage: create-sample <amount>\n");
+        .             return EXIT_FAILURE;
+        .           }
+        .         
+        2 (0.0%)    clock_t tstart = clock();
+        4 (0.0%)    FILE *fh = fopen("measurements.txt", "w");
+        2 (0.0%)    if (!fh) {
+        .             perror("error opening file for writing");
+        .             return EXIT_FAILURE;
+        .           }
+        .         
+        5 (0.0%)    long n = strtol(argv[1], NULL, 10);
+        .           int ncities = sizeof(data) / sizeof(data[0]);
+  300,005 (0.1%)    for (int i = 0; i < n; i++) {
+1,100,000 (0.5%)      int c = rand() % ncities;
+  500,000 (0.2%)      double measurement = rand_nd(data[c].mean, 10);
+  500,000 (0.2%)      fprintf(fh, "%s;%.1f\n", data[c].city, measurement);
+        .           }
+        .         
+        2 (0.0%)    fclose(fh);
+        5 (0.0%)    printf("Created %ld measurements in %f ms\n", n,
+        5 (0.0%)           (double)(clock() - tstart) * 1000 / (double)CLOCKS_PER_SEC);
+        1 (0.0%)    return EXIT_SUCCESS;
+        6 (0.0%)  
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /usr/src/debug/glibc-2.41-5.fc42.x86_64/math/../sysdeps/ieee754/dbl-64/e_log.c
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- /usr/src/debug/glibc-2.41-5.fc42.x86_64/math/../sysdeps/ieee754/dbl-64/e_log.c
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /usr/src/debug/glibc-2.41-5.fc42.x86_64/math/../sysdeps/ieee754/dbl-64/s_sin.c
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- /usr/src/debug/glibc-2.41-5.fc42.x86_64/math/../sysdeps/ieee754/dbl-64/s_sin.c
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /usr/src/debug/glibc-2.41-5.fc42.x86_64/math/../sysdeps/x86/fpu/fenv_private.h
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- /usr/src/debug/glibc-2.41-5.fc42.x86_64/math/../sysdeps/x86/fpu/fenv_private.h
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /usr/src/debug/glibc-2.41-5.fc42.x86_64/math/./w_log_template.c
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- /usr/src/debug/glibc-2.41-5.fc42.x86_64/math/./w_log_template.c
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /usr/src/debug/glibc-2.41-5.fc42.x86_64/nptl/alloca_cutoff.c
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- /usr/src/debug/glibc-2.41-5.fc42.x86_64/nptl/alloca_cutoff.c
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../include/../locale/localeinfo.h
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../include/../locale/localeinfo.h
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../include/printf_buffer.h
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../include/printf_buffer.h
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../include/rounding-mode.h
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../include/rounding-mode.h
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../string/bits/string_fortified.h
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../string/bits/string_fortified.h
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../sysdeps/generic/get-rounding-mode.h
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../sysdeps/generic/get-rounding-mode.h
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../sysdeps/pthread/allocalim.h
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../sysdeps/pthread/allocalim.h
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/Xprintf_buffer_done.c
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/Xprintf_buffer_done.c
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/Xprintf_buffer_write.c
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/Xprintf_buffer_write.c
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/fprintf.c
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/fprintf.c
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/printf-parse.h
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/printf-parse.h
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/printf_buffer_to_file.c
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/printf_buffer_to_file.c
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/printf_fp.c
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/printf_fp.c
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/vfprintf-internal.c
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/vfprintf-internal.c
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/vfprintf-process-arg.c
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/vfprintf-process-arg.c
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/../sysdeps/ieee754/dbl-64/dbl2mpn.c
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/../sysdeps/ieee754/dbl-64/dbl2mpn.c
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/../sysdeps/x86_64/lshift.S
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/../sysdeps/x86_64/lshift.S
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/../sysdeps/x86_64/mul_1.S
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/../sysdeps/x86_64/mul_1.S
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/../sysdeps/x86_64/rshift.S
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/../sysdeps/x86_64/rshift.S
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/cmp.c
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/cmp.c
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/divrem.c
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/divrem.c
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/rand.c
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/rand.c
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/random.c
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/random.c
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/random_r.c
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/random_r.c
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- /usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/strchr-avx2.S
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- /usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/strchr-avx2.S
+
+--------------------------------------------------------------------------------
+-- Annotated source file: /usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/strlen-avx2.S
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- /usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/strlen-avx2.S
+
+--------------------------------------------------------------------------------
+-- Annotation summary
+--------------------------------------------------------------------------------
+Ir_________________ 
+
+  6,700,045  (3.0%)    annotated: files known & above threshold & readable, line numbers known
+          0            annotated: files known & above threshold & readable, line numbers unknown
+          0          unannotated: files known & above threshold & two or more non-identical
+210,691,942 (95.4%)  unannotated: files known & above threshold & unreadable 
+    582,342  (0.3%)  unannotated: files known & below threshold
+  2,812,965  (1.3%)  unannotated: files unknown
+

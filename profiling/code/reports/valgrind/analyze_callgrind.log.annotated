@@ -1,0 +1,162 @@
+--------------------------------------------------------------------------------
+Profile data file '/home/acm/Documents/heig/HPC/lab/profiling/code/valgrind_data/analyze_callgrind.out' (creator: callgrind-3.25.0)
+--------------------------------------------------------------------------------
+I1 cache: 
+D1 cache: 
+LL cache: 
+Timerange: Basic block 0 - 166113733
+Trigger: Program termination
+Profiled target:  /home/acm/Documents/heig/HPC/lab/profiling/code/src/build/analyze (PID 124606, part 1)
+Events recorded:  Ir
+Events shown:     Ir
+Event sort order: Ir
+Thresholds:       99
+Include dirs:     
+User annotated:   
+Auto-annotation:  on
+
+--------------------------------------------------------------------------------
+Ir                   
+--------------------------------------------------------------------------------
+738,403,854 (100.0%)  PROGRAM TOTALS
+
+--------------------------------------------------------------------------------
+Ir                    file:function
+--------------------------------------------------------------------------------
+419,166,656 (56.77%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/strcmp-avx2.S:__strcmp_avx2 [/usr/lib64/libc.so.6]
+230,939,800 (31.28%)  src/main.c:main [/home/acm/Documents/heig/HPC/lab/profiling/code/src/build/analyze]
+ 35,079,341 ( 4.75%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/strtod_l.c:____strtod_l_internal [/usr/lib64/libc.so.6]
+ 10,919,687 ( 1.48%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/strtod_l.c:str_to_mpn.part.0.constprop.0 [/usr/lib64/libc.so.6]
+  5,910,836 ( 0.80%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/libio/iogetline.c:_IO_getline_info [/usr/lib64/libc.so.6]
+  5,600,051 ( 0.76%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/libio/iofgets.c:fgets [/usr/lib64/libc.so.6]
+  5,535,044 ( 0.75%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/strtod_l.c:round_and_return [/usr/lib64/libc.so.6]
+  4,466,000 ( 0.60%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/../sysdeps/x86_64/lshift.S:__mpn_lshift [/usr/lib64/libc.so.6]
+  3,559,880 ( 0.48%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S:__memcpy_chk_avx_unaligned_erms [/usr/lib64/libc.so.6]
+  2,100,021 ( 0.28%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/strchr-avx2.S:__strchr_avx2 [/usr/lib64/libc.so.6]
+  1,912,708 ( 0.26%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/memchr-avx2.S:__memchr_avx2 [/usr/lib64/libc.so.6]
+  1,598,272 ( 0.22%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/../sysdeps/ieee754/dbl-64/mpn2dbl.c:__mpn_construct_double [/usr/lib64/libc.so.6]
+  1,428,924 ( 0.19%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/strlen-avx2.S:__strlen_avx2 [/usr/lib64/libc.so.6]
+  1,354,218 ( 0.18%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S:__memcpy_avx_unaligned_erms [/usr/lib64/libc.so.6]
+  1,200,011 ( 0.16%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/libio/libioP.h:fgets
+  1,198,704 ( 0.16%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/../include/rounding-mode.h:round_away [/usr/lib64/libc.so.6]
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: src/main.c
+--------------------------------------------------------------------------------
+Ir                   
+
+-- line 4 ----------------------------------------
+          .           
+          .           struct result {
+          .             char city[100];
+          .             int count;
+          .             double sum, min, max;
+          .           };
+          .           
+          .           static int getcity(const char *city, struct result results[], int nresults) {
+ 62,181,269 ( 8.42%)    for (int i = 0; i < nresults; i++) {
+165,646,343 (22.43%)      if (strcmp(results[i].city, city) == 0) {
+419,104,026 (56.76%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/strcmp-avx2.S:__strcmp_avx2 (20,693,344x)
+        769 ( 0.00%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (1x)
+          .                 return i;
+          .               }
+          .             }
+          .           
+          .             return -1;
+          .           }
+          .           
+          .           static int cmp(const void *ptr_a, const void *ptr_b) {
+      6,120 ( 0.00%)    return strcmp(((struct result *)ptr_a)->city, ((struct result *)ptr_b)->city);
+     62,630 ( 0.01%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/strcmp-avx2.S:__strcmp_avx2 (3,060x)
+          .           }
+          .           
+          6 ( 0.00%)  int main(int argc, const char **argv) {
+          .             const char *file = "measurements.txt";
+          2 ( 0.00%)    if (argc > 1) {
+          .               file = argv[1];
+          .             }
+          .           
+          8 ( 0.00%)    FILE *fh = fopen(file, "r");
+        713 ( 0.00%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (1x)
+      2,212 ( 0.00%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/libio/iofopen.c:fopen@@GLIBC_2.2.5 (1x)
+          2 ( 0.00%)    if (!fh) {
+          .               perror("error opening file");
+          .               exit(EXIT_FAILURE);
+          .             }
+          .           
+          .             struct result results[450];
+          3 ( 0.00%)    int nresults = 0;
+          .             char buf[1 << 10];
+    700,011 ( 0.09%)    while (fgets(buf, 1 << 10, fh)) {
+ 17,147,527 ( 2.32%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/libio/iofgets.c:fgets (100,001x)
+        734 ( 0.00%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (1x)
+    400,004 ( 0.05%)      char *pos = strchr(buf, ';');
+  2,100,000 ( 0.28%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/strchr-avx2.S:__strchr_avx2 (100,000x)
+        729 ( 0.00%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (1x)
+    100,000 ( 0.01%)      *pos = 0x0;
+    500,004 ( 0.07%)      double measurement = strtod(pos + 1, NULL);
+ 66,672,326 ( 9.03%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/strtod.c:strtod (100,000x)
+        685 ( 0.00%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (1x)
+          .           
+          .               int c = getcity(buf, results, nresults);
+          .               if (c < 0) {
+      2,069 ( 0.00%)        strcpy(results[nresults].city, buf);
+      9,909 ( 0.00%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/strcpy-avx2.S:__strcpy_avx2 (413x)
+        750 ( 0.00%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (1x)
+        826 ( 0.00%)        results[nresults].sum = measurement;
+        826 ( 0.00%)        results[nresults].max = measurement;
+          .                 results[nresults].min = measurement;
+        413 ( 0.00%)        results[nresults].count = 1;
+      1,239 ( 0.00%)        nresults++;
+          .               } else {
+    597,522 ( 0.08%)        results[c].sum += measurement;
+     99,587 ( 0.01%)        results[c].count += 1;
+    298,761 ( 0.04%)        if (results[c].min > measurement) {
+      2,080 ( 0.00%)          results[c].min = measurement;
+          .                 }
+    398,348 ( 0.05%)        if (results[c].max < measurement) {
+      4,238 ( 0.00%)          results[c].max = measurement;
+          .                 }
+          .               }
+          .             }
+          .           
+         10 ( 0.00%)    qsort(results, (size_t)nresults, sizeof(*results), cmp);
+    174,458 ( 0.02%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/qsort.c:qsort (1x)
+        689 ( 0.00%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (1x)
+          .           
+      1,245 ( 0.00%)    for (int i = 0; i < nresults; i++) {
+      4,960 ( 0.00%)      printf("%s=%.1f/%.1f/%.1f%s", results[i].city, results[i].min,
+  2,078,022 ( 0.28%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/printf.c:printf (413x)
+        685 ( 0.00%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (1x)
+          .                      results[i].sum / results[i].count, results[i].max,
+          .                      i < nresults ? ", " : "");
+          .             }
+          7 ( 0.00%)    puts("\n");
+        705 ( 0.00%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (1x)
+        542 ( 0.00%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/libio/ioputs.c:puts (1x)
+          .           
+          7 ( 0.00%)    fclose(fh);
+        734 ( 0.00%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (1x)
+        526 ( 0.00%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/libio/iofclose.c:fclose@@GLIBC_2.2.5 (1x)
+         10 ( 0.00%)  }
+--------------------------------------------------------------------------------
+The following files chosen for auto-annotation could not be found:
+--------------------------------------------------------------------------------
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/libio/iofgets.c
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/libio/iogetline.c
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/libio/libioP.h
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/../include/rounding-mode.h
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/../sysdeps/ieee754/dbl-64/mpn2dbl.c
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/../sysdeps/x86_64/lshift.S
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/strtod_l.c
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/memchr-avx2.S
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/strchr-avx2.S
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/strcmp-avx2.S
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/strlen-avx2.S
+
+--------------------------------------------------------------------------------
+Ir                   
+--------------------------------------------------------------------------------
+230,945,920 (31.28%)  events annotated
+

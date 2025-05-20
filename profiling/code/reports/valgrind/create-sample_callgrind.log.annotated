@@ -1,0 +1,187 @@
+--------------------------------------------------------------------------------
+Profile data file '/home/acm/Documents/heig/HPC/lab/profiling/code/valgrind_data/create-sample_callgrind.out' (creator: callgrind-3.25.0)
+--------------------------------------------------------------------------------
+I1 cache: 
+D1 cache: 
+LL cache: 
+Timerange: Basic block 0 - 43811368
+Trigger: Program termination
+Profiled target:  /home/acm/Documents/heig/HPC/lab/profiling/code/src/build/create-sample 100000 (PID 124495, part 1)
+Events recorded:  Ir
+Events shown:     Ir
+Event sort order: Ir
+Thresholds:       99
+Include dirs:     
+User annotated:   
+Auto-annotation:  on
+
+--------------------------------------------------------------------------------
+Ir                   
+--------------------------------------------------------------------------------
+220,145,060 (100.0%)  PROGRAM TOTALS
+
+--------------------------------------------------------------------------------
+Ir                   file:function
+--------------------------------------------------------------------------------
+51,778,106 (23.52%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/printf_fp.c:__printf_fp_buffer_1.isra.0 [/usr/lib64/libc.so.6]
+21,700,216 ( 9.86%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/vfprintf-internal.c:__printf_buffer [/usr/lib64/libc.so.6]
+18,944,294 ( 8.61%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/printf_fp.c:hack_digit [/usr/lib64/libc.so.6]
+15,910,351 ( 7.23%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/Xprintf_buffer_write.c:__printf_buffer_write [/usr/lib64/libc.so.6]
+13,317,109 ( 6.05%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/divrem.c:__mpn_divrem [/usr/lib64/libc.so.6]
+ 7,905,054 ( 3.59%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/../sysdeps/x86_64/mul_1.S:__mpn_mul_1 [/usr/lib64/libc.so.6]
+ 7,897,759 ( 3.59%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S:__memcpy_avx_unaligned_erms [/usr/lib64/libc.so.6]
+ 5,700,057 ( 2.59%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/strchr-avx2.S:__strchrnul_avx2 [/usr/lib64/libc.so.6]
+ 5,393,549 ( 2.45%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/random_r.c:random_r [/usr/lib64/libc.so.6]
+ 5,200,052 ( 2.36%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/printf_fp.c:__printf_fp_l_buffer [/usr/lib64/libc.so.6]
+ 4,900,047 ( 2.23%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/vfprintf-internal.c:__vfprintf_internal [/usr/lib64/libc.so.6]
+ 4,600,012 ( 2.09%)  src/create-sample.c:rand_nd [/home/acm/Documents/heig/HPC/lab/profiling/code/src/build/create-sample]
+ 4,600,000 ( 2.09%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/random.c:random [/usr/lib64/libc.so.6]
+ 4,568,440 ( 2.08%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/math/../sysdeps/ieee754/dbl-64/e_log.c:__ieee754_log_fma [/usr/lib64/libm.so.6]
+ 3,909,490 ( 1.78%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/math/../sysdeps/ieee754/dbl-64/s_sin.c:__cos_fma [/usr/lib64/libm.so.6]
+ 3,846,304 ( 1.75%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/math/../sysdeps/ieee754/dbl-64/s_sin.c:__sin_fma [/usr/lib64/libm.so.6]
+ 3,500,000 ( 1.59%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/fprintf.c:fprintf [/usr/lib64/libc.so.6]
+ 3,300,093 ( 1.50%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/vfprintf-process-arg.c:__printf_buffer
+ 2,803,802 ( 1.27%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/strlen-avx2.S:__strlen_avx2 [/usr/lib64/libc.so.6]
+ 2,749,176 ( 1.25%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/../sysdeps/x86_64/rshift.S:__mpn_rshift [/usr/lib64/libc.so.6]
+ 2,617,508 ( 1.19%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/printf_buffer_to_file.c:__printf_buffer_flush_to_file [/usr/lib64/libc.so.6]
+ 2,600,079 ( 1.18%)  src/create-sample.c:main [/home/acm/Documents/heig/HPC/lab/profiling/code/src/build/create-sample]
+ 2,100,021 ( 0.95%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/../sysdeps/ieee754/dbl-64/dbl2mpn.c:__mpn_extract_double [/usr/lib64/libc.so.6]
+ 2,000,013 ( 0.91%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/printf-parse.h:__printf_buffer
+ 1,800,018 ( 0.82%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/Xprintf_buffer_done.c:__printf_buffer_done [/usr/lib64/libc.so.6]
+ 1,600,016 ( 0.73%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/../sysdeps/x86_64/lshift.S:__mpn_lshift [/usr/lib64/libc.so.6]
+ 1,201,371 ( 0.55%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../string/bits/string_fortified.h:__printf_buffer_write
+ 1,200,012 ( 0.55%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/printf_buffer_to_file.c:__printf_buffer_to_file_done [/usr/lib64/libc.so.6]
+ 1,200,000 ( 0.55%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/rand.c:rand [/usr/lib64/libc.so.6]
+ 1,112,696 ( 0.51%)  ???:0x000000000494da50 [???]
+ 1,003,421 ( 0.46%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/printf_buffer_to_file.c:__printf_buffer_to_file_switch [/usr/lib64/libc.so.6]
+ 1,000,010 ( 0.45%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/nptl/alloca_cutoff.c:__libc_alloca_cutoff [/usr/lib64/libc.so.6]
+   985,338 ( 0.45%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/cmp.c:__mpn_cmp [/usr/lib64/libc.so.6]
+   800,008 ( 0.36%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../sysdeps/generic/get-rounding-mode.h:__printf_fp_buffer_1.isra.0
+   600,006 ( 0.27%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../include/printf_buffer.h:__printf_buffer_to_file_init
+   600,006 ( 0.27%)  ???:0x000000000494d920 [???]
+   562,325 ( 0.26%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../include/printf_buffer.h:__printf_fp_buffer_1.isra.0
+   500,005 ( 0.23%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../sysdeps/pthread/allocalim.h:__printf_fp_buffer_1.isra.0
+   500,005 ( 0.23%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/printf_buffer_to_file.c:__printf_buffer_to_file_init [/usr/lib64/libc.so.6]
+   500,000 ( 0.23%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/math/../sysdeps/x86/fpu/fenv_private.h:__cos_fma
+   500,000 ( 0.23%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/math/../sysdeps/x86/fpu/fenv_private.h:__sin_fma
+   500,000 ( 0.23%)  /usr/src/debug/glibc-2.41-5.fc42.x86_64/math/./w_log_template.c:log@@GLIBC_2.29 [/usr/lib64/libm.so.6]
+
+--------------------------------------------------------------------------------
+-- Auto-annotated source: src/create-sample.c
+--------------------------------------------------------------------------------
+Ir                 
+
+-- line 422 ----------------------------------------
+        .               {"Yellowknife", -4.3},
+        .               {"Yerevan", 12.4},
+        .               {"Yinchuan", 9.0},
+        .               {"Zagreb", 10.7},
+        .               {"Zanzibar City", 26.0},
+        .               {"Zürich", 9.3},
+        .           };
+        .           
+  500,000 ( 0.23%)  double rand_nd(double mean, double stddev) {
+        .             static double U, V;
+        .             static int phase = 0;
+        .             double Z;
+        .           
+  350,000 ( 0.16%)    if (phase == 0) {
+  400,000 ( 0.18%)      U = (rand() + 1.) / (RAND_MAX + 2.);
+2,848,387 ( 1.29%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/rand.c:rand (50,000x)
+  350,000 ( 0.16%)      V = rand() / (RAND_MAX + 1.);
+2,848,387 ( 1.29%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/rand.c:rand (50,000x)
+  950,008 ( 0.43%)      Z = sqrt(-2 * log(U)) * sin(2 * M_PI * V);
+2,684,220 ( 1.22%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/math/./w_log_template.c:log@@GLIBC_2.29 (50,000x)
+4,346,304 ( 1.97%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/math/../sysdeps/ieee754/dbl-64/s_sin.c:__sin_fma (50,000x)
+    1,310 ( 0.00%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (2x)
+        .             } else {
+  950,004 ( 0.43%)      Z = sqrt(-2 * log(U)) * cos(2 * M_PI * V);
+2,684,220 ( 1.22%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/math/./w_log_template.c:log@@GLIBC_2.29 (50,000x)
+4,409,490 ( 2.00%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/math/../sysdeps/ieee754/dbl-64/s_sin.c:__cos_fma (50,000x)
+      663 ( 0.00%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (1x)
+        .             }
+  300,000 ( 0.14%)    phase = 1 - phase;
+        .           
+  300,000 ( 0.14%)    return Z * stddev + mean;
+  500,000 ( 0.23%)  }
+        .           
+        5 ( 0.00%)  int main(int argc, char **argv) {
+        3 ( 0.00%)    if (argc <= 1) {
+        .               fprintf(stderr, "usage: create-sample <amount>\n");
+        .               return EXIT_FAILURE;
+        .             }
+        .           
+        7 ( 0.00%)    clock_t tstart = clock();
+      681 ( 0.00%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (1x)
+       35 ( 0.00%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/time/../sysdeps/unix/sysv/linux/clock.c:clock (1x)
+        9 ( 0.00%)    FILE *fh = fopen("measurements.txt", "w");
+      713 ( 0.00%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (1x)
+    2,216 ( 0.00%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/libio/iofopen.c:fopen@@GLIBC_2.2.5 (1x)
+        2 ( 0.00%)    if (!fh) {
+        .               perror("error opening file for writing");
+        .               return EXIT_FAILURE;
+        .             }
+        .           
+       10 ( 0.00%)    long n = strtol(argv[1], NULL, 10);
+      751 ( 0.00%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (1x)
+      207 ( 0.00%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/../stdlib/strtol.c:strtol (1x)
+        .             int ncities = sizeof(data) / sizeof(data[0]);
+  300,005 ( 0.14%)    for (int i = 0; i < n; i++) {
+1,200,004 ( 0.55%)      int c = rand() % ncities;
+5,696,775 ( 2.59%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/rand.c:rand (100,000x)
+      680 ( 0.00%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (1x)
+  500,000 ( 0.23%)      double measurement = rand_nd(data[c].mean, 10);
+24,422,993 (11.09%)  => src/create-sample.c:rand_nd (100,000x)
+  600,004 ( 0.27%)      fprintf(fh, "%s;%.1f\n", data[c].city, measurement);
+187,242,372 (85.05%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/fprintf.c:fprintf (100,000x)
+      774 ( 0.00%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (1x)
+        .             }
+        .           
+        7 ( 0.00%)    fclose(fh);
+      693 ( 0.00%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (1x)
+      699 ( 0.00%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/libio/iofclose.c:fclose@@GLIBC_2.2.5 (1x)
+       10 ( 0.00%)    printf("Created %ld measurements in %f ms\n", n,
+    6,242 ( 0.00%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/printf.c:printf (1x)
+      726 ( 0.00%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/elf/../sysdeps/x86_64/dl-trampoline.h:_dl_runtime_resolve_xsave (1x)
+        6 ( 0.00%)           (double)(clock() - tstart) * 1000 / (double)CLOCKS_PER_SEC);
+       35 ( 0.00%)  => /usr/src/debug/glibc-2.41-5.fc42.x86_64/time/../sysdeps/unix/sysv/linux/clock.c:clock (1x)
+        1 ( 0.00%)    return EXIT_SUCCESS;
+        6 ( 0.00%)  }
+--------------------------------------------------------------------------------
+The following files chosen for auto-annotation could not be found:
+--------------------------------------------------------------------------------
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/math/../sysdeps/ieee754/dbl-64/e_log.c
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/math/../sysdeps/ieee754/dbl-64/s_sin.c
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/math/../sysdeps/x86/fpu/fenv_private.h
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/math/./w_log_template.c
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/nptl/alloca_cutoff.c
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../include/printf_buffer.h
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../string/bits/string_fortified.h
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../sysdeps/generic/get-rounding-mode.h
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/../sysdeps/pthread/allocalim.h
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/Xprintf_buffer_done.c
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/Xprintf_buffer_write.c
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/fprintf.c
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/printf-parse.h
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/printf_buffer_to_file.c
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/printf_fp.c
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/vfprintf-internal.c
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdio-common/vfprintf-process-arg.c
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/../sysdeps/ieee754/dbl-64/dbl2mpn.c
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/../sysdeps/x86_64/lshift.S
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/../sysdeps/x86_64/mul_1.S
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/../sysdeps/x86_64/rshift.S
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/cmp.c
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/divrem.c
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/rand.c
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/random.c
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/stdlib/random_r.c
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/strchr-avx2.S
+  /usr/src/debug/glibc-2.41-5.fc42.x86_64/string/../sysdeps/x86_64/multiarch/strlen-avx2.S
+
+--------------------------------------------------------------------------------
+Ir                 
+--------------------------------------------------------------------------------
+7,200,091 ( 3.27%)  events annotated
+

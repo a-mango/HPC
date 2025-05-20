@@ -1,0 +1,8 @@
+==124591== Cachegrind, a high-precision tracing profiler
+==124591== Copyright (C) 2002-2024, and GNU GPL'd, by Nicholas Nethercote et al.
+==124591== Using Valgrind-3.25.0 and LibVEX; rerun with -h for copyright info
+==124591== Command: /home/acm/Documents/heig/HPC/lab/profiling/code/src/build/analyze
+==124591== Parent PID: 124479
+==124591== 
+==124591== 
+==124591== I refs:        774,857,421

@@ -1,0 +1,12 @@
+==124495== Callgrind, a call-graph generating cache profiler
+==124495== Copyright (C) 2002-2017, and GNU GPL'd, by Josef Weidendorfer et al.
+==124495== Using Valgrind-3.25.0 and LibVEX; rerun with -h for copyright info
+==124495== Command: /home/acm/Documents/heig/HPC/lab/profiling/code/src/build/create-sample 100000
+==124495== Parent PID: 124479
+==124495== 
+==124495== For interactive control, run 'callgrind_control -h'.
+==124495== 
+==124495== Events    : Ir
+==124495== Collected : 220145060
+==124495== 
+==124495== I   refs:      220,145,060
