@@ -49,7 +49,7 @@ Ce programme trie les mesures. Le Flame Graph @fig-perf_analyze tiré des donné
   caption: [Flame Graph de l'exécution du programme `analyze`],
 ) <fig-perf_analyze>
 
-Une refonte avec une table de hachage (de complexité $O(1)$ pour les insertions/recherches) ou un tri préalable des entrées pour permettre une recherche binaire $(O(log n))$ réduirait drastiquement le temps d'exécution (surtout pour un grands jeu de données).
+Une refonte avec une table de hachage (de complexité $O(1)$ pour les insertions/recherches) ou un tri préalable des entrées pour permettre une recherche binaire en $(O(log n))$ qui réduirait drastiquement le temps d'exécution (surtout pour un grands jeu de données).
 
 = DTMF
 
@@ -89,7 +89,7 @@ Perf révèle un goulot d'étranglement dans le pré-traitement car la fonction 
   caption: [Flame Graph de l'exécution du décodage par le programme DTMF version Goerzel],
 ) <fig-dtmf_goe>
 
-Memcheck ne détecte pas de fuite de mémoire. Ce résultat est a prendre avec précaution car `libasan` révèle des fuites de mémoire pour certains paramétrages. Callgrind indique une charge de calcul élevée pour les fonctions de filtre bandpass et de détection Goertzel. Ce résultat fait sens puisque ces deux fonctions effectuent des calcules mathématiques qui n'ont pas été optimisés.
+Memcheck ne détecte pas de fuite de mémoire. Ce résultat est a prendre avec précaution car `libasan` révèle des fuites de mémoire pour certains paramétrages. Callgrind indique une charge de calcul élevée pour les fonctions de filtre passe-bande et de détection Goertzel. Ce résultat fait sens puisque ces deux fonctions effectuent des calcules mathématiques qui n'ont pas été optimisés.
 
 Des optimisation potentielles seraient :
 - `_dtmf_apply_bandpass` : utiliser un filtre FIR plutôt que IIR afin de pouvoir vectoriser la fonction, voir directement utiliser FFTW3 pour calculer le filtre.
@@ -104,7 +104,7 @@ Des optimisation potentielles seraient :
 
 Le programme analysé avec Perf et Valgrind est le décodeur DTMF basé sur l'algorithme de transformation de Fourrier rapide. Les données de Perf sont utilisées pour générer le Flame Graph présenté à @fig-dtmf_fft.
 
-On observe avec les données de Perf que la fonction `dtmf_decode` passe approximativement la moitié du temps de processeur au prétraitement et l'autre moitié à l'application de la FFT au travers de la librairie FFTW3. Cette librairie est populaire et déjà bien optimisée et le Flame Graph ne révèle pas de comportement anormal lors de l'invocation de la FFT. Dans le cas du prétraitement --- à l'instar du décodeur basé sur l'algorithme Goertzel --- la fonction de filtre bandpass est la plus chaude sur le processeur.
+On observe avec les données de Perf que la fonction `dtmf_decode` passe approximativement la moitié du temps de processeur au prétraitement et l'autre moitié à l'application de la FFT au travers de la librairie FFTW3. Cette librairie est populaire et déjà bien optimisée et le Flame Graph ne révèle pas de comportement anormal lors de l'invocation de la FFT. Dans le cas du prétraitement --- à l'instar du décodeur basé sur l'algorithme Goertzel --- la fonction de filtre passe-bande est la plus chaude sur le processeur.
 
 #figure(
   image("assets/dtmf_fft.png", width: 80%),
@@ -119,13 +119,26 @@ Quelques améliorations potentielles sont les suivantes :
   - Précalculer les indices de fréquences `low_idx` et `hi_idx`.
   - Vectorise le calcul des hypoténuses.
 
+== Optimisation du filtre bandpass
+
+L'analyse a montré que le filtre passe-bande --- utilisé par les 2 versions du décodeur --- est un goulot d'étranglement majeur. L'optimisation proposée est donc de remplacer le filtre IIR par un filtre FIR vectorisé.
+
+La première tentative d'optimisation de la fonction passe-bande est effectuée avec un filtre FIR. Cette solution a engendré des pertes de performance. Du au fait que FIR est moins efficace que IIR si pas linéarisé. Des performances similaires étaient pourtant attendues et il semble que l'implémentation n'était pas efficace.
+
+#figure(
+  image("./assets/dtmf_goe_post.png", width: 80%),
+  caption: [Flame Graph de l'exécution du décodage par le programme DTMF version Goerzel après modification du filtre passe-bande],
+) <fig-dtmf_goe_post>
+
+Une deuxième tentative d'optimisation est faite en utilisant SIMD avec le filtre FIR. Cette solution n'a pas non plus abouti car le nouveau filtre s'avère être trop coûteux en temps de calcul. Les résultats obtenus au travers d'une analyse avec Perf et Valgrind présentés dans @fig-dtmf_goe_post montrent que le filtre présente d'encore moins bonnes performances que la première tentative d'amélioration. Le code a été maintenu en commentaire dans le fichier `dtmf_common.c`.
+
+Aucune autres optimisations n'ont été tentées.
+
 = Conclusion
 
 L'utilisation de Perf et de la suite d'outils Valgrind permet de mettre en lumière les hotspots du code. Perf est un outil efficace pour identifier les fonctions chaudes sur le processeur et les chaînes d'interruptions. Valgrind permet de détecter les fuites de mémoire, d'analyser la localité des données et les chaînes d'appel. Les deux outils sont complémentaires et permettent d'optimiser le code de manière significative.
 
-La création de Flame Graphs permet de visualiser les hotspots du code et d'identifier les fonctions qui consomment le plus de temps CPU. Ces graphiques sont particulièrement utiles pour comprendre le comportement du code et pour identifier les fonctions couteuses.
+La création de Flame Graphs permet de visualiser les hotspots du code et d'identifier les fonctions qui consomment le plus de temps CPU. Ces graphiques sont particulièrement utiles pour comprendre le comportement du code et pour identifier les fonctions couteuses. L'utilisation de ces outils permet d'obtenir une vue plus générale du comportement du programme et permet ainsi de mieux comprendre les goulots d'étranglements, menant à la découverte d'opportunités d'optimisation qui seraient potentiellement passées inaperçues si on avait uniquement observé le code.
 
-L'utilisation de ces outils permet d'obtenir une vue plus générale du comportement du programme et permet ainsi de mieux comprendre les goulots d'étranglements, menant à la découverte d'opportunités d'optimisation qui seraient potentiellement passées inaperçues si on avait uniquement observé le code.
-
-Ultimement, l'utilisation de ces outils est essentielle pour cibler les efforts d'optimisation sur les parties du code qui en ont le plus besoin.
+Ultimement, l'utilisation d'outils d'analyse est essentielle pour cibler les efforts d'optimisation sur les parties du code qui en ont le plus besoin.
 
