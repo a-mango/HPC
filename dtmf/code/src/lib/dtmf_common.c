@@ -283,6 +283,62 @@ static void _dtmf_apply_bandpass(dtmf_float_t *buffer, dtmf_count_t const count)
     }
 }
 
+// FIR + SIMD variant
+// static void _dtmf_apply_bandpass(dtmf_float_t *buffer, dtmf_count_t const count) {
+//     // FIR filter parameters
+//     const int          fir_order     = 7;
+//     const dtmf_float_t fir_coeffs[7] = {0.0220102, 0.0921197, 0.2392328, 0.3152551, 0.2392328, 0.0921197, 0.0220102};
+//
+//     // Circular buffer for previous samples
+//     static dtmf_float_t state[7]  = {0};
+//     static int          state_idx = 0;
+//
+//     // Load symmetric coefficient pairs into AVX registers
+//     const __m256d coeffs_pairs = _mm256_setr_pd(
+//         fir_coeffs[0],
+//         fir_coeffs[1],
+//         fir_coeffs[2],
+//         0.0);
+//
+//     // Process each sample in the buffer
+//     for (dtmf_count_t i = 0; i < count; i++) {
+//         // Update circular buffer with new sample
+//         state[state_idx]      = buffer[i];
+//         const int current_idx = state_idx;
+//         state_idx             = (state_idx + 1) % fir_order;
+//
+//         // Compute indices for symmetric taps on the buffer
+//         const int idx[7] = {
+//             current_idx,
+//             (current_idx - 1 + 7) % 7,
+//             (current_idx - 2 + 7) % 7,
+//             (current_idx - 3 + 7) % 7,
+//             (current_idx - 4 + 7) % 7,
+//             (current_idx - 5 + 7) % 7,
+//             (current_idx - 6 + 7) % 7};
+//
+//         // Load symmetric state pairs into AVX register
+//         __m256d states_pair = _mm256_setr_pd(
+//             state[idx[0]] + state[idx[6]],
+//             state[idx[1]] + state[idx[5]],
+//             state[idx[2]] + state[idx[4]],
+//             0.0  // Padding
+//         );
+//
+//         // Vectorized multiply-add operation
+//         __m256d partial_sum = _mm256_mul_pd(states_pair, coeffs_pairs);
+//
+//         // Sum of vector elements
+//         dtmf_float_t sum = ((dtmf_float_t *)&partial_sum)[0] + ((dtmf_float_t *)&partial_sum)[1] + ((dtmf_float_t *)&partial_sum)[2];
+//
+//         // Central term contribution
+//         sum += state[idx[3]] * fir_coeffs[3];
+//
+//         // Store filtered value
+//         buffer[i] = sum;
+//     }
+// }
+
 static dtmf_float_t _dtmf_calculate_noise_threshold(dtmf_float_t const *buffer, dtmf_count_t const count, dtmf_float_t const threshold_factor) {
     dtmf_float_t sum    = 0.0;
     dtmf_float_t sum_sq = 0.0;
