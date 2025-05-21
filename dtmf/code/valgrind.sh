@@ -9,7 +9,7 @@ OUT_DIR="$SCRIPT_DIR/reports/valgrind"
 BIN_GOE=dtmf_encdec-goertzel
 BIN_FFT=dtmf_encdec-fft
 BIN_ENC=dtmf_encdec-enc
-BUILD_OPTS="-DCMAKE_BUILD_TYPE=Release -DENABLE_DEBUG_SYMBOLS=ON"
+BUILD_OPTS="-DCMAKE_BUILD_TYPE=Release -DENABLE_DEBUG_SYMBOLS=ON -DENABLE_SAN=OFF"
 MAKE_OPTS="-j8"
 TOOLS=("memcheck" "cachegrind" "callgrind")
 
