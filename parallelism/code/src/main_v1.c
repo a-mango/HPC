@@ -1,4 +1,4 @@
-// Original version of the program
+// Original single threaded version of the program
 
 #include <stdio.h>
 #include <stdlib.h>
